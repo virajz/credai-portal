@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\ExhibitorForm;
+use App\Livewire\ExhibitorsList;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -32,4 +34,7 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
+
+    Route::get('exhibitor/register', ExhibitorForm::class)->name('exhibitor.register');
+    Route::get('exhibitors', ExhibitorsList::class)->name('exhibitors.index');
 });
