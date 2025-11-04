@@ -150,8 +150,6 @@ class ExhibitorForm extends Component
             $this->currentStep = $draft->current_step ?? 1;
             $this->completedSteps = $draft->completed_steps ?? [];
             $this->showResumeLink = true;
-
-            session()->flash('info', 'Your draft has been loaded. Note: Uploaded images are not saved in drafts.');
         } else {
             // Invalid or expired resume token - start fresh
             $this->createNewDraft();
@@ -465,7 +463,7 @@ class ExhibitorForm extends Component
         }
 
         // Filter empty social media links
-        $socialMediaLinks = array_filter($this->social_media_links, fn ($value) => ! empty($value));
+        $socialMediaLinks = array_filter($this->social_media_links, fn($value) => ! empty($value));
 
         // Create exhibitor
         Exhibitor::create([

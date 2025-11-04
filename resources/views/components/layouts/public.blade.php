@@ -13,7 +13,7 @@
                 <div class="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
                     <!-- CREDAI Logo -->
                     <div class="flex items-center gap-4">
-                        <img src="/credai_logo.png" alt="CREDAI Logo" class="h-12 w-auto sm:h-16" />
+                        <img src="/credai_logo.png" alt="CREDAI Logo" class="h-8 w-auto sm:h-10" />
                     </div>
 
                     <!-- Company/Event Logo -->
