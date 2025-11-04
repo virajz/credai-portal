@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\DraftExhibitorsList;
 use App\Livewire\ExhibitorForm;
 use App\Livewire\ExhibitorsList;
 use App\Livewire\PublicExhibitorForm;
@@ -44,4 +45,5 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('exhibitor/register', ExhibitorForm::class)->name('exhibitor.register');
     Route::get('exhibitors', ExhibitorsList::class)->name('exhibitors.index');
+    Route::get('exhibitors/drafts', DraftExhibitorsList::class)->name('exhibitors.drafts');
 });

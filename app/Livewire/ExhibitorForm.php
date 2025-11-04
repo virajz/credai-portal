@@ -2,8 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Models\DraftExhibitor;
 use App\Models\Exhibitor;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -15,6 +17,14 @@ class ExhibitorForm extends Component
     public int $currentStep = 1;
 
     public array $completedSteps = [];
+
+    // Draft functionality
+    #[Url(as: 'resume')]
+    public ?string $resumeToken = null;
+
+    public ?int $draftId = null;
+
+    public bool $showResumeLink = false;
 
     public array $cities = [
         'Surat',
@@ -61,6 +71,151 @@ class ExhibitorForm extends Component
     public string $facia_name = '';
 
     public bool $use_brand_name_as_facia = false;
+
+    /**
+     * Component initialization
+     */
+    public function mount(): void
+    {
+        // Check if resume token is set via URL (Livewire's #[Url] attribute)
+        if ($this->resumeToken) {
+            $this->loadDraft($this->resumeToken);
+        } else {
+            // Check if user has a draft in session
+            $sessionToken = session('exhibitor_draft_token');
+            if ($sessionToken) {
+                $this->resumeToken = $sessionToken;
+                $this->loadDraft($sessionToken);
+            }
+        }
+        // Don't create a new draft on mount - wait until user starts filling
+    }
+
+    /**
+     * Create a new draft entry (called lazily when needed)
+     */
+    protected function createNewDraft(): void
+    {
+        $draft = DraftExhibitor::create([
+            'resume_token' => DraftExhibitor::generateResumeToken(),
+            'last_activity_at' => now(),
+        ]);
+
+        $this->draftId = $draft->id;
+        $this->resumeToken = $draft->resume_token;
+        $this->showResumeLink = true;
+
+        // Store in session so user can refresh without losing draft
+        session(['exhibitor_draft_token' => $draft->resume_token]);
+
+        // The #[Url] attribute will automatically update the browser URL
+    }
+
+    /**
+     * Ensure a draft exists before saving
+     */
+    protected function ensureDraftExists(): void
+    {
+        if (! $this->draftId) {
+            $this->createNewDraft();
+        }
+    }
+
+    /**
+     * Load draft data from resume token
+     */
+    protected function loadDraft(string $token): void
+    {
+        $draft = DraftExhibitor::where('resume_token', $token)
+            ->where('is_completed', false)
+            ->first();
+
+        if ($draft) {
+            $this->draftId = $draft->id;
+            $this->resumeToken = $draft->resume_token;
+            $this->brand_name = $draft->brand_name ?? '';
+            $this->office_address = $draft->office_address ?? '';
+            $this->city = $draft->city ?? '';
+            $this->contact_person_name = $draft->contact_person_name ?? '';
+            $this->phone_number = $draft->phone_number ?? '';
+            $this->email = $draft->email ?? '';
+            $this->website = $draft->website ?? '';
+            $this->video_url = $draft->video_url ?? '';
+            $this->social_media_links = $draft->social_media_links ?? [
+                'facebook' => '',
+                'linkedin' => '',
+                'instagram' => '',
+            ];
+            $this->facia_name = $draft->facia_name ?? '';
+            $this->currentStep = $draft->current_step ?? 1;
+            $this->completedSteps = $draft->completed_steps ?? [];
+            $this->showResumeLink = true;
+
+            session()->flash('info', 'Your draft has been loaded. Note: Uploaded images are not saved in drafts.');
+        } else {
+            // Invalid or expired resume token - start fresh
+            $this->createNewDraft();
+            session()->flash('warning', 'The resume link was invalid or expired. Starting a new form.');
+        }
+    }
+
+    /**
+     * Auto-save the draft whenever relevant data changes
+     */
+    public function updated($propertyName): void
+    {
+        // Skip file uploads and internal properties
+        if (in_array($propertyName, ['logo', 'brochure', 'photos', 'photo_labels', 'use_brand_name_as_facia', 'currentStep', 'completedSteps', 'showResumeLink'])) {
+            return;
+        }
+
+        $this->saveDraft();
+    }
+
+    /**
+     * Save the current form state as a draft
+     */
+    public function saveDraft(): void
+    {
+        // Create draft if it doesn't exist yet
+        $this->ensureDraftExists();
+
+        DraftExhibitor::where('id', $this->draftId)->update([
+            'brand_name' => $this->brand_name ?: null,
+            'office_address' => $this->office_address ?: null,
+            'city' => $this->city ?: null,
+            'contact_person_name' => $this->contact_person_name ?: null,
+            'phone_number' => $this->phone_number ?: null,
+            'email' => $this->email ?: null,
+            'website' => $this->website ?: null,
+            'video_url' => $this->video_url ?: null,
+            'social_media_links' => array_filter($this->social_media_links) ?: null,
+            'facia_name' => $this->facia_name ?: null,
+            'current_step' => $this->currentStep,
+            'completed_steps' => $this->completedSteps,
+            'last_activity_at' => now(),
+        ]);
+    }
+
+    /**
+     * Copy the resume link to clipboard
+     */
+    public function copyResumeLink(): void
+    {
+        $this->dispatch('resume-link-copied');
+    }
+
+    /**
+     * Get the resume URL
+     */
+    public function getResumeUrlProperty(): string
+    {
+        if (! $this->resumeToken) {
+            return '';
+        }
+
+        return route('exhibitor.public.register', ['resume' => $this->resumeToken]);
+    }
 
     /**
      * Remove a photo from the list
@@ -116,6 +271,7 @@ class ExhibitorForm extends Component
     {
         if ($step >= 1 && $step <= 4) {
             $this->currentStep = $step;
+            $this->saveDraft();
         }
     }
 
@@ -133,6 +289,8 @@ class ExhibitorForm extends Component
             if ($this->currentStep < 4) {
                 $this->currentStep++;
             }
+
+            $this->saveDraft();
         }
     }
 
@@ -143,6 +301,7 @@ class ExhibitorForm extends Component
     {
         if ($this->currentStep > 1) {
             $this->currentStep--;
+            $this->saveDraft();
         }
     }
 
@@ -164,12 +323,13 @@ class ExhibitorForm extends Component
             ]),
             2 => $this->validate([
                 'contact_person_name' => ['required', 'string', 'max:255'],
-                'phone_number' => ['required', 'string', 'max:20'],
+                'phone_number' => ['required', 'digits:10'],
                 'email' => ['nullable', 'email', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
             ], [
                 'contact_person_name.required' => 'Please provide the main contact person\'s name.',
                 'phone_number.required' => 'Mobile number is required for event coordination.',
+                'phone_number.digits' => 'Mobile number must be exactly 10 digits.',
                 'email.email' => 'Please provide a valid email address.',
                 'website.url' => 'Please provide a valid website URL.',
             ]),
@@ -240,7 +400,7 @@ class ExhibitorForm extends Component
 
             // Contact Person
             'contact_person_name' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'string', 'max:20'],
+            'phone_number' => ['required', 'digits:10'],
             'email' => ['nullable', 'email', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
 
@@ -266,6 +426,7 @@ class ExhibitorForm extends Component
             'city.in' => 'Please select a valid city from the dropdown.',
             'contact_person_name.required' => 'Please provide the main contact person\'s name.',
             'phone_number.required' => 'Mobile number is required for event coordination.',
+            'phone_number.digits' => 'Mobile number must be exactly 10 digits.',
             'email.email' => 'Please provide a valid email address.',
             'website.url' => 'Please provide a valid website URL.',
             'logo.image' => 'Logo must be an image file.',
@@ -304,7 +465,7 @@ class ExhibitorForm extends Component
         }
 
         // Filter empty social media links
-        $socialMediaLinks = array_filter($this->social_media_links, fn($value) => ! empty($value));
+        $socialMediaLinks = array_filter($this->social_media_links, fn ($value) => ! empty($value));
 
         // Create exhibitor
         Exhibitor::create([
@@ -322,6 +483,16 @@ class ExhibitorForm extends Component
             'social_media_links' => ! empty($socialMediaLinks) ? $socialMediaLinks : null,
             'facia_name' => $validated['facia_name'],
         ]);
+
+        // Mark draft as completed
+        if ($this->draftId) {
+            DraftExhibitor::where('id', $this->draftId)->update([
+                'is_completed' => true,
+            ]);
+        }
+
+        // Clear the draft token from session
+        session()->forget('exhibitor_draft_token');
 
         session()->flash('success', $this->getSuccessMessage());
 

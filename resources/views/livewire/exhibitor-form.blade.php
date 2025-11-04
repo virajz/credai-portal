@@ -10,6 +10,58 @@
         </flux:callout>
     @endif
 
+    @if (session('info'))
+        <flux:callout variant="info" class="mb-6">
+            {{ session('info') }}
+        </flux:callout>
+    @endif
+
+    @if (session('warning'))
+        <flux:callout variant="warning" class="mb-6">
+            {{ session('warning') }}
+        </flux:callout>
+    @endif
+
+    <!-- Resume Link Callout -->
+    @if ($showResumeLink && $resumeToken)
+        <flux:callout variant="warning" class="mb-6" icon="bookmark">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                    <div class="font-semibold">Save Your Progress</div>
+                    <div class="mt-1 text-sm">
+                        Your progress is auto-saved! You can bookmark this page or copy the URL from your browser's
+                        address bar to resume later. Your text data is saved, but <strong>images will not be
+                            saved</strong> in the draft.
+                    </div>
+                    <div class="mt-3">
+                        <flux:input readonly :value="$this->resumeUrl" class="font-mono text-sm"
+                            id="resume-url-input" />
+                    </div>
+                </div>
+                <div>
+                    <flux:button size="sm" variant="primary" icon="clipboard" x-data
+                        x-on:click="
+                        navigator.clipboard.writeText('{{ $this->resumeUrl }}');
+                        $dispatch('resume-link-copied');
+                    ">
+                        Copy Link
+                    </flux:button>
+                </div>
+            </div>
+        </flux:callout>
+
+        <!-- Toast notification for copy -->
+        <div x-data="{ show: false }" x-on:resume-link-copied.window="show = true; setTimeout(() => show = false, 3000)"
+            x-show="show" x-transition
+            class="fixed bottom-4 right-4 z-50 rounded-lg bg-green-600 px-4 py-3 text-white shadow-lg dark:bg-green-500"
+            style="display: none;">
+            <div class="flex items-center gap-2">
+                <flux:icon.check class="size-5" />
+                <span>Resume link copied to clipboard!</span>
+            </div>
+        </div>
+    @endif
+
     <!-- Progress Indicator -->
     <div class="mb-8">
         <div class="flex items-center justify-between">
@@ -107,8 +159,8 @@
                         <flux:input wire:model="contact_person_name" label="Main Contact Person" placeholder="John Doe"
                             description="Person handling event coordination." required />
 
-                        <flux:input wire:model="phone_number" label="Mobile Number" type="tel"
-                            placeholder="+91 98765 43210" description="Active during exhibition — WhatsApp preferred."
+                        <flux:input wire:model="phone_number" label="Mobile Number" type="tel" inputmode="numeric"
+                            placeholder="9876543210" description="Enter 10 digit mobile number — WhatsApp preferred."
                             required />
                     </div>
 
