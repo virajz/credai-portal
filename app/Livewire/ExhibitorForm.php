@@ -59,6 +59,8 @@ class ExhibitorForm extends Component
 
     public array $photo_labels = [];
 
+    public $newPhoto;
+
     public string $video_url = '';
 
     public array $social_media_links = [
@@ -163,7 +165,7 @@ class ExhibitorForm extends Component
     public function updated($propertyName): void
     {
         // Skip file uploads and internal properties
-        if (in_array($propertyName, ['logo', 'brochure', 'photos', 'photo_labels', 'use_brand_name_as_facia', 'currentStep', 'completedSteps', 'showResumeLink'])) {
+        if (in_array($propertyName, ['logo', 'brochure', 'newPhoto', 'photos', 'photo_labels', 'use_brand_name_as_facia', 'currentStep', 'completedSteps', 'showResumeLink'])) {
             return;
         }
 
@@ -221,6 +223,35 @@ class ExhibitorForm extends Component
         }
 
         return route('exhibitor.public.register', ['resume' => $this->resumeToken]);
+    }
+
+    /**
+     * Handle new photo upload (called sequentially from frontend)
+     */
+    public function updatedNewPhoto(): void
+    {
+        // Validate the single new photo
+        $this->validate([
+            'newPhoto' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
+        ], [
+            'newPhoto.image' => 'Photo must be an image file.',
+            'newPhoto.mimes' => 'Photo must be a PNG or JPG file.',
+            'newPhoto.max' => 'Photo file size should not exceed 2MB.',
+        ]);
+
+        // Check if we haven't exceeded the limit
+        if (count($this->photos) >= 5) {
+            $this->addError('newPhoto', 'You can upload a maximum of 5 photos.');
+
+            return;
+        }
+
+        // Add to photos array
+        $this->photos[] = $this->newPhoto;
+        $this->photo_labels[] = '';
+
+        // Clear the newPhoto property
+        $this->newPhoto = null;
     }
 
     /**
@@ -471,7 +502,7 @@ class ExhibitorForm extends Component
         }
 
         // Filter empty social media links
-        $socialMediaLinks = array_filter($this->social_media_links, fn($value) => ! empty($value));
+        $socialMediaLinks = array_filter($this->social_media_links, fn ($value) => ! empty($value));
 
         // Create exhibitor
         Exhibitor::create([

@@ -189,13 +189,85 @@
                 <div class="space-y-6">
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <!-- Logo Upload -->
-                        <div>
-                            <flux:file-upload wire:model="logo" label="Upload Logo"
-                                description="High-quality PNG or JPG. Transparent background preferred."
-                                accept="image/png,image/jpeg,image/jpg">
-                                <flux:file-upload.dropzone heading="Drop file or click to browse"
-                                    text="PNG or JPG, max 2MB" icon="photo" with-progress />
-                            </flux:file-upload>
+                        <div x-data="{
+                            uploading: false,
+                            isDragging: false,
+                            handleFile(event) {
+                                const file = event.target.files[0];
+                                if (file) {
+                                    this.uploading = true;
+                                    @this.upload('logo', file, () => {
+                                        this.uploading = false;
+                                    }, () => {
+                                        this.uploading = false;
+                                    })
+                                }
+                            },
+                            handleDrop(event) {
+                                event.preventDefault();
+                                this.isDragging = false;
+                                const file = event.dataTransfer.files[0];
+                                if (file && file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+                                    this.uploading = true;
+                                    @this.upload('logo', file, () => {
+                                        this.uploading = false;
+                                    }, () => {
+                                        this.uploading = false;
+                                    })
+                                }
+                            }
+                        }">
+                            <div class="space-y-2">
+                                <flux:label>Upload Logo</flux:label>
+                                <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
+                                    High-quality PNG or JPG. Transparent background preferred.
+                                </flux:text>
+
+                                <div class="relative">
+                                    <input
+                                        type="file"
+                                        @change="handleFile($event)"
+                                        accept="image/png,image/jpeg,image/jpg"
+                                        class="hidden"
+                                        id="logo-upload"
+                                        :disabled="uploading || {{ $logo ? 'true' : 'false' }}"
+                                    />
+                                    <label
+                                        for="logo-upload"
+                                        @dragover.prevent="isDragging = true"
+                                        @dragleave.prevent="isDragging = false"
+                                        @drop.prevent="handleDrop($event)"
+                                        class="{{ implode(' ', [
+                                            'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
+                                            'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
+                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600'
+                                        ]) }}"
+                                        :class="{
+                                            'cursor-not-allowed opacity-60': uploading || {{ $logo ? 'true' : 'false' }},
+                                            'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
+                                        }"
+                                    >
+                                        <flux:icon.photo class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="!uploading">
+                                            Drop file or click to browse
+                                        </span>
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="uploading" x-cloak>
+                                            Uploading...
+                                        </span>
+                                        <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                            PNG or JPG, max 2MB
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div x-show="uploading" x-cloak class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Processing upload...</span>
+                                </div>
+                            </div>
 
                             @if ($logo)
                                 <div class="mt-3">
@@ -207,16 +279,95 @@
                                     </flux:file-item>
                                 </div>
                             @endif
+
+                            @error('logo')
+                                <flux:text class="text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                            @enderror
                         </div>
 
                         <!-- Brochure Upload -->
-                        <div>
-                            <flux:file-upload wire:model="brochure" label="Upload Brochure"
-                                description="PDF visitors can view or download from your profile."
-                                accept="application/pdf" badge="Optional">
-                                <flux:file-upload.dropzone heading="Drop file or click to browse" text="PDF, max 10MB"
-                                    icon="document-text" with-progress />
-                            </flux:file-upload>
+                        <div x-data="{
+                            uploading: false,
+                            isDragging: false,
+                            handleFile(event) {
+                                const file = event.target.files[0];
+                                if (file) {
+                                    this.uploading = true;
+                                    @this.upload('brochure', file, () => {
+                                        this.uploading = false;
+                                    }, () => {
+                                        this.uploading = false;
+                                    })
+                                }
+                            },
+                            handleDrop(event) {
+                                event.preventDefault();
+                                this.isDragging = false;
+                                const file = event.dataTransfer.files[0];
+                                if (file && file.type === 'application/pdf') {
+                                    this.uploading = true;
+                                    @this.upload('brochure', file, () => {
+                                        this.uploading = false;
+                                    }, () => {
+                                        this.uploading = false;
+                                    })
+                                }
+                            }
+                        }">
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <flux:label>Upload Brochure</flux:label>
+                                    <flux:badge size="sm" variant="outline" color="zinc">Optional</flux:badge>
+                                </div>
+                                <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
+                                    PDF visitors can view or download from your profile.
+                                </flux:text>
+
+                                <div class="relative">
+                                    <input
+                                        type="file"
+                                        @change="handleFile($event)"
+                                        accept="application/pdf"
+                                        class="hidden"
+                                        id="brochure-upload"
+                                        :disabled="uploading || {{ $brochure ? 'true' : 'false' }}"
+                                    />
+                                    <label
+                                        for="brochure-upload"
+                                        @dragover.prevent="isDragging = true"
+                                        @dragleave.prevent="isDragging = false"
+                                        @drop.prevent="handleDrop($event)"
+                                        class="{{ implode(' ', [
+                                            'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
+                                            'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
+                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600'
+                                        ]) }}"
+                                        :class="{
+                                            'cursor-not-allowed opacity-60': uploading || {{ $brochure ? 'true' : 'false' }},
+                                            'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
+                                        }"
+                                    >
+                                        <flux:icon.document-text class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="!uploading">
+                                            Drop file or click to browse
+                                        </span>
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="uploading" x-cloak>
+                                            Uploading...
+                                        </span>
+                                        <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                            PDF, max 10MB
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div x-show="uploading" x-cloak class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Processing upload...</span>
+                                </div>
+                            </div>
 
                             @if ($brochure)
                                 <div class="mt-3">
@@ -229,22 +380,146 @@
                                     </flux:file-item>
                                 </div>
                             @endif
+
+                            @error('brochure')
+                                <flux:text class="text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                            @enderror
                         </div>
                     </div>
 
                     <!-- Photos Upload -->
-                    <div>
-                        <flux:file-upload wire:model="photos" label="Upload Images"
-                            description="Upload 3–5 photos that best showcase your company or projects. Minimum 3 required."
-                            accept="image/png,image/jpeg,image/jpg" multiple required>
-                            <flux:file-upload.dropzone heading="Drop file or click to browse"
-                                text="PNG or JPG, 3–5 photos required, 2MB each" icon="photo" with-progress />
-                        </flux:file-upload>
+                    <div x-data="{
+                        uploading: false,
+                        isDragging: false,
+                        uploadQueue: [],
+                        isProcessing: false,
+                        async processQueue() {
+                            if (this.uploadQueue.length > 0 && !this.isProcessing) {
+                                this.isProcessing = true;
+                                this.uploading = true;
+                                const file = this.uploadQueue.shift();
+                                console.log('Starting upload for:', file.name, 'Queue remaining:', this.uploadQueue.length);
+
+                                try {
+                                    await new Promise((resolve, reject) => {
+                                        @this.upload('newPhoto', file, resolve, reject);
+                                    });
+                                    console.log('Upload complete:', file.name);
+                                } catch (error) {
+                                    console.error('Upload failed:', error);
+                                }
+
+                                this.isProcessing = false;
+
+                                // Continue with next file
+                                if (this.uploadQueue.length > 0) {
+                                    setTimeout(() => this.processQueue(), 100);
+                                } else {
+                                    // All done, hide loading state
+                                    this.uploading = false;
+                                }
+                            }
+                        },
+                        handleFiles(event) {
+                            const files = Array.from(event.target.files);
+                            const validFiles = files.filter(file =>
+                                file.type.match(/^image\/(png|jpeg|jpg)$/)
+                            );
+                            console.log('Adding files to queue:', validFiles.length, validFiles.map(f => f.name));
+                            this.uploadQueue.push(...validFiles);
+                            event.target.value = '';
+                            this.processQueue();
+                        },
+                        handleDrop(event) {
+                            event.preventDefault();
+                            this.isDragging = false;
+                            const files = Array.from(event.dataTransfer.files);
+                            const validFiles = files.filter(file =>
+                                file.type.match(/^image\/(png|jpeg|jpg)$/)
+                            );
+                            console.log('Dropping files:', validFiles.length, validFiles.map(f => f.name));
+                            if (validFiles.length > 0) {
+                                this.uploadQueue.push(...validFiles);
+                                this.processQueue();
+                            }
+                        }
+                    }" x-init="console.log('Photo upload component initialized'); $watch('uploadQueue', value => console.log('Queue updated:', value.length))">
+                        <div class="space-y-2">
+                            <flux:label>Upload Images</flux:label>
+                            <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
+                                Upload 3–5 photos that best showcase your company or projects. Minimum 3 required.
+                            </flux:text>
+
+                            @if (count($photos) < 5)
+                                <!-- Custom file input with better UX -->
+                                <div class="relative">
+                                    <div wire:ignore>
+                                        <input
+                                            type="file"
+                                            @change="handleFiles($event)"
+                                            accept="image/png,image/jpeg,image/jpg"
+                                            multiple
+                                            class="hidden"
+                                            id="photo-upload"
+                                            :disabled="uploading || {{ count($photos) }} >= 5"
+                                        />
+                                    </div>
+                                    <label
+                                        for="photo-upload"
+                                        @dragover.prevent="isDragging = true"
+                                        @dragleave.prevent="isDragging = false"
+                                        @drop.prevent="handleDrop($event)"
+                                        class="{{ implode(' ', [
+                                            'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
+                                            'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
+                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600'
+                                        ]) }}"
+                                        :class="{
+                                            'cursor-not-allowed opacity-60': uploading,
+                                            'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
+                                        }"
+                                    >
+                                        <flux:icon.photo class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="!uploading">
+                                            Drop files or click to browse
+                                        </span>
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="uploading" x-cloak>
+                                            Uploading...
+                                        </span>
+                                        <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                            PNG or JPG, 3–5 photos required, 2MB each
+                                        </span>
+                                        <span class="mt-2 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                                            Uploaded: {{ count($photos) }}/5
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <!-- Loading state -->
+                                <div x-show="uploading" x-cloak class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Processing upload... (<span x-text="uploadQueue.length"></span> remaining)</span>
+                                </div>
+                            @else
+                                <div class="rounded-lg bg-green-50 px-4 py-3 dark:bg-green-900/20">
+                                    <div class="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
+                                        <flux:icon.check class="size-5" />
+                                        <span class="font-medium">Maximum photos uploaded (5/5)</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-green-600 dark:text-green-500">
+                                        Remove a photo below to upload a different one.
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
 
                         @if (count($photos) > 0)
-                            <div class="mt-3 space-y-3">
+                            <div class="mt-4 space-y-3" wire:key="photos-list">
                                 @foreach ($photos as $index => $photo)
-                                    <div>
+                                    <div wire:key="photo-{{ $index }}-{{ $photo->getClientOriginalName() }}">
                                         <flux:file-item :heading="$photo->getClientOriginalName()"
                                             :image="$photo->temporaryUrl()" :size="$photo->getSize()">
                                             <x-slot name="actions">
@@ -261,6 +536,10 @@
                                 @endforeach
                             </div>
                         @endif
+
+                        @error('photos')
+                            <flux:text class="text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                        @enderror
                     </div>
 
                     <flux:input wire:model="video_url" label="Promotional Video URL" type="url"
