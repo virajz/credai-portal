@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\DraftExhibitor;
+use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -14,6 +15,8 @@ class DraftExhibitorsList extends Component
     public string $search = '';
 
     public string $filter = 'incomplete';
+
+    public ?int $draftToDelete = null;
 
     /**
      * Reset pagination when search changes
@@ -41,12 +44,43 @@ class DraftExhibitorsList extends Component
     }
 
     /**
+     * Confirm delete a draft
+     */
+    public function confirmDelete(int $draftId): void
+    {
+        $this->draftToDelete = $draftId;
+        $this->modal('delete-draft')->show();
+    }
+
+    /**
      * Delete a draft
      */
-    public function deleteDraft(int $draftId): void
+    public function deleteDraft(): void
     {
-        DraftExhibitor::findOrFail($draftId)->delete();
-        session()->flash('success', 'Draft deleted successfully.');
+        if ($this->draftToDelete) {
+            $draft = DraftExhibitor::findOrFail($this->draftToDelete);
+            $contactName = $draft->contact_person_name ?: 'Draft submission';
+
+            $draft->delete();
+
+            $this->draftToDelete = null;
+            $this->modal('delete-draft')->close();
+
+            Flux::toast(
+                heading: 'Draft deleted',
+                text: "{$contactName} has been removed successfully.",
+                variant: 'success'
+            );
+        }
+    }
+
+    /**
+     * Cancel delete operation
+     */
+    public function cancelDelete(): void
+    {
+        $this->draftToDelete = null;
+        $this->modal('delete-draft')->close();
     }
 
     #[Title('Draft Exhibitor Submissions')]

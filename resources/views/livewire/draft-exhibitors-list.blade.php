@@ -5,11 +5,6 @@
         <flux:subheading>Track incomplete and abandoned form submissions</flux:subheading>
     </div>
 
-    @if (session('success'))
-        <flux:callout variant="success">
-            {{ session('success') }}
-        </flux:callout>
-    @endif
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -171,8 +166,7 @@
                             <flux:table.cell>
                                 <div class="flex items-center gap-2">
                                     <flux:button size="xs" variant="ghost" icon="trash" color="red"
-                                        wire:click="deleteDraft({{ $draft->id }})"
-                                        wire:confirm="Are you sure you want to delete this draft?" title="Delete draft">
+                                        wire:click="confirmDelete({{ $draft->id }})" title="Delete draft">
                                     </flux:button>
                                 </div>
                             </flux:table.cell>
@@ -197,4 +191,22 @@
             <span>Resume link copied to clipboard!</span>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <flux:modal name="delete-draft" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Delete draft?</flux:heading>
+                <flux:text class="mt-2">
+                    <p>You're about to delete this draft submission.</p>
+                    <p>This action cannot be reversed.</p>
+                </flux:text>
+            </div>
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:button variant="ghost" wire:click="cancelDelete">Cancel</flux:button>
+                <flux:button variant="danger" wire:click="deleteDraft">Delete draft</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

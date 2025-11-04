@@ -277,3 +277,42 @@ test('exhibitors list shows distinct cities for filter', function () {
         ->assertSee('Surat')
         ->assertSee('Ahmedabad');
 });
+
+test('can confirm delete exhibitor', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $exhibitor = Exhibitor::factory()->create();
+
+    Livewire::test(ExhibitorsList::class)
+        ->call('confirmDelete', $exhibitor->id)
+        ->assertSet('exhibitorToDelete', $exhibitor->id);
+});
+
+test('can delete exhibitor', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $exhibitor = Exhibitor::factory()->create(['brand_name' => 'Test Brand']);
+
+    Livewire::test(ExhibitorsList::class)
+        ->call('confirmDelete', $exhibitor->id)
+        ->call('deleteExhibitor')
+        ->assertSet('exhibitorToDelete', null);
+
+    expect(Exhibitor::find($exhibitor->id))->toBeNull();
+});
+
+test('can cancel delete exhibitor', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $exhibitor = Exhibitor::factory()->create();
+
+    Livewire::test(ExhibitorsList::class)
+        ->call('confirmDelete', $exhibitor->id)
+        ->call('cancelDelete')
+        ->assertSet('exhibitorToDelete', null);
+
+    expect(Exhibitor::find($exhibitor->id))->not->toBeNull();
+});

@@ -130,7 +130,8 @@
                                     <flux:menu.item icon="eye">View Details</flux:menu.item>
                                     <flux:menu.item icon="pencil">Edit</flux:menu.item>
                                     <flux:menu.separator />
-                                    <flux:menu.item icon="trash" variant="danger">Delete</flux:menu.item>
+                                    <flux:menu.item icon="trash" variant="danger"
+                                        wire:click="confirmDelete({{ $exhibitor->id }})">Delete</flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
                         </flux:table.cell>
@@ -175,4 +176,22 @@
             exhibitors
         </div>
     @endif
+
+    <!-- Delete Confirmation Modal -->
+    <flux:modal name="delete-exhibitor" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Delete exhibitor?</flux:heading>
+                <flux:text class="mt-2">
+                    <p>You're about to delete this exhibitor registration.</p>
+                    <p>This action cannot be reversed.</p>
+                </flux:text>
+            </div>
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:button variant="ghost" wire:click="cancelDelete">Cancel</flux:button>
+                <flux:button variant="danger" wire:click="deleteExhibitor">Delete exhibitor</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

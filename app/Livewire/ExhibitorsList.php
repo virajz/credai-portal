@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Exhibitor;
+use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -23,6 +24,8 @@ class ExhibitorsList extends Component
 
     #[Url]
     public string $cityFilter = '';
+
+    public ?int $exhibitorToDelete = null;
 
     public function updatingSearch(): void
     {
@@ -48,6 +51,37 @@ class ExhibitorsList extends Component
     {
         $this->reset(['search', 'cityFilter', 'sortBy', 'sortDirection']);
         $this->resetPage();
+    }
+
+    public function confirmDelete(int $exhibitorId): void
+    {
+        $this->exhibitorToDelete = $exhibitorId;
+        $this->modal('delete-exhibitor')->show();
+    }
+
+    public function deleteExhibitor(): void
+    {
+        if ($this->exhibitorToDelete) {
+            $exhibitor = Exhibitor::findOrFail($this->exhibitorToDelete);
+            $brandName = $exhibitor->brand_name;
+
+            $exhibitor->delete();
+
+            $this->exhibitorToDelete = null;
+            $this->modal('delete-exhibitor')->close();
+
+            Flux::toast(
+                heading: 'Exhibitor deleted',
+                text: "{$brandName} has been removed successfully.",
+                variant: 'success'
+            );
+        }
+    }
+
+    public function cancelDelete(): void
+    {
+        $this->exhibitorToDelete = null;
+        $this->modal('delete-exhibitor')->close();
     }
 
     #[Title('Exhibitors')]
