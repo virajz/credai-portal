@@ -41,12 +41,8 @@ test('users with two factor enabled are redirected to two factor challenge', fun
     if (! Features::canManageTwoFactorAuthentication()) {
         $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
-    Features::twoFactorAuthentication([
-        'confirm' => true,
-        'confirmPassword' => true,
-    ]);
 
-    $user = User::factory()->create();
+    $user = User::factory()->withTwoFactor()->create();
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,

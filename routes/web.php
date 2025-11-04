@@ -2,6 +2,7 @@
 
 use App\Livewire\ExhibitorForm;
 use App\Livewire\ExhibitorsList;
+use App\Livewire\PublicExhibitorForm;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -12,6 +13,12 @@ use Laravel\Fortify\Features;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+// Public exhibitor registration routes
+Route::get('register-exhibitor', PublicExhibitorForm::class)->name('exhibitor.public.register');
+Route::get('exhibitor/thank-you', function () {
+    return view('exhibitor.thank-you');
+})->name('exhibitor.public.thank-you');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

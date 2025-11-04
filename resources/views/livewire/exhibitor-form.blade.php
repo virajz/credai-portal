@@ -176,10 +176,10 @@
                     <!-- Photos Upload -->
                     <div>
                         <flux:file-upload wire:model="photos" label="Upload Images"
-                            description="3–5 photos that best showcase your company or projects."
-                            accept="image/png,image/jpeg,image/jpg" multiple>
+                            description="Upload 3–5 photos that best showcase your company or projects. Minimum 3 required."
+                            accept="image/png,image/jpeg,image/jpg" multiple required>
                             <flux:file-upload.dropzone heading="Drop file or click to browse"
-                                text="PNG or JPG, up to 5 photos, 2MB each" icon="photo" with-progress />
+                                text="PNG or JPG, 3–5 photos required, 2MB each" icon="photo" with-progress />
                         </flux:file-upload>
 
                         @if (count($photos) > 0)

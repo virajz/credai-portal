@@ -176,7 +176,7 @@ class ExhibitorForm extends Component
             3 => $this->validate([
                 'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
                 'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
-                'photos' => ['nullable', 'array', 'max:5'],
+                'photos' => ['required', 'array', 'min:3', 'max:5'],
                 'photos.*' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
                 'photo_labels' => ['nullable', 'array'],
                 'photo_labels.*' => ['nullable', 'string', 'max:255'],
@@ -191,7 +191,8 @@ class ExhibitorForm extends Component
                 'logo.max' => 'Logo file size should not exceed 2MB.',
                 'brochure.mimes' => 'Brochure must be a PDF file.',
                 'brochure.max' => 'Brochure file size should not exceed 10MB.',
-                'photos.min' => 'Please upload at least 3 photos.',
+                'photos.required' => 'Please upload at least 3 photos to showcase your company or projects.',
+                'photos.min' => 'Please upload at least 3 photos to showcase your company or projects.',
                 'photos.max' => 'You can upload a maximum of 5 photos.',
                 'photos.*.image' => 'All photos must be image files.',
                 'photos.*.mimes' => 'Photos must be PNG or JPG files.',
@@ -208,6 +209,22 @@ class ExhibitorForm extends Component
             ]),
             default => null,
         };
+    }
+
+    /**
+     * Get the redirect route after successful submission
+     */
+    protected function getRedirectRoute(): string
+    {
+        return route('dashboard');
+    }
+
+    /**
+     * Get the success message after submission
+     */
+    protected function getSuccessMessage(): string
+    {
+        return 'Exhibitor information submitted successfully!';
     }
 
     /**
@@ -230,7 +247,7 @@ class ExhibitorForm extends Component
             // Branding & Media
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
             'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
-            'photos' => ['nullable', 'array', 'max:5'],
+            'photos' => ['required', 'array', 'min:3', 'max:5'],
             'photos.*' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
             'photo_labels' => ['nullable', 'array'],
             'photo_labels.*' => ['nullable', 'string', 'max:255'],
@@ -256,7 +273,8 @@ class ExhibitorForm extends Component
             'logo.max' => 'Logo file size should not exceed 2MB.',
             'brochure.mimes' => 'Brochure must be a PDF file.',
             'brochure.max' => 'Brochure file size should not exceed 10MB.',
-            'photos.min' => 'Please upload at least 3 photos.',
+            'photos.required' => 'Please upload at least 3 photos to showcase your company or projects.',
+            'photos.min' => 'Please upload at least 3 photos to showcase your company or projects.',
             'photos.max' => 'You can upload a maximum of 5 photos.',
             'photos.*.image' => 'All photos must be image files.',
             'photos.*.mimes' => 'Photos must be PNG or JPG files.',
@@ -267,13 +285,6 @@ class ExhibitorForm extends Component
             'social_media_links.instagram.url' => 'Please provide a valid Instagram URL.',
             'facia_name.required' => 'Please provide the name for your booth fascia board.',
         ]);
-
-        // Additional validation: photos must be at least 3 if provided
-        if (! empty($this->photos) && count($this->photos) < 3) {
-            $this->addError('photos', 'Please upload at least 3 photos.');
-
-            return;
-        }
 
         // Handle file uploads
         $logoPath = $this->logo ? $this->logo->store('exhibitors/logos', 'public') : null;
@@ -312,9 +323,9 @@ class ExhibitorForm extends Component
             'facia_name' => $validated['facia_name'],
         ]);
 
-        session()->flash('success', 'Exhibitor information submitted successfully!');
+        session()->flash('success', $this->getSuccessMessage());
 
-        $this->redirect(route('dashboard'), navigate: true);
+        $this->redirect($this->getRedirectRoute(), navigate: true);
     }
 
     #[Title('Exhibitor Information Form')]

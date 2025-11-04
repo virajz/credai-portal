@@ -7,6 +7,18 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
+/**
+ * Helper function to generate minimum required photos for testing
+ */
+function getMinimumPhotos(): array
+{
+    return [
+        UploadedFile::fake()->image('photo1.jpg'),
+        UploadedFile::fake()->image('photo2.jpg'),
+        UploadedFile::fake()->image('photo3.jpg'),
+    ];
+}
+
 test('guests cannot access exhibitor form', function () {
     $this->get(route('exhibitor.register'))->assertRedirect(route('login'));
 });
@@ -191,6 +203,7 @@ test('exhibitor form creates exhibitor with valid data', function () {
         ->set('email', 'contact@abc.com')
         ->set('website', 'https://www.abc.com')
         ->set('video_url', 'https://youtube.com/watch?v=test')
+        ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->call('submit')
         ->assertHasNoErrors()
@@ -213,6 +226,7 @@ test('exhibitor form creates exhibitor with only required fields', function () {
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
         ->set('phone_number', '+91 98765 43210')
+        ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->call('submit')
         ->assertHasNoErrors()
@@ -233,6 +247,7 @@ test('exhibitor form stores logo file correctly', function () {
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
         ->set('phone_number', '+91 98765 43210')
+        ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('logo', $logo)
         ->call('submit')
@@ -255,6 +270,7 @@ test('exhibitor form stores brochure file correctly', function () {
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
         ->set('phone_number', '+91 98765 43210')
+        ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('brochure', $brochure)
         ->call('submit')
@@ -303,6 +319,7 @@ test('exhibitor form stores social media links correctly', function () {
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
         ->set('phone_number', '+91 98765 43210')
+        ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('social_media_links.facebook', 'https://facebook.com/abc')
         ->set('social_media_links.linkedin', 'https://linkedin.com/company/abc')
@@ -325,6 +342,7 @@ test('exhibitor form filters empty social media links', function () {
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
         ->set('phone_number', '+91 98765 43210')
+        ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('social_media_links.facebook', 'https://facebook.com/abc')
         ->set('social_media_links.linkedin', '')
@@ -397,4 +415,60 @@ test('photo labels can be updated reactively without toJSON error', function () 
         ->and($exhibitor->photos[0]['label'])->toBe('First Photo Label')
         ->and($exhibitor->photos[1]['label'])->toBe('Second Photo Label')
         ->and($exhibitor->photos[2]['label'])->toBe('Third Photo Label');
+});
+
+test('step 3 validation prevents advancing without minimum 3 photos', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Livewire::test(ExhibitorForm::class)
+        ->set('currentStep', 3)
+        ->set('brand_name', 'ABC Developers')
+        ->set('office_address', '123 Main Street')
+        ->set('city', 'Surat')
+        ->set('contact_person_name', 'John Doe')
+        ->set('phone_number', '+91 98765 43210')
+        ->set('facia_name', 'ABC DEVELOPERS')
+        ->call('nextStep')
+        ->assertHasErrors(['photos' => 'required']);
+});
+
+test('step 3 validation prevents advancing with less than 3 photos', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Livewire::test(ExhibitorForm::class)
+        ->set('currentStep', 3)
+        ->set('brand_name', 'ABC Developers')
+        ->set('office_address', '123 Main Street')
+        ->set('city', 'Surat')
+        ->set('contact_person_name', 'John Doe')
+        ->set('phone_number', '+91 98765 43210')
+        ->set('facia_name', 'ABC DEVELOPERS')
+        ->set('photos', [
+            UploadedFile::fake()->image('photo1.jpg'),
+            UploadedFile::fake()->image('photo2.jpg'),
+        ])
+        ->call('nextStep')
+        ->assertHasErrors(['photos' => 'min']);
+});
+
+test('step 3 validation allows advancing with 3 or more photos', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Livewire::test(ExhibitorForm::class)
+        ->set('currentStep', 3)
+        ->set('brand_name', 'ABC Developers')
+        ->set('office_address', '123 Main Street')
+        ->set('city', 'Surat')
+        ->set('contact_person_name', 'John Doe')
+        ->set('phone_number', '+91 98765 43210')
+        ->set('facia_name', 'ABC DEVELOPERS')
+        ->set('photos', getMinimumPhotos())
+        ->call('nextStep')
+        ->assertHasNoErrors()
+        ->assertSet('currentStep', 4);
 });

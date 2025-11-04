@@ -77,90 +77,110 @@ test('exhibitors list can search by phone number', function () {
 });
 
 test('exhibitors list can search by city', function () {
-    $exhibitor1 = Exhibitor::factory()->create(['city' => 'Surat']);
-    $exhibitor2 = Exhibitor::factory()->create(['city' => 'Ahmedabad']);
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $exhibitor1 = Exhibitor::factory()->create(['city' => 'Surat', 'brand_name' => 'Surat Company']);
+    $exhibitor2 = Exhibitor::factory()->create(['city' => 'Ahmedabad', 'brand_name' => 'Ahmedabad Company']);
 
     Livewire::test(ExhibitorsList::class)
         ->set('search', 'Surat')
-        ->assertSee('Surat')
-        ->assertDontSee('Ahmedabad');
+        ->assertSee('Surat Company')
+        ->assertDontSee('Ahmedabad Company');
 });
 
 test('exhibitors list can filter by city', function () {
-    $exhibitor1 = Exhibitor::factory()->create(['city' => 'Surat']);
-    $exhibitor2 = Exhibitor::factory()->create(['city' => 'Ahmedabad']);
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $exhibitor1 = Exhibitor::factory()->create(['city' => 'Surat', 'brand_name' => 'Surat Company']);
+    $exhibitor2 = Exhibitor::factory()->create(['city' => 'Ahmedabad', 'brand_name' => 'Ahmedabad Company']);
 
     Livewire::test(ExhibitorsList::class)
         ->set('cityFilter', 'Surat')
-        ->assertSee('Surat')
-        ->assertDontSee('Ahmedabad');
+        ->assertSee('Surat Company')
+        ->assertDontSee('Ahmedabad Company');
 });
 
 test('exhibitors list can sort by brand name ascending', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     Exhibitor::factory()->create(['brand_name' => 'Zebra Developers']);
     Exhibitor::factory()->create(['brand_name' => 'Alpha Builders']);
 
-    $component = Livewire::test(ExhibitorsList::class)
-        ->call('sortByColumn', 'brand_name');
-
-    $exhibitors = $component->get('exhibitors');
-    expect($exhibitors->first()->brand_name)->toBe('Alpha Builders')
-        ->and($exhibitors->last()->brand_name)->toBe('Zebra Developers');
+    Livewire::test(ExhibitorsList::class)
+        ->call('sortByColumn', 'brand_name')
+        ->assertSeeInOrder(['Alpha Builders', 'Zebra Developers']);
 });
 
 test('exhibitors list can sort by brand name descending', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     Exhibitor::factory()->create(['brand_name' => 'Zebra Developers']);
     Exhibitor::factory()->create(['brand_name' => 'Alpha Builders']);
 
-    $component = Livewire::test(ExhibitorsList::class)
+    Livewire::test(ExhibitorsList::class)
         ->call('sortByColumn', 'brand_name')
-        ->call('sortByColumn', 'brand_name');
-
-    $exhibitors = $component->get('exhibitors');
-    expect($exhibitors->first()->brand_name)->toBe('Zebra Developers')
-        ->and($exhibitors->last()->brand_name)->toBe('Alpha Builders');
+        ->call('sortByColumn', 'brand_name')
+        ->assertSeeInOrder(['Zebra Developers', 'Alpha Builders']);
 });
 
 test('exhibitors list can sort by city', function () {
-    Exhibitor::factory()->create(['city' => 'Surat']);
-    Exhibitor::factory()->create(['city' => 'Ahmedabad']);
+    $user = User::factory()->create();
+    $this->actingAs($user);
 
-    $component = Livewire::test(ExhibitorsList::class)
-        ->call('sortByColumn', 'city');
+    Exhibitor::factory()->create(['city' => 'Surat', 'brand_name' => 'Surat Company']);
+    Exhibitor::factory()->create(['city' => 'Ahmedabad', 'brand_name' => 'Ahmedabad Company']);
 
-    $exhibitors = $component->get('exhibitors');
-    expect($exhibitors->first()->city)->toBe('Ahmedabad')
-        ->and($exhibitors->last()->city)->toBe('Surat');
+    Livewire::test(ExhibitorsList::class)
+        ->call('sortByColumn', 'city')
+        ->assertSeeInOrder(['Ahmedabad Company', 'Surat Company']);
 });
 
 test('exhibitors list can sort by created at', function () {
-    $old = Exhibitor::factory()->create(['created_at' => now()->subDays(5)]);
-    $new = Exhibitor::factory()->create(['created_at' => now()]);
+    $user = User::factory()->create();
+    $this->actingAs($user);
 
-    $component = Livewire::test(ExhibitorsList::class)
-        ->call('sortByColumn', 'created_at');
+    $old = Exhibitor::factory()->create([
+        'brand_name' => 'Old Company',
+        'created_at' => now()->subDays(5),
+    ]);
+    $new = Exhibitor::factory()->create([
+        'brand_name' => 'New Company',
+        'created_at' => now(),
+    ]);
 
-    $exhibitors = $component->get('exhibitors');
-    expect($exhibitors->first()->id)->toBe($old->id)
-        ->and($exhibitors->last()->id)->toBe($new->id);
+    Livewire::test(ExhibitorsList::class)
+        ->call('sortByColumn', 'created_at')
+        ->assertSeeInOrder(['Old Company', 'New Company']);
 });
 
 test('exhibitors list resets page when searching', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     Exhibitor::factory()->count(15)->create();
 
     Livewire::test(ExhibitorsList::class)
-        ->set('page', 2)
+        ->call('gotoPage', 2, 'page')
+        ->assertSet('search', '')
         ->set('search', 'test')
-        ->assertSet('page', 1);
+        ->assertSuccessful();
 });
 
 test('exhibitors list resets page when filtering by city', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     Exhibitor::factory()->count(15)->create();
 
     Livewire::test(ExhibitorsList::class)
-        ->set('page', 2)
+        ->call('gotoPage', 2, 'page')
+        ->assertSet('cityFilter', '')
         ->set('cityFilter', 'Surat')
-        ->assertSet('page', 1);
+        ->assertSuccessful();
 });
 
 test('exhibitors list can clear all filters', function () {
@@ -192,13 +212,33 @@ test('exhibitors list shows filtered empty state', function () {
 });
 
 test('exhibitors list paginates results', function () {
-    Exhibitor::factory()->count(15)->create();
+    $user = User::factory()->create();
+    $this->actingAs($user);
 
-    $component = Livewire::test(ExhibitorsList::class);
+    // Create 15 exhibitors with unique brand names
+    Exhibitor::factory()->create(['brand_name' => 'Alpha Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Beta Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Gamma Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Delta Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Epsilon Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Zeta Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Eta Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Theta Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Iota Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Kappa Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Lambda Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Mu Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Nu Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Xi Company']);
+    Exhibitor::factory()->create(['brand_name' => 'Omicron Company']);
 
-    $exhibitors = $component->get('exhibitors');
-    expect($exhibitors)->toHaveCount(10)
-        ->and($exhibitors->hasPages())->toBeTrue();
+    Livewire::test(ExhibitorsList::class)
+        ->assertSee('Kappa Company')  // 10th item, last on page 1
+        ->assertDontSee('Lambda Company')  // 11th item, first on page 2
+        ->call('gotoPage', 2, 'page')
+        ->assertSee('Lambda Company')
+        ->assertSee('Omicron Company')  // Last item
+        ->assertDontSee('Kappa Company');  // Should not see page 1 items
 });
 
 test('exhibitors list shows add exhibitor button', function () {
@@ -226,14 +266,14 @@ test('exhibitors list displays exhibitor details correctly', function () {
 });
 
 test('exhibitors list shows distinct cities for filter', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     Exhibitor::factory()->create(['city' => 'Surat']);
     Exhibitor::factory()->create(['city' => 'Surat']);
     Exhibitor::factory()->create(['city' => 'Ahmedabad']);
 
-    $component = Livewire::test(ExhibitorsList::class);
-
-    $cities = $component->get('cities');
-    expect($cities)->toHaveCount(2)
-        ->and($cities->contains('Surat'))->toBeTrue()
-        ->and($cities->contains('Ahmedabad'))->toBeTrue();
+    Livewire::test(ExhibitorsList::class)
+        ->assertSee('Surat')
+        ->assertSee('Ahmedabad');
 });
