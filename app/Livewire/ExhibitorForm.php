@@ -204,6 +204,14 @@ class ExhibitorForm extends Component
     }
 
     /**
+     * Check if this is a public form (not authenticated)
+     */
+    public function isPublicForm(): bool
+    {
+        return false;
+    }
+
+    /**
      * Get the resume URL
      */
     public function getResumeUrlProperty(): string

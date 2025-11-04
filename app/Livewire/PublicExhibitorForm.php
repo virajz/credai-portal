@@ -7,6 +7,14 @@ use Livewire\Attributes\Title;
 class PublicExhibitorForm extends ExhibitorForm
 {
     /**
+     * Check if this is a public form (not authenticated)
+     */
+    public function isPublicForm(): bool
+    {
+        return true;
+    }
+
+    /**
      * Get the redirect route after successful submission
      */
     protected function getRedirectRoute(): string

@@ -333,7 +333,7 @@
                     <flux:button type="button" variant="ghost" icon="arrow-left" wire:click="previousStep">
                         Previous
                     </flux:button>
-                @else
+                @elseif (!$this->isPublicForm())
                     <flux:button variant="ghost" href="{{ route('dashboard') }}" wire:navigate>
                         Cancel
                     </flux:button>

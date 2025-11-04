@@ -18,7 +18,10 @@
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 <flux:navlist.item icon="building-office" :href="route('exhibitors.index')"
-                    :current="request()->routeIs('exhibitors.*')" wire:navigate>{{ __('Exhibitors') }}
+                    :current="request()->routeIs('exhibitors.index')" wire:navigate>{{ __('Exhibitors') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="document-text" :href="route('exhibitors.drafts')"
+                    :current="request()->routeIs('exhibitors.drafts')" wire:navigate>{{ __('Drafts') }}
                 </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
