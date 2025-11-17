@@ -30,9 +30,6 @@
 }">
     <div class="space-y-2">
         <flux:label>Upload Photos</flux:label>
-        <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-            Upload 3-5 high-quality images of your projects, office, or team. PNG, JPG, or JPEG format accepted.
-        </flux:text>
         @if (is_array($photos) && count($photos) > 0)
             <flux:text class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 {{ count($photos) }}/5 photos uploaded (minimum 3 required)
@@ -81,8 +78,7 @@
 
                     <div class="mt-2">
                         <flux:input wire:model="photoLabels.{{ $index }}"
-                            placeholder="e.g., Modern Villa, Office Exterior, Team Photo..." label="Photo Label"
-                            description="Add a descriptive label for this photo." />
+                            placeholder="e.g., Modern Villa, Office Exterior, Team Photo..." label="Photo Label" />
                     </div>
 
                     @error('photoLabels.' . $index)

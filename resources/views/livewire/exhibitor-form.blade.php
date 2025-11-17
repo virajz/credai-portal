@@ -131,10 +131,10 @@
                     <flux:heading size="lg">Company Information</flux:heading>
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <flux:input wire:model="brand_name" label="Company / Brand Name" placeholder="ABC Developers"
-                            description="Name shown on your booth and website." required />
+                            required />
 
-                        <flux:select wire:model="city" label="City" placeholder="Select city"
-                            description="Your main office location" variant="listbox" searchable required>
+                        <flux:select wire:model="city" label="City" placeholder="Select city" variant="listbox"
+                            searchable required>
                             <flux:select.option value="Surat">Surat</flux:select.option>
                             <flux:select.option value="Navsari">Navsari</flux:select.option>
                             <flux:select.option value="Ahmedabad">Ahmedabad</flux:select.option>
@@ -144,16 +144,14 @@
                     </div>
 
                     <flux:textarea wire:model="office_address" label="Company Address"
-                        placeholder="123 Main Street, Building Name, Area"
-                        description="Shown to visitors on your exhibitor page and in location search." rows="3"
-                        required />
+                        placeholder="123 Main Street, Building Name, Area" rows="3" required />
 
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <flux:input wire:model="gst_number" label="GST Number" placeholder="22AAAAA0000A1Z5"
-                            description="Your company's GST registration number." badge="Optional" />
+                            badge="Optional" />
 
                         <flux:input wire:model="pan_number" label="PAN Card" placeholder="AAAAA0000A"
-                            description="Your company's PAN card number." badge="Optional" />
+                            badge="Optional" />
                     </div>
 
                     <flux:separator />
@@ -161,27 +159,22 @@
                     <flux:heading size="lg">Contact Information</flux:heading>
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <flux:input wire:model="contact_person_name" label="Main Contact Person" placeholder="John Doe"
-                            description="Person handling event coordination." required />
+                            required />
 
                         <flux:input wire:model="phone_number" label="Mobile Number" type="tel" inputmode="numeric"
-                            placeholder="9876543210" description="Enter 10 digit mobile number — WhatsApp preferred."
-                            required />
+                            placeholder="9876543210" required />
                     </div>
 
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <flux:input wire:model="email" label="Email ID" type="email" placeholder="contact@example.com"
-                            description="For visitor enquiries and official updates." badge="Optional" />
+                            badge="Optional" />
 
                         <flux:input wire:model="website" label="Website URL" type="url"
-                            placeholder="https://www.example.com" description="Link to your official company website."
-                            badge="Optional" />
+                            placeholder="https://www.example.com" badge="Optional" />
                     </div>
 
                     <!-- Media & Branding Section -->
                     @include('components.exhibitor.media-upload-section')
-
-                    <!-- Photo Upload Section -->
-                    @include('components.exhibitor.photo-upload-section')
                 </div>
             </flux:card>
         @endif

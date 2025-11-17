@@ -35,9 +35,6 @@
         }">
             <div class="space-y-2">
                 <flux:label>Upload Logo</flux:label>
-                <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-                    PNG, JPG, PDF, or CDR format accepted.
-                </flux:text>
 
                 <div class="relative">
                     <input type="file" @change="handleFile($event)"
@@ -129,9 +126,6 @@
         }">
             <div class="space-y-2">
                 <flux:label>Company Brochure</flux:label>
-                <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-                    PDF format only, max 10MB
-                </flux:text>
 
                 <div class="relative">
                     <input type="file" @change="handleFile($event)" accept="application/pdf" class="hidden"
@@ -193,8 +187,7 @@
 
     <!-- Video URL -->
     <flux:input wire:model="video_url" label="Video URL (YouTube/Vimeo)" type="url"
-        placeholder="https://www.youtube.com/watch?v=..."
-        description="Add a link to your company video or project showcase." badge="Optional" />
+        placeholder="https://www.youtube.com/watch?v=..." badge="Optional" />
 
     <!-- Social Media Links -->
     <div>
@@ -202,8 +195,6 @@
             <flux:heading size="base">Social Media Links</flux:heading>
             <flux:badge size="sm" variant="outline" color="zinc">Optional</flux:badge>
         </div>
-        <flux:text class="mb-4 text-sm text-zinc-600 dark:text-zinc-400">Add links to help visitors
-            verify and follow your brand.</flux:text>
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <flux:input wire:model="social_media_links.facebook" label="Facebook" type="url"
@@ -238,7 +229,5 @@
 
     <!-- Additional Details -->
     <flux:textarea wire:model="additional_details" label="Additional Details"
-        placeholder="e.g., Established in 2010, Specializing in luxury villas..."
-        description="Add any additional information like establishment year, specializations, awards, etc."
-        rows="4" badge="Optional" />
+        placeholder="e.g., Established in 2010, Specializing in luxury villas..." rows="4" badge="Optional" />
 </div>

@@ -2,10 +2,6 @@
     <flux:card class="space-y-6">
         <div>
             <flux:heading size="lg">Project Details</flux:heading>
-            <flux:text class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Add details about your real estate projects. This step is optional - you can add multiple
-                projects or skip this section.
-            </flux:text>
         </div>
 
         @if (count($projects) > 0)
@@ -27,56 +23,86 @@
                             <flux:input wire:model="projects.{{ $index }}.name" label="Project Name"
                                 type="text" placeholder="e.g., Sunset Residency" required />
 
-                            <div>
-                                <flux:select wire:model.live="projects.{{ $index }}.area" label="Area/Location"
-                                    placeholder="Select area..." variant="listbox" searchable required>
-                                    <flux:select.option value="Athwa - Vesu">Athwa - Vesu</flux:select.option>
-                                    <flux:select.option value="Pal - Adajan - Rander">Pal - Adajan - Rander
-                                    </flux:select.option>
-                                    <flux:select.option value="Katargam">Katargam</flux:select.option>
-                                    <flux:select.option value="Varachha">Varachha</flux:select.option>
-                                    <flux:select.option value="Udhna - Sachin">Udhna - Sachin</flux:select.option>
-                                    <flux:select.option value="Dindoli">Dindoli</flux:select.option>
-                                    <flux:select.option value="Kamrej">Kamrej</flux:select.option>
-                                    <flux:select.option value="Saroli">Saroli</flux:select.option>
-                                    <flux:select.option value="Within City">Within City</flux:select.option>
-                                    <flux:select.option value="Outer City">Outer City</flux:select.option>
-                                    <flux:select.option value="Puna Kumbhaiya">Puna Kumbhaiya</flux:select.option>
-                                    <flux:select.option value="Others">Others</flux:select.option>
-                                </flux:select>
-
-                                @if (isset($projects[$index]['area']) && $projects[$index]['area'] === 'Others')
-                                    <div class="mt-2">
-                                        <flux:input wire:model="projects.{{ $index }}.area_other"
-                                            placeholder="Enter custom area/location" label="Custom Area" />
-                                    </div>
-                                @endif
-                            </div>
+                            <flux:select wire:model.live="projects.{{ $index }}.area" label="Area/Location"
+                                placeholder="Select area..." variant="listbox" searchable required>
+                                <flux:select.option value="Athwa - Vesu">Athwa - Vesu</flux:select.option>
+                                <flux:select.option value="Pal - Adajan - Rander">Pal - Adajan - Rander
+                                </flux:select.option>
+                                <flux:select.option value="Katargam">Katargam</flux:select.option>
+                                <flux:select.option value="Varachha">Varachha</flux:select.option>
+                                <flux:select.option value="Udhna - Sachin">Udhna - Sachin</flux:select.option>
+                                <flux:select.option value="Dindoli">Dindoli</flux:select.option>
+                                <flux:select.option value="Kamrej">Kamrej</flux:select.option>
+                                <flux:select.option value="Saroli">Saroli</flux:select.option>
+                                <flux:select.option value="Within City">Within City</flux:select.option>
+                                <flux:select.option value="Outer City">Outer City</flux:select.option>
+                                <flux:select.option value="Puna Kumbhaiya">Puna Kumbhaiya</flux:select.option>
+                                <flux:select.option value="Others">Others</flux:select.option>
+                            </flux:select>
                         </div>
 
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <flux:input wire:model="projects.{{ $index }}.category" label="Project Category"
-                                type="text" placeholder="e.g., Residential, Commercial" required />
+                        @if (isset($projects[$index]['area']) && $projects[$index]['area'] === 'Others')
+                            <flux:input wire:model="projects.{{ $index }}.area_other"
+                                placeholder="Enter custom area/location" label="Custom Area" required />
+                        @endif
 
-                            <flux:input wire:model="projects.{{ $index }}.sq_ft" label="Total Area (sq ft)"
-                                type="number" placeholder="0" required />
-                        </div>
+                        <flux:input wire:model="projects.{{ $index }}.sq_ft" label="Total Area (sq ft)"
+                            type="number" placeholder="0" required />
 
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <flux:input wire:model="projects.{{ $index }}.budget_range" label="Budget Range"
-                                type="text" placeholder="e.g., 50L - 1Cr" required />
+                        <!-- Project Category -->
+                        <flux:radio.group wire:model="projects.{{ $index }}.category" label="Property Types"
+                            variant="cards" class="max-sm:flex-col">
+                            <flux:radio value="Residential" label="Residential" />
+                            <flux:radio value="Commercial" label="Commercial" />
+                            <flux:radio value="Plotting" label="Plotting" />
+                        </flux:radio.group>
+                        @error('projects.' . $index . '.category')
+                            <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                {{ $message }}
+                            </flux:text>
+                        @enderror
 
-                            <flux:input wire:model="projects.{{ $index }}.handover_date"
-                                label="Expected Handover Date" type="date" required />
-                        </div>
+                        <!-- Budget Range -->
+                        <flux:radio.group wire:model="projects.{{ $index }}.budget_range" label="Budget Range"
+                            variant="cards" class="max-sm:flex-col">
+                            <flux:radio value="Below 50L" label="Below 50L" />
+                            <flux:radio value="50L - 1Cr" label="50L - 1Cr" />
+                            <flux:radio value="1Cr - 2Cr" label="1Cr - 2Cr" />
+                            <flux:radio value="2Cr - 5Cr" label="2Cr - 5Cr" />
+                            <flux:radio value="Above 5Cr" label="Above 5Cr" />
+                        </flux:radio.group>
+                        @error('projects.' . $index . '.budget_range')
+                            <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                {{ $message }}
+                            </flux:text>
+                        @enderror
 
-                        <flux:select wire:model="projects.{{ $index }}.status" label="Project Status"
-                            placeholder="Select status..." variant="listbox" required>
-                            <flux:select.option value="upcoming">Upcoming</flux:select.option>
-                            <flux:select.option value="ongoing">Ongoing</flux:select.option>
-                            <flux:select.option value="completed">Completed</flux:select.option>
-                            <flux:select.option value="ready_to_move">Ready to Move</flux:select.option>
-                        </flux:select>
+                        <!-- Expected Handover Date -->
+                        <flux:radio.group wire:model="projects.{{ $index }}.handover_date"
+                            label="Expected Handover Date" variant="cards" class="max-sm:flex-col">
+                            <flux:radio value="Within 3 months" label="Within 3 months" />
+                            <flux:radio value="Within 6 months" label="Within 6 months" />
+                            <flux:radio value="Within a year" label="Within a year" />
+                        </flux:radio.group>
+                        @error('projects.' . $index . '.handover_date')
+                            <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                {{ $message }}
+                            </flux:text>
+                        @enderror
+
+                        <!-- Project Status -->
+                        <flux:radio.group wire:model="projects.{{ $index }}.status" label="Project Status"
+                            variant="cards" class="max-sm:flex-col">
+                            <flux:radio value="upcoming" label="Upcoming" />
+                            <flux:radio value="ongoing" label="Ongoing" />
+                            <flux:radio value="completed" label="Completed" />
+                            <flux:radio value="ready_to_move" label="Ready to Move" />
+                        </flux:radio.group>
+                        @error('projects.' . $index . '.status')
+                            <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                {{ $message }}
+                            </flux:text>
+                        @enderror
 
                         <flux:textarea wire:model="projects.{{ $index }}.usp" label="Unique Selling Points"
                             placeholder="Key features and highlights..." rows="3" required />
@@ -288,9 +314,6 @@
                         }">
                             <div class="space-y-2">
                                 <flux:label>Project Photos (3-5 images)</flux:label>
-                                <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-                                    Upload 3-5 photos showcasing this project.
-                                </flux:text>
                                 @if (isset($project['photos']) && is_array($project['photos']))
                                     <flux:text class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                                         {{ count($project['photos']) }}/5 photos uploaded

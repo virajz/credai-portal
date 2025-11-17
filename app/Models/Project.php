@@ -27,7 +27,6 @@ class Project extends Model
     ];
 
     protected $casts = [
-        'handover_date' => 'date',
         'total_payment' => 'decimal:2',
     ];
 

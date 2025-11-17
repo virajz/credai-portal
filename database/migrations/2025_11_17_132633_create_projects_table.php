@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('category')->nullable();
             $table->string('sq_ft')->nullable();
             $table->string('budget_range')->nullable();
-            $table->date('handover_date')->nullable();
+            $table->string('handover_date')->nullable(); // Purchase timeline: Within 3 months, Within 6 months, Within a year
             $table->string('status')->nullable(); // ongoing/in development
             $table->string('pdf_path')->nullable();
             $table->string('video_url')->nullable();

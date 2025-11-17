@@ -60,14 +60,6 @@ class ExhibitorForm extends Component
 
     public $brochure;
 
-    public array $photos = [];
-
-    public array $photo_labels = [];
-
-    public $newPhoto;
-
-    public array $newPhotos = [];
-
     public string $video_url = '';
 
     public array $social_media_links = [
@@ -230,7 +222,7 @@ class ExhibitorForm extends Component
     public function updated($propertyName): void
     {
         // Skip file uploads and internal properties
-        if (in_array($propertyName, ['logo', 'brochure', 'newPhoto', 'newPhotos', 'photos', 'photo_labels', 'use_brand_name_as_facia', 'currentStep', 'completedSteps', 'showResumeLink'])) {
+        if (in_array($propertyName, ['logo', 'brochure', 'use_brand_name_as_facia', 'currentStep', 'completedSteps', 'showResumeLink'])) {
             return;
         }
 
@@ -301,83 +293,6 @@ class ExhibitorForm extends Component
         }
 
         return route('exhibitor.public.register', ['resume' => $this->resumeToken]);
-    }
-
-    /**
-     * Handle new photo upload (called sequentially from frontend)
-     */
-    public function updatedNewPhoto(): void
-    {
-        // Validate the single new photo
-        $this->validate([
-            'newPhoto' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
-        ], [
-            'newPhoto.image' => 'Photo must be an image file.',
-            'newPhoto.mimes' => 'Photo must be a PNG or JPG file.',
-            'newPhoto.max' => 'Photo file size should not exceed 2MB.',
-        ]);
-
-        // Check if we haven't exceeded the limit
-        if (count($this->photos) >= 5) {
-            $this->addError('newPhoto', 'You can upload a maximum of 5 photos.');
-
-            return;
-        }
-
-        // Add to photos array
-        $this->photos[] = $this->newPhoto;
-        $this->photo_labels[] = '';
-
-        // Clear the newPhoto property
-        $this->newPhoto = null;
-    }
-
-    /**
-     * Handle multiple photo uploads (when uploadMultiple is used)
-     */
-    public function updatedNewPhotos(): void
-    {
-        // Validate all new photos
-        $this->validate([
-            'newPhotos' => ['array'],
-            'newPhotos.*' => ['image', 'mimes:png,jpg,jpeg', 'max:2048'],
-        ], [
-            'newPhotos.*.image' => 'All photos must be image files.',
-            'newPhotos.*.mimes' => 'Photos must be PNG or JPG files.',
-            'newPhotos.*.max' => 'Each photo should not exceed 2MB.',
-        ]);
-
-        // Check total count including existing photos
-        $totalCount = count($this->photos) + count($this->newPhotos);
-        if ($totalCount > 5) {
-            $this->addError('newPhotos', 'You can upload a maximum of 5 photos total.');
-            $this->newPhotos = [];
-            return;
-        }
-
-        // Append new photos to existing photos
-        foreach ($this->newPhotos as $photo) {
-            $this->photos[] = $photo;
-            $this->photo_labels[] = '';
-        }
-
-        // Clear the temporary newPhotos array
-        $this->newPhotos = [];
-    }
-
-    /**
-     * Remove a photo from the list
-     */
-    public function removePhoto(int $index): void
-    {
-        if (isset($this->photos[$index])) {
-            $photo = $this->photos[$index];
-            $photo->delete();
-            unset($this->photos[$index]);
-            unset($this->photo_labels[$index]);
-            $this->photos = array_values($this->photos);
-            $this->photo_labels = array_values($this->photo_labels);
-        }
     }
 
     /**
@@ -470,10 +385,6 @@ class ExhibitorForm extends Component
                 'website' => ['nullable', 'url', 'max:255'],
                 'logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
                 'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
-                'photos' => ['required', 'array', 'min:3', 'max:5'],
-                'photos.*' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
-                'photo_labels' => ['nullable', 'array'],
-                'photo_labels.*' => ['nullable', 'string', 'max:255'],
                 'video_url' => ['nullable', 'url', 'max:255'],
                 'social_media_links' => ['nullable', 'array'],
                 'social_media_links.facebook' => ['nullable', 'url', 'max:255'],
@@ -498,12 +409,6 @@ class ExhibitorForm extends Component
                 'logo.max' => 'Logo file size should not exceed 5MB.',
                 'brochure.mimes' => 'Brochure must be a PDF file.',
                 'brochure.max' => 'Brochure file size should not exceed 10MB.',
-                'photos.required' => 'Please upload at least 3 photos to showcase your company or projects.',
-                'photos.min' => 'Please upload at least 3 photos to showcase your company or projects.',
-                'photos.max' => 'You can upload a maximum of 5 photos.',
-                'photos.*.image' => 'All photos must be image files.',
-                'photos.*.mimes' => 'Photos must be PNG or JPG files.',
-                'photos.*.max' => 'Each photo should not exceed 2MB.',
                 'video_url.url' => 'Please provide a valid video URL (YouTube or Vimeo).',
                 'social_media_links.facebook.url' => 'Please provide a valid Facebook URL.',
                 'social_media_links.linkedin.url' => 'Please provide a valid LinkedIn URL.',
@@ -625,10 +530,6 @@ class ExhibitorForm extends Component
             // Branding & Media
             'logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
             'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
-            'photos' => ['required', 'array', 'min:3', 'max:5'],
-            'photos.*' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
-            'photo_labels' => ['nullable', 'array'],
-            'photo_labels.*' => ['nullable', 'string', 'max:255'],
             'video_url' => ['nullable', 'url', 'max:255'],
             'social_media_links' => ['nullable', 'array'],
             'social_media_links.facebook' => ['nullable', 'url', 'max:255'],
@@ -656,12 +557,6 @@ class ExhibitorForm extends Component
             'logo.max' => 'Logo file size should not exceed 5MB.',
             'brochure.mimes' => 'Brochure must be a PDF file.',
             'brochure.max' => 'Brochure file size should not exceed 10MB.',
-            'photos.required' => 'Please upload at least 3 photos to showcase your company or projects.',
-            'photos.min' => 'Please upload at least 3 photos to showcase your company or projects.',
-            'photos.max' => 'You can upload a maximum of 5 photos.',
-            'photos.*.image' => 'All photos must be image files.',
-            'photos.*.mimes' => 'Photos must be PNG or JPG files.',
-            'photos.*.max' => 'Each photo should not exceed 2MB.',
             'video_url.url' => 'Please provide a valid video URL (YouTube or Vimeo).',
             'social_media_links.facebook.url' => 'Please provide a valid Facebook URL.',
             'social_media_links.linkedin.url' => 'Please provide a valid LinkedIn URL.',
@@ -674,19 +569,6 @@ class ExhibitorForm extends Component
         // Handle file uploads
         $logoPath = $this->logo ? $this->logo->store('exhibitors/logos', 'public') : null;
         $brochurePath = $this->brochure ? $this->brochure->store('exhibitors/brochures', 'public') : null;
-
-        // Handle photos with labels
-        $photosData = [];
-        if (! empty($this->photos)) {
-            foreach ($this->photos as $index => $photo) {
-                $path = $photo->store('exhibitors/photos', 'public');
-                $label = $this->photo_labels[$index] ?? '';
-                $photosData[] = [
-                    'path' => $path,
-                    'label' => $label,
-                ];
-            }
-        }
 
         // Filter empty social media links
         $socialMediaLinks = array_filter($this->social_media_links, fn($value) => ! empty($value));
@@ -704,7 +586,6 @@ class ExhibitorForm extends Component
             'website' => $validated['website'] ?? null,
             'logo_path' => $logoPath,
             'brochure_path' => $brochurePath,
-            'photos' => ! empty($photosData) ? $photosData : null,
             'video_url' => $validated['video_url'] ?? null,
             'social_media_links' => ! empty($socialMediaLinks) ? $socialMediaLinks : null,
             'facia_name' => $validated['facia_name'] ?? $this->facia_name,
