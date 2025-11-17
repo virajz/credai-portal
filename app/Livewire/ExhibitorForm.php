@@ -506,7 +506,7 @@ class ExhibitorForm extends Component
         if (str_contains($key, '.newPhoto')) {
             // Extract project index from key like "0.newPhoto"
             $projectIndex = (int) explode('.', $key)[0];
-            
+
             if (!isset($this->projects[$projectIndex]['newPhoto'])) {
                 return;
             }

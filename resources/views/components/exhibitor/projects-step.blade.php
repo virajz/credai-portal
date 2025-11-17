@@ -284,32 +284,37 @@
                         <!-- Project Photos (3-5) -->
                         <div x-data="{
                             uploading: false,
+                            uploadQueue: [],
                             isDragging: false,
-                            handleFile(event) {
-                                const file = event.target.files[0];
-                                if (file) {
-                                    this.uploading = true;
-                                    @this.upload('projects.{{ $index }}.newPhoto', file, () => {
-                                        this.uploading = false;
-                                        event.target.value = '';
-                                    }, () => {
-                                        this.uploading = false;
-                                        event.target.value = '';
-                                    })
+                            async uploadFiles(files) {
+                                this.uploadQueue = Array.from(files).filter(file => 
+                                    file.type.match(/^image\/(png|jpeg|jpg)$/)
+                                );
+                                
+                                if (this.uploadQueue.length === 0) return;
+                                
+                                this.uploading = true;
+                                
+                                for (const file of this.uploadQueue) {
+                                    await new Promise((resolve, reject) => {
+                                        @this.upload('projects.{{ $index }}.newPhoto', file, 
+                                            () => resolve(),
+                                            () => reject()
+                                        );
+                                    }).catch(() => {});
                                 }
+                                
+                                this.uploading = false;
+                                this.uploadQueue = [];
+                            },
+                            handleFiles(event) {
+                                this.uploadFiles(event.target.files);
+                                event.target.value = '';
                             },
                             handleDrop(event) {
                                 event.preventDefault();
                                 this.isDragging = false;
-                                const file = event.dataTransfer.files[0];
-                                if (file && file.type.match(/^image\/(png|jpeg|jpg)$/)) {
-                                    this.uploading = true;
-                                    @this.upload('projects.{{ $index }}.newPhoto', file, () => {
-                                        this.uploading = false;
-                                    }, () => {
-                                        this.uploading = false;
-                                    })
-                                }
+                                this.uploadFiles(event.dataTransfer.files);
                             }
                         }">
                             <div class="space-y-2">
@@ -322,9 +327,9 @@
                             </div>
 
                             <div class="relative mt-3">
-                                <input type="file" @change="handleFile($event)"
+                                <input type="file" @change="handleFiles($event)"
                                     accept="image/png,image/jpeg,image/jpg" class="hidden"
-                                    id="project-{{ $index }}-photos-upload" :disabled="uploading" />
+                                    id="project-{{ $index }}-photos-upload" multiple :disabled="uploading" />
                                 <label for="project-{{ $index }}-photos-upload"
                                     @dragover.prevent="isDragging = true" @dragleave.prevent="isDragging = false"
                                     @drop.prevent="handleDrop($event)"
