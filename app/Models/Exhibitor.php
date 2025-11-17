@@ -19,6 +19,8 @@ class Exhibitor extends Model
         'brand_name',
         'office_address',
         'city',
+        'gst_number',
+        'pan_number',
         'contact_person_name',
         'phone_number',
         'email',
@@ -29,6 +31,7 @@ class Exhibitor extends Model
         'video_url',
         'social_media_links',
         'facia_name',
+        'additional_details',
     ];
 
     /**

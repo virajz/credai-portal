@@ -31,7 +31,7 @@ test('public form can be submitted without authentication', function () {
         ->set('office_address', '123 Test Street, Test Area, Test City')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('email', 'john@testcompany.com')
         ->set('website', 'https://testcompany.com')
         ->set('logo', $logo)
@@ -51,7 +51,7 @@ test('public form can be submitted without authentication', function () {
         'brand_name' => 'Test Company Ltd',
         'city' => 'Surat',
         'contact_person_name' => 'John Doe',
-        'phone_number' => '+91 98765 43210',
+        'phone_number' => '9876543210',
         'email' => 'john@testcompany.com',
         'facia_name' => 'TEST COMPANY LTD',
     ]);
@@ -85,7 +85,7 @@ test('public form persists data to database correctly', function () {
         ->set('office_address', '456 Another Street')
         ->set('city', 'Ahmedabad')
         ->set('contact_person_name', 'Jane Smith')
-        ->set('phone_number', '+91 12345 67890')
+        ->set('phone_number', '1234567890')
         ->set('photos', $photos)
         ->set('facia_name', 'ANOTHER TEST COMPANY')
         ->call('submit')

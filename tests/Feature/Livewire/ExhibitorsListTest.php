@@ -67,12 +67,12 @@ test('exhibitors list can search by email', function () {
 });
 
 test('exhibitors list can search by phone number', function () {
-    $exhibitor1 = Exhibitor::factory()->create(['phone_number' => '+91 98765 43210']);
+    $exhibitor1 = Exhibitor::factory()->create(['phone_number' => '9876543210']);
     $exhibitor2 = Exhibitor::factory()->create(['phone_number' => '+91 12345 67890']);
 
     Livewire::test(ExhibitorsList::class)
         ->set('search', '98765')
-        ->assertSee('+91 98765 43210')
+        ->assertSee('9876543210')
         ->assertDontSee('+91 12345 67890');
 });
 
@@ -252,7 +252,7 @@ test('exhibitors list displays exhibitor details correctly', function () {
         'facia_name' => 'TEST BRAND',
         'city' => 'Surat',
         'contact_person_name' => 'John Doe',
-        'phone_number' => '+91 98765 43210',
+        'phone_number' => '9876543210',
         'email' => 'john@example.com',
     ]);
 
@@ -261,7 +261,7 @@ test('exhibitors list displays exhibitor details correctly', function () {
         ->assertSee('TEST BRAND')
         ->assertSee('Surat')
         ->assertSee('John Doe')
-        ->assertSee('+91 98765 43210')
+        ->assertSee('9876543210')
         ->assertSee('john@example.com');
 });
 

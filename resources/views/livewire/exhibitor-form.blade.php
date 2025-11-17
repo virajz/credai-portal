@@ -154,6 +154,14 @@
                         placeholder="123 Main Street, Building Name, Area"
                         description="Shown to visitors on your exhibitor page and in location search." rows="3"
                         required />
+
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <flux:input wire:model="gst_number" label="GST Number" placeholder="22AAAAA0000A1Z5"
+                            description="Your company's GST registration number." badge="Optional" />
+
+                        <flux:input wire:model="pan_number" label="PAN Card" placeholder="AAAAA0000A"
+                            description="Your company's PAN card number." badge="Optional" />
+                    </div>
                 </div>
             </flux:card>
         @endif
@@ -207,7 +215,7 @@
                                 event.preventDefault();
                                 this.isDragging = false;
                                 const file = event.dataTransfer.files[0];
-                                if (file && file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+                                if (file && (file.type.match(/^image\/(png|jpeg|jpg)$/) || file.type === 'application/pdf' || file.name.endsWith('.cdr'))) {
                                     this.uploading = true;
                                     @this.upload('logo', file, () => {
                                         this.uploading = false;
@@ -220,50 +228,50 @@
                             <div class="space-y-2">
                                 <flux:label>Upload Logo</flux:label>
                                 <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-                                    High-quality PNG or JPG. Transparent background preferred.
+                                    PNG, JPG, PDF, or CDR format accepted.
                                 </flux:text>
 
                                 <div class="relative">
-                                    <input
-                                        type="file"
-                                        @change="handleFile($event)"
-                                        accept="image/png,image/jpeg,image/jpg"
-                                        class="hidden"
-                                        id="logo-upload"
-                                        :disabled="uploading || {{ $logo ? 'true' : 'false' }}"
-                                    />
-                                    <label
-                                        for="logo-upload"
-                                        @dragover.prevent="isDragging = true"
-                                        @dragleave.prevent="isDragging = false"
-                                        @drop.prevent="handleDrop($event)"
+                                    <input type="file" @change="handleFile($event)"
+                                        accept="image/png,image/jpeg,image/jpg,application/pdf,.cdr,application/x-coreldraw,application/coreldraw"
+                                        class="hidden" id="logo-upload"
+                                        :disabled="uploading || {{ $logo ? 'true' : 'false' }}" />
+                                    <label for="logo-upload" @dragover.prevent="isDragging = true"
+                                        @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop($event)"
                                         class="{{ implode(' ', [
                                             'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
                                             'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
-                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600'
+                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600',
                                         ]) }}"
                                         :class="{
-                                            'cursor-not-allowed opacity-60': uploading || {{ $logo ? 'true' : 'false' }},
+                                            'cursor-not-allowed opacity-60': uploading ||
+                                                {{ $logo ? 'true' : 'false' }},
                                             'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
-                                        }"
-                                    >
+                                        }">
                                         <flux:icon.photo class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="!uploading">
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                            x-show="!uploading">
                                             Drop file or click to browse
                                         </span>
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="uploading" x-cloak>
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                            x-show="uploading" x-cloak>
                                             Uploading...
                                         </span>
                                         <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                                            PNG or JPG, max 2MB
+                                            PNG, JPG, PDF, or CDR, max 5MB
                                         </span>
                                     </label>
                                 </div>
 
-                                <div x-show="uploading" x-cloak class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <div x-show="uploading" x-cloak
+                                    class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
                                     </svg>
                                     <span>Processing upload...</span>
                                 </div>
@@ -316,42 +324,38 @@
                         }">
                             <div class="space-y-2">
                                 <div class="flex items-center gap-2">
-                                    <flux:label>Upload Brochure</flux:label>
-                                    <flux:badge size="sm" variant="outline" color="zinc">Optional</flux:badge>
+                                    <flux:label>Company Brochure</flux:label>
+                                    <flux:badge size="sm" variant="outline" color="zinc" inset="top bottom">
+                                        Optional</flux:badge>
                                 </div>
                                 <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-                                    PDF visitors can view or download from your profile.
+                                    Upload a PDF of your company profile.
                                 </flux:text>
 
                                 <div class="relative">
-                                    <input
-                                        type="file"
-                                        @change="handleFile($event)"
-                                        accept="application/pdf"
-                                        class="hidden"
-                                        id="brochure-upload"
-                                        :disabled="uploading || {{ $brochure ? 'true' : 'false' }}"
-                                    />
-                                    <label
-                                        for="brochure-upload"
-                                        @dragover.prevent="isDragging = true"
-                                        @dragleave.prevent="isDragging = false"
-                                        @drop.prevent="handleDrop($event)"
+                                    <input type="file" @change="handleFile($event)" accept="application/pdf"
+                                        class="hidden" id="brochure-upload"
+                                        :disabled="uploading || {{ $brochure ? 'true' : 'false' }}" />
+                                    <label for="brochure-upload" @dragover.prevent="isDragging = true"
+                                        @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop($event)"
                                         class="{{ implode(' ', [
                                             'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
                                             'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
-                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600'
+                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600',
                                         ]) }}"
                                         :class="{
-                                            'cursor-not-allowed opacity-60': uploading || {{ $brochure ? 'true' : 'false' }},
+                                            'cursor-not-allowed opacity-60': uploading ||
+                                                {{ $brochure ? 'true' : 'false' }},
                                             'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
-                                        }"
-                                    >
-                                        <flux:icon.document-text class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="!uploading">
+                                        }">
+                                        <flux:icon.document-text
+                                            class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                            x-show="!uploading">
                                             Drop file or click to browse
                                         </span>
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="uploading" x-cloak>
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                            x-show="uploading" x-cloak>
                                             Uploading...
                                         </span>
                                         <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
@@ -360,10 +364,15 @@
                                     </label>
                                 </div>
 
-                                <div x-show="uploading" x-cloak class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <div x-show="uploading" x-cloak
+                                    class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
                                     </svg>
                                     <span>Processing upload...</span>
                                 </div>
@@ -443,7 +452,8 @@
                                 this.processQueue();
                             }
                         }
-                    }" x-init="console.log('Photo upload component initialized'); $watch('uploadQueue', value => console.log('Queue updated:', value.length))">
+                    }" x-init="console.log('Photo upload component initialized');
+                    $watch('uploadQueue', value => console.log('Queue updated:', value.length))">
                         <div class="space-y-2">
                             <flux:label>Upload Images</flux:label>
                             <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
@@ -454,36 +464,28 @@
                                 <!-- Custom file input with better UX -->
                                 <div class="relative">
                                     <div wire:ignore>
-                                        <input
-                                            type="file"
-                                            @change="handleFiles($event)"
-                                            accept="image/png,image/jpeg,image/jpg"
-                                            multiple
-                                            class="hidden"
-                                            id="photo-upload"
-                                            :disabled="uploading || {{ count($photos) }} >= 5"
-                                        />
+                                        <input type="file" @change="handleFiles($event)"
+                                            accept="image/png,image/jpeg,image/jpg" multiple class="hidden"
+                                            id="photo-upload" :disabled="uploading || {{ count($photos) }} >= 5" />
                                     </div>
-                                    <label
-                                        for="photo-upload"
-                                        @dragover.prevent="isDragging = true"
-                                        @dragleave.prevent="isDragging = false"
-                                        @drop.prevent="handleDrop($event)"
+                                    <label for="photo-upload" @dragover.prevent="isDragging = true"
+                                        @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop($event)"
                                         class="{{ implode(' ', [
                                             'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
                                             'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
-                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600'
+                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600',
                                         ]) }}"
                                         :class="{
                                             'cursor-not-allowed opacity-60': uploading,
                                             'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
-                                        }"
-                                    >
+                                        }">
                                         <flux:icon.photo class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="!uploading">
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                            x-show="!uploading">
                                             Drop files or click to browse
                                         </span>
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-show="uploading" x-cloak>
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                            x-show="uploading" x-cloak>
                                             Uploading...
                                         </span>
                                         <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
@@ -496,12 +498,18 @@
                                 </div>
 
                                 <!-- Loading state -->
-                                <div x-show="uploading" x-cloak class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <div x-show="uploading" x-cloak
+                                    class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
                                     </svg>
-                                    <span>Processing upload... (<span x-text="uploadQueue.length"></span> remaining)</span>
+                                    <span>Processing upload... (<span x-text="uploadQueue.length"></span>
+                                        remaining)</span>
                                 </div>
                             @else
                                 <div class="rounded-lg bg-green-50 px-4 py-3 dark:bg-green-900/20">
@@ -555,31 +563,31 @@
                             verify and follow your brand.</flux:text>
 
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <flux:input wire:model="social_media_links.facebook" type="url"
+                            <flux:input wire:model="social_media_links.facebook" label="Facebook" type="url"
                                 placeholder="https://facebook.com/yourcompany" badge="Optional">
                                 <x-slot name="iconLeading">
                                     <x-bi-facebook />
                                 </x-slot>
                             </flux:input>
 
-                            <flux:input wire:model="social_media_links.instagram" type="url"
+                            <flux:input wire:model="social_media_links.instagram" label="Instagram" type="url"
                                 placeholder="https://instagram.com/yourcompany" badge="Optional">
                                 <x-slot name="iconLeading">
                                     <x-bi-instagram />
                                 </x-slot>
                             </flux:input>
 
-                            <flux:input wire:model="social_media_links.linkedin" type="url"
+                            <flux:input wire:model="social_media_links.linkedin" label="LinkedIn" type="url"
                                 placeholder="https://linkedin.com/company/yourcompany" badge="Optional">
                                 <x-slot name="iconLeading">
                                     <x-bi-linkedin />
                                 </x-slot>
                             </flux:input>
 
-                            <flux:input wire:model="social_media_links.twitter" type="url"
-                                placeholder="https://x.com/yourcompany" badge="Optional">
+                            <flux:input wire:model="social_media_links.youtube" label="YouTube" type="url"
+                                placeholder="https://youtube.com/@yourcompany" badge="Optional">
                                 <x-slot name="iconLeading">
-                                    <x-bi-twitter-x />
+                                    <x-bi-youtube />
                                 </x-slot>
                             </flux:input>
                         </div>
@@ -601,6 +609,11 @@
                         placeholder="ABC DEVELOPERS"
                         description="The name that should appear on your booth fascia board."
                         :disabled="$use_brand_name_as_facia" required />
+
+                    <flux:textarea wire:model="additional_details" label="Additional Details"
+                        placeholder="e.g., Established in 2010, Specializing in luxury villas..."
+                        description="Add any additional information like establishment year, specializations, awards, etc."
+                        rows="4" badge="Optional" />
                 </div>
             </flux:card>
         @endif

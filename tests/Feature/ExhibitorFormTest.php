@@ -101,19 +101,19 @@ test('exhibitor form validates logo file type', function () {
     Storage::fake('public');
     $this->actingAs(User::factory()->create());
 
-    $invalidFile = UploadedFile::fake()->create('document.pdf', 100);
+    $invalidFile = UploadedFile::fake()->create('document.txt', 100);
 
     Livewire::test(ExhibitorForm::class)
         ->set('logo', $invalidFile)
         ->call('submit')
-        ->assertHasErrors(['logo' => 'image']);
+        ->assertHasErrors(['logo' => 'mimes']);
 });
 
 test('exhibitor form validates logo file size', function () {
     Storage::fake('public');
     $this->actingAs(User::factory()->create());
 
-    $largeFile = UploadedFile::fake()->image('logo.png')->size(3000);
+    $largeFile = UploadedFile::fake()->image('logo.png')->size(6000);
 
     Livewire::test(ExhibitorForm::class)
         ->set('logo', $largeFile)
@@ -199,7 +199,7 @@ test('exhibitor form creates exhibitor with valid data', function () {
         ->set('office_address', '123 Main Street, Building A')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('email', 'contact@abc.com')
         ->set('website', 'https://www.abc.com')
         ->set('video_url', 'https://youtube.com/watch?v=test')
@@ -225,7 +225,7 @@ test('exhibitor form creates exhibitor with only required fields', function () {
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->call('submit')
@@ -246,7 +246,7 @@ test('exhibitor form stores logo file correctly', function () {
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('logo', $logo)
@@ -269,7 +269,7 @@ test('exhibitor form stores brochure file correctly', function () {
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('brochure', $brochure)
@@ -296,7 +296,7 @@ test('exhibitor form stores photos with labels correctly', function () {
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('photos', $photos)
         ->set('photo_labels', ['Showroom', 'Project Front', 'Interior'])
@@ -318,7 +318,7 @@ test('exhibitor form stores social media links correctly', function () {
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('social_media_links.facebook', 'https://facebook.com/abc')
@@ -341,7 +341,7 @@ test('exhibitor form filters empty social media links', function () {
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('photos', getMinimumPhotos())
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('social_media_links.facebook', 'https://facebook.com/abc')
@@ -368,7 +368,7 @@ test('exhibitor form shows success message after submission', function () {
         ->set('office_address', '123 Test Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'Test Person')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('facia_name', 'TEST BRAND')
         ->set('logo', UploadedFile::fake()->image('logo.png', 100, 100))
         ->set('photos', [
@@ -394,7 +394,7 @@ test('photo labels can be updated reactively without toJSON error', function () 
         ->set('office_address', '123 Test Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'Test Person')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('facia_name', 'TEST BRAND')
         ->set('photos', [
             UploadedFile::fake()->image('photo1.jpg'),
@@ -427,7 +427,7 @@ test('step 3 validation prevents advancing without minimum 3 photos', function (
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('facia_name', 'ABC DEVELOPERS')
         ->call('nextStep')
         ->assertHasErrors(['photos' => 'required']);
@@ -444,7 +444,7 @@ test('step 3 validation prevents advancing with less than 3 photos', function ()
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('photos', [
             UploadedFile::fake()->image('photo1.jpg'),
@@ -465,7 +465,7 @@ test('step 3 validation allows advancing with 3 or more photos', function () {
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
         ->set('contact_person_name', 'John Doe')
-        ->set('phone_number', '+91 98765 43210')
+        ->set('phone_number', '9876543210')
         ->set('facia_name', 'ABC DEVELOPERS')
         ->set('photos', getMinimumPhotos())
         ->call('nextStep')

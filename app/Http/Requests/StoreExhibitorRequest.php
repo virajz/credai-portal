@@ -26,6 +26,8 @@ class StoreExhibitorRequest extends FormRequest
             'brand_name' => ['required', 'string', 'max:255'],
             'office_address' => ['required', 'string', 'max:1000'],
             'city' => ['required', 'string', 'max:255'],
+            'gst_number' => ['nullable', 'string', 'max:255'],
+            'pan_number' => ['nullable', 'string', 'max:255'],
 
             // Contact Person
             'contact_person_name' => ['required', 'string', 'max:255'],
@@ -34,7 +36,7 @@ class StoreExhibitorRequest extends FormRequest
             'website' => ['nullable', 'url', 'max:255'],
 
             // Branding & Media
-            'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
+            'logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
             'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'photos' => ['nullable', 'array', 'min:3', 'max:5'],
             'photos.*' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
@@ -45,9 +47,11 @@ class StoreExhibitorRequest extends FormRequest
             'social_media_links.facebook' => ['nullable', 'url', 'max:255'],
             'social_media_links.linkedin' => ['nullable', 'url', 'max:255'],
             'social_media_links.instagram' => ['nullable', 'url', 'max:255'],
+            'social_media_links.youtube' => ['nullable', 'url', 'max:255'],
 
             // Exhibition Display
             'facia_name' => ['required', 'string', 'max:255'],
+            'additional_details' => ['nullable', 'string', 'max:1000'],
         ];
     }
 
@@ -68,6 +72,9 @@ class StoreExhibitorRequest extends FormRequest
             'city.required' => 'Please specify your main business location.',
             'city.max' => 'City name should not exceed 255 characters.',
 
+            'gst_number.max' => 'GST number should not exceed 255 characters.',
+            'pan_number.max' => 'PAN card number should not exceed 255 characters.',
+
             'contact_person_name.required' => 'Please provide the main contact person\'s name.',
             'contact_person_name.max' => 'Contact person name should not exceed 255 characters.',
 
@@ -80,9 +87,9 @@ class StoreExhibitorRequest extends FormRequest
             'website.url' => 'Please provide a valid website URL.',
             'website.max' => 'Website URL should not exceed 255 characters.',
 
-            'logo.image' => 'Logo must be an image file.',
-            'logo.mimes' => 'Logo must be a PNG or JPG file.',
-            'logo.max' => 'Logo file size should not exceed 2MB.',
+            'logo.file' => 'Logo must be a file.',
+            'logo.mimes' => 'Logo must be a PNG, JPG, PDF, or CDR file.',
+            'logo.max' => 'Logo file size should not exceed 5MB.',
 
             'brochure.file' => 'Brochure must be a file.',
             'brochure.mimes' => 'Brochure must be a PDF file.',
@@ -102,9 +109,11 @@ class StoreExhibitorRequest extends FormRequest
             'social_media_links.facebook.url' => 'Please provide a valid Facebook URL.',
             'social_media_links.linkedin.url' => 'Please provide a valid LinkedIn URL.',
             'social_media_links.instagram.url' => 'Please provide a valid Instagram URL.',
+            'social_media_links.youtube.url' => 'Please provide a valid YouTube URL.',
 
             'facia_name.required' => 'Please provide the name for your booth fascia board.',
             'facia_name.max' => 'Facia name should not exceed 255 characters.',
+            'additional_details.max' => 'Additional details should not exceed 1000 characters.',
         ];
     }
 
