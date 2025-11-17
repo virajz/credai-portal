@@ -37,7 +37,7 @@ class DraftExhibitorFactory extends Factory
             ],
             'facia_name' => strtoupper(fake()->company()),
             'additional_details' => fake()->optional()->paragraph(),
-            'current_step' => fake()->numberBetween(1, 4),
+            'current_step' => fake()->numberBetween(1, 3),
             'completed_steps' => [],
             'is_completed' => false,
             'last_activity_at' => fake()->dateTimeBetween('-7 days', 'now'),
@@ -49,10 +49,10 @@ class DraftExhibitorFactory extends Factory
      */
     public function completed(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_completed' => true,
-            'current_step' => 4,
-            'completed_steps' => [1, 2, 3, 4],
+            'current_step' => 3,
+            'completed_steps' => [1, 2, 3],
         ]);
     }
 
@@ -61,7 +61,7 @@ class DraftExhibitorFactory extends Factory
      */
     public function incomplete(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_completed' => false,
         ]);
     }

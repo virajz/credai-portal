@@ -417,12 +417,12 @@ test('photo labels can be updated reactively without toJSON error', function () 
         ->and($exhibitor->photos[2]['label'])->toBe('Third Photo Label');
 });
 
-test('step 3 validation prevents advancing without minimum 3 photos', function () {
+test('step 2 validation prevents advancing without minimum 3 photos', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
 
     Livewire::test(ExhibitorForm::class)
-        ->set('currentStep', 3)
+        ->set('currentStep', 2)
         ->set('brand_name', 'ABC Developers')
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
@@ -433,13 +433,13 @@ test('step 3 validation prevents advancing without minimum 3 photos', function (
         ->assertHasErrors(['photos' => 'required']);
 });
 
-test('step 3 validation prevents advancing with less than 3 photos', function () {
+test('step 2 validation prevents advancing with less than 3 photos', function () {
     Storage::fake('public');
     $user = User::factory()->create();
     $this->actingAs($user);
 
     Livewire::test(ExhibitorForm::class)
-        ->set('currentStep', 3)
+        ->set('currentStep', 2)
         ->set('brand_name', 'ABC Developers')
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
@@ -454,13 +454,13 @@ test('step 3 validation prevents advancing with less than 3 photos', function ()
         ->assertHasErrors(['photos' => 'min']);
 });
 
-test('step 3 validation allows advancing with 3 or more photos', function () {
+test('step 2 validation allows advancing with 3 or more photos', function () {
     Storage::fake('public');
     $user = User::factory()->create();
     $this->actingAs($user);
 
     Livewire::test(ExhibitorForm::class)
-        ->set('currentStep', 3)
+        ->set('currentStep', 2)
         ->set('brand_name', 'ABC Developers')
         ->set('office_address', '123 Main Street')
         ->set('city', 'Surat')
@@ -470,5 +470,5 @@ test('step 3 validation allows advancing with 3 or more photos', function () {
         ->set('photos', getMinimumPhotos())
         ->call('nextStep')
         ->assertHasNoErrors()
-        ->assertSet('currentStep', 4);
+        ->assertSet('currentStep', 3);
 });

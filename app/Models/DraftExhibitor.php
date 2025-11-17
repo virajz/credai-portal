@@ -30,6 +30,16 @@ class DraftExhibitor extends Model
         'social_media_links',
         'facia_name',
         'additional_details',
+        'stall_type',
+        'stall_number',
+        'stall_size',
+        'total_payment',
+        'payment_received',
+        'payment_pending',
+        'extra_furniture_details',
+        'exhibitor_passes_details',
+        'momento_name',
+        'car_pass_details',
         'current_step',
         'completed_steps',
         'is_completed',
@@ -48,6 +58,9 @@ class DraftExhibitor extends Model
             'completed_steps' => 'array',
             'is_completed' => 'boolean',
             'last_activity_at' => 'datetime',
+            'total_payment' => 'decimal:2',
+            'payment_received' => 'decimal:2',
+            'payment_pending' => 'decimal:2',
         ];
     }
 

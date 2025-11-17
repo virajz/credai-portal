@@ -25,7 +25,7 @@
     <!-- Progress Indicator -->
     <div class="mb-6">
         <div class="flex items-center justify-between">
-            @for ($i = 1; $i <= 4; $i++)
+            @for ($i = 1; $i <= 3; $i++)
                 <button type="button" wire:click="goToStep({{ $i }})"
                     class="{{ implode(
                         ' ',
@@ -58,10 +58,8 @@
                                 @if ($i === 1)
                                     <flux:icon.building-office-2 class="size-3.5" />
                                 @elseif ($i === 2)
-                                    <flux:icon.user class="size-3.5" />
-                                @elseif ($i === 3)
                                     <flux:icon.photo class="size-3.5" />
-                                @elseif ($i === 4)
+                                @elseif ($i === 3)
                                     <flux:icon.sparkles class="size-3.5" />
                                 @endif
                             </span>
@@ -69,18 +67,16 @@
                     </span>
                     <span class="hidden whitespace-nowrap md:inline">
                         @if ($i === 1)
-                            Company Details
+                            Exhibitor Details
                         @elseif ($i === 2)
-                            Contact Person
+                            Stall Details
                         @elseif ($i === 3)
-                            Branding & Media
-                        @elseif ($i === 4)
-                            Exhibition Display
+                            Project Details
                         @endif
                     </span>
                 </button>
 
-                @if ($i < 4)
+                @if ($i < 3)
                     <div
                         class="{{ implode(
                             ' ',
@@ -105,25 +101,21 @@
                     @if ($currentStep === 1)
                         <flux:icon.building-office-2 class="size-5" />
                     @elseif ($currentStep === 2)
-                        <flux:icon.user class="size-5" />
-                    @elseif ($currentStep === 3)
                         <flux:icon.photo class="size-5" />
-                    @elseif ($currentStep === 4)
+                    @elseif ($currentStep === 3)
                         <flux:icon.sparkles class="size-5" />
                     @endif
                 </div>
                 <div>
-                    <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Step {{ $currentStep }} of 4
+                    <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Step {{ $currentStep }} of 3
                     </div>
                     <div class="text-base font-semibold text-zinc-900 dark:text-white">
                         @if ($currentStep === 1)
-                            Company Details
+                            Exhibitor Details
                         @elseif ($currentStep === 2)
-                            Contact Person
+                            Stall Details
                         @elseif ($currentStep === 3)
-                            Branding & Media
-                        @elseif ($currentStep === 4)
-                            Exhibition Display
+                            Project Details
                         @endif
                     </div>
                 </div>
@@ -132,10 +124,11 @@
     </div>
 
     <form wire:submit="submit" class="space-y-6">
-        <!-- Step 1: Company Details -->
+        <!-- Step 1: Exhibitor Details -->
         @if ($currentStep === 1)
             <flux:card>
                 <div class="space-y-6">
+                    <flux:heading size="lg">Company Information</flux:heading>
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <flux:input wire:model="brand_name" label="Company / Brand Name" placeholder="ABC Developers"
                             description="Name shown on your booth and website." required />
@@ -162,14 +155,10 @@
                         <flux:input wire:model="pan_number" label="PAN Card" placeholder="AAAAA0000A"
                             description="Your company's PAN card number." badge="Optional" />
                     </div>
-                </div>
-            </flux:card>
-        @endif
 
-        <!-- Step 2: Contact Person -->
-        @if ($currentStep === 2)
-            <flux:card>
-                <div class="space-y-6">
+                    <flux:separator />
+
+                    <flux:heading size="lg">Contact Information</flux:heading>
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <flux:input wire:model="contact_person_name" label="Main Contact Person" placeholder="John Doe"
                             description="Person handling event coordination." required />
@@ -187,436 +176,21 @@
                             placeholder="https://www.example.com" description="Link to your official company website."
                             badge="Optional" />
                     </div>
+
+                    <!-- Media & Branding Section -->
+                    @include('components.exhibitor.media-upload-section')
+
+                    <!-- Photo Upload Section -->
+                    @include('components.exhibitor.photo-upload-section')
                 </div>
             </flux:card>
         @endif
 
-        <!-- Step 3: Branding & Media -->
-        @if ($currentStep === 3)
-            <flux:card>
-                <div class="space-y-6">
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <!-- Logo Upload -->
-                        <div x-data="{
-                            uploading: false,
-                            isDragging: false,
-                            handleFile(event) {
-                                const file = event.target.files[0];
-                                if (file) {
-                                    this.uploading = true;
-                                    @this.upload('logo', file, () => {
-                                        this.uploading = false;
-                                    }, () => {
-                                        this.uploading = false;
-                                    })
-                                }
-                            },
-                            handleDrop(event) {
-                                event.preventDefault();
-                                this.isDragging = false;
-                                const file = event.dataTransfer.files[0];
-                                if (file && (file.type.match(/^image\/(png|jpeg|jpg)$/) || file.type === 'application/pdf' || file.name.endsWith('.cdr'))) {
-                                    this.uploading = true;
-                                    @this.upload('logo', file, () => {
-                                        this.uploading = false;
-                                    }, () => {
-                                        this.uploading = false;
-                                    })
-                                }
-                            }
-                        }">
-                            <div class="space-y-2">
-                                <flux:label>Upload Logo</flux:label>
-                                <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-                                    PNG, JPG, PDF, or CDR format accepted.
-                                </flux:text>
+        <!-- Step 2: Stall Details -->
+        @include('components.exhibitor.stall-details-step')
 
-                                <div class="relative">
-                                    <input type="file" @change="handleFile($event)"
-                                        accept="image/png,image/jpeg,image/jpg,application/pdf,.cdr,application/x-coreldraw,application/coreldraw"
-                                        class="hidden" id="logo-upload"
-                                        :disabled="uploading || {{ $logo ? 'true' : 'false' }}" />
-                                    <label for="logo-upload" @dragover.prevent="isDragging = true"
-                                        @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop($event)"
-                                        class="{{ implode(' ', [
-                                            'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
-                                            'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
-                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600',
-                                        ]) }}"
-                                        :class="{
-                                            'cursor-not-allowed opacity-60': uploading ||
-                                                {{ $logo ? 'true' : 'false' }},
-                                            'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
-                                        }">
-                                        <flux:icon.photo class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                                            x-show="!uploading">
-                                            Drop file or click to browse
-                                        </span>
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                                            x-show="uploading" x-cloak>
-                                            Uploading...
-                                        </span>
-                                        <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                                            PNG, JPG, PDF, or CDR, max 5MB
-                                        </span>
-                                    </label>
-                                </div>
-
-                                <div x-show="uploading" x-cloak
-                                    class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                            stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    <span>Processing upload...</span>
-                                </div>
-                            </div>
-
-                            @if ($logo)
-                                <div class="mt-3">
-                                    <flux:file-item :heading="$logo->getClientOriginalName()"
-                                        :image="$logo->temporaryUrl()" :size="$logo->getSize()">
-                                        <x-slot name="actions">
-                                            <flux:file-item.remove wire:click="removeLogo" aria-label="Remove logo" />
-                                        </x-slot>
-                                    </flux:file-item>
-                                </div>
-                            @endif
-
-                            @error('logo')
-                                <flux:text class="text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                            @enderror
-                        </div>
-
-                        <!-- Brochure Upload -->
-                        <div x-data="{
-                            uploading: false,
-                            isDragging: false,
-                            handleFile(event) {
-                                const file = event.target.files[0];
-                                if (file) {
-                                    this.uploading = true;
-                                    @this.upload('brochure', file, () => {
-                                        this.uploading = false;
-                                    }, () => {
-                                        this.uploading = false;
-                                    })
-                                }
-                            },
-                            handleDrop(event) {
-                                event.preventDefault();
-                                this.isDragging = false;
-                                const file = event.dataTransfer.files[0];
-                                if (file && file.type === 'application/pdf') {
-                                    this.uploading = true;
-                                    @this.upload('brochure', file, () => {
-                                        this.uploading = false;
-                                    }, () => {
-                                        this.uploading = false;
-                                    })
-                                }
-                            }
-                        }">
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <flux:label>Company Brochure</flux:label>
-                                    <flux:badge size="sm" variant="outline" color="zinc" inset="top bottom">
-                                        Optional</flux:badge>
-                                </div>
-                                <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-                                    Upload a PDF of your company profile.
-                                </flux:text>
-
-                                <div class="relative">
-                                    <input type="file" @change="handleFile($event)" accept="application/pdf"
-                                        class="hidden" id="brochure-upload"
-                                        :disabled="uploading || {{ $brochure ? 'true' : 'false' }}" />
-                                    <label for="brochure-upload" @dragover.prevent="isDragging = true"
-                                        @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop($event)"
-                                        class="{{ implode(' ', [
-                                            'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
-                                            'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
-                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600',
-                                        ]) }}"
-                                        :class="{
-                                            'cursor-not-allowed opacity-60': uploading ||
-                                                {{ $brochure ? 'true' : 'false' }},
-                                            'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
-                                        }">
-                                        <flux:icon.document-text
-                                            class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                                            x-show="!uploading">
-                                            Drop file or click to browse
-                                        </span>
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                                            x-show="uploading" x-cloak>
-                                            Uploading...
-                                        </span>
-                                        <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                                            PDF, max 10MB
-                                        </span>
-                                    </label>
-                                </div>
-
-                                <div x-show="uploading" x-cloak
-                                    class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                            stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    <span>Processing upload...</span>
-                                </div>
-                            </div>
-
-                            @if ($brochure)
-                                <div class="mt-3">
-                                    <flux:file-item :heading="$brochure->getClientOriginalName()"
-                                        :size="$brochure->getSize()" icon="document-text">
-                                        <x-slot name="actions">
-                                            <flux:file-item.remove wire:click="removeBrochure"
-                                                aria-label="Remove brochure" />
-                                        </x-slot>
-                                    </flux:file-item>
-                                </div>
-                            @endif
-
-                            @error('brochure')
-                                <flux:text class="text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Photos Upload -->
-                    <div x-data="{
-                        uploading: false,
-                        isDragging: false,
-                        uploadQueue: [],
-                        isProcessing: false,
-                        async processQueue() {
-                            if (this.uploadQueue.length > 0 && !this.isProcessing) {
-                                this.isProcessing = true;
-                                this.uploading = true;
-                                const file = this.uploadQueue.shift();
-                                console.log('Starting upload for:', file.name, 'Queue remaining:', this.uploadQueue.length);
-
-                                try {
-                                    await new Promise((resolve, reject) => {
-                                        @this.upload('newPhoto', file, resolve, reject);
-                                    });
-                                    console.log('Upload complete:', file.name);
-                                } catch (error) {
-                                    console.error('Upload failed:', error);
-                                }
-
-                                this.isProcessing = false;
-
-                                // Continue with next file
-                                if (this.uploadQueue.length > 0) {
-                                    setTimeout(() => this.processQueue(), 100);
-                                } else {
-                                    // All done, hide loading state
-                                    this.uploading = false;
-                                }
-                            }
-                        },
-                        handleFiles(event) {
-                            const files = Array.from(event.target.files);
-                            const validFiles = files.filter(file =>
-                                file.type.match(/^image\/(png|jpeg|jpg)$/)
-                            );
-                            console.log('Adding files to queue:', validFiles.length, validFiles.map(f => f.name));
-                            this.uploadQueue.push(...validFiles);
-                            event.target.value = '';
-                            this.processQueue();
-                        },
-                        handleDrop(event) {
-                            event.preventDefault();
-                            this.isDragging = false;
-                            const files = Array.from(event.dataTransfer.files);
-                            const validFiles = files.filter(file =>
-                                file.type.match(/^image\/(png|jpeg|jpg)$/)
-                            );
-                            console.log('Dropping files:', validFiles.length, validFiles.map(f => f.name));
-                            if (validFiles.length > 0) {
-                                this.uploadQueue.push(...validFiles);
-                                this.processQueue();
-                            }
-                        }
-                    }" x-init="console.log('Photo upload component initialized');
-                    $watch('uploadQueue', value => console.log('Queue updated:', value.length))">
-                        <div class="space-y-2">
-                            <flux:label>Upload Images</flux:label>
-                            <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
-                                Upload 3–5 photos that best showcase your company or projects. Minimum 3 required.
-                            </flux:text>
-
-                            @if (count($photos) < 5)
-                                <!-- Custom file input with better UX -->
-                                <div class="relative">
-                                    <div wire:ignore>
-                                        <input type="file" @change="handleFiles($event)"
-                                            accept="image/png,image/jpeg,image/jpg" multiple class="hidden"
-                                            id="photo-upload" :disabled="uploading || {{ count($photos) }} >= 5" />
-                                    </div>
-                                    <label for="photo-upload" @dragover.prevent="isDragging = true"
-                                        @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop($event)"
-                                        class="{{ implode(' ', [
-                                            'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed',
-                                            'border-zinc-300 bg-zinc-50 px-6 py-8 transition hover:border-zinc-400',
-                                            'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600',
-                                        ]) }}"
-                                        :class="{
-                                            'cursor-not-allowed opacity-60': uploading,
-                                            'border-blue-400 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20': isDragging
-                                        }">
-                                        <flux:icon.photo class="mb-3 size-10 text-zinc-400 dark:text-zinc-600" />
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                                            x-show="!uploading">
-                                            Drop files or click to browse
-                                        </span>
-                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                                            x-show="uploading" x-cloak>
-                                            Uploading...
-                                        </span>
-                                        <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                                            PNG or JPG, 3–5 photos required, 2MB each
-                                        </span>
-                                        <span class="mt-2 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                                            Uploaded: {{ count($photos) }}/5
-                                        </span>
-                                    </label>
-                                </div>
-
-                                <!-- Loading state -->
-                                <div x-show="uploading" x-cloak
-                                    class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                    <svg class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                            stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    <span>Processing upload... (<span x-text="uploadQueue.length"></span>
-                                        remaining)</span>
-                                </div>
-                            @else
-                                <div class="rounded-lg bg-green-50 px-4 py-3 dark:bg-green-900/20">
-                                    <div class="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
-                                        <flux:icon.check class="size-5" />
-                                        <span class="font-medium">Maximum photos uploaded (5/5)</span>
-                                    </div>
-                                    <p class="mt-1 text-xs text-green-600 dark:text-green-500">
-                                        Remove a photo below to upload a different one.
-                                    </p>
-                                </div>
-                            @endif
-                        </div>
-
-                        @if (count($photos) > 0)
-                            <div class="mt-4 space-y-3" wire:key="photos-list">
-                                @foreach ($photos as $index => $photo)
-                                    <div wire:key="photo-{{ $index }}-{{ $photo->getClientOriginalName() }}">
-                                        <flux:file-item :heading="$photo->getClientOriginalName()"
-                                            :image="$photo->temporaryUrl()" :size="$photo->getSize()">
-                                            <x-slot name="actions">
-                                                <flux:file-item.remove wire:click="removePhoto({{ $index }})"
-                                                    aria-label="Remove photo {{ $index + 1 }}" />
-                                            </x-slot>
-                                        </flux:file-item>
-                                        <div class="mt-2">
-                                            <flux:input wire:model.defer="photo_labels.{{ $index }}"
-                                                placeholder="e.g., Showroom Interior, Project Front View"
-                                                badge="Optional" />
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        @error('photos')
-                            <flux:text class="text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                        @enderror
-                    </div>
-
-                    <flux:input wire:model="video_url" label="Promotional Video URL" type="url"
-                        placeholder="https://youtube.com/watch?v=..."
-                        description="YouTube or Vimeo link to feature on your exhibitor page." badge="Optional" />
-
-                    <div>
-                        <div class="mb-3 flex items-center gap-2">
-                            <flux:heading size="base">Social Media Links</flux:heading>
-                            <flux:badge size="sm" variant="outline" color="zinc">Optional</flux:badge>
-                        </div>
-                        <flux:text class="mb-4 text-sm text-zinc-600 dark:text-zinc-400">Add links to help visitors
-                            verify and follow your brand.</flux:text>
-
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <flux:input wire:model="social_media_links.facebook" label="Facebook" type="url"
-                                placeholder="https://facebook.com/yourcompany" badge="Optional">
-                                <x-slot name="iconLeading">
-                                    <x-bi-facebook />
-                                </x-slot>
-                            </flux:input>
-
-                            <flux:input wire:model="social_media_links.instagram" label="Instagram" type="url"
-                                placeholder="https://instagram.com/yourcompany" badge="Optional">
-                                <x-slot name="iconLeading">
-                                    <x-bi-instagram />
-                                </x-slot>
-                            </flux:input>
-
-                            <flux:input wire:model="social_media_links.linkedin" label="LinkedIn" type="url"
-                                placeholder="https://linkedin.com/company/yourcompany" badge="Optional">
-                                <x-slot name="iconLeading">
-                                    <x-bi-linkedin />
-                                </x-slot>
-                            </flux:input>
-
-                            <flux:input wire:model="social_media_links.youtube" label="YouTube" type="url"
-                                placeholder="https://youtube.com/@yourcompany" badge="Optional">
-                                <x-slot name="iconLeading">
-                                    <x-bi-youtube />
-                                </x-slot>
-                            </flux:input>
-                        </div>
-                    </div>
-                </div>
-            </flux:card>
-        @endif
-
-        <!-- Step 4: Exhibition Display -->
-        @if ($currentStep === 4)
-            <flux:card>
-                <div class="space-y-6">
-                    <div class="flex items-center justify-between">
-                        <flux:label>Use Company Name as Facia Name</flux:label>
-                        <flux:switch wire:model.live="use_brand_name_as_facia" />
-                    </div>
-
-                    <flux:input wire:model="facia_name" label="Facia Name (Booth Header Text)"
-                        placeholder="ABC DEVELOPERS"
-                        description="The name that should appear on your booth fascia board."
-                        :disabled="$use_brand_name_as_facia" required />
-
-                    <flux:textarea wire:model="additional_details" label="Additional Details"
-                        placeholder="e.g., Established in 2010, Specializing in luxury villas..."
-                        description="Add any additional information like establishment year, specializations, awards, etc."
-                        rows="4" badge="Optional" />
-                </div>
-            </flux:card>
-        @endif
+        <!-- Step 3: Project Details -->
+        @include('components.exhibitor.projects-step')
 
         <!-- Navigation Buttons -->
         <div class="flex justify-between gap-4">
@@ -633,7 +207,7 @@
             </div>
 
             <div>
-                @if ($currentStep < 4)
+                @if ($currentStep < 3)
                     <flux:button type="button" variant="primary" icon:trailing="arrow-right" wire:click="nextStep"
                         wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="nextStep">Next</span>
@@ -677,110 +251,82 @@
                     </flux:button>
                 </div>
 
-                <!-- Mobile Modal -->
-                <div x-show="showModal" x-cloak @click.self="showModal = false"
-                    class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4">
-                    <div @click.away="showModal = false" x-show="showModal"
-                        x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="translate-y-full opacity-0"
-                        x-transition:enter-end="translate-y-0 opacity-100"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="translate-y-0 opacity-100"
-                        x-transition:leave-end="translate-y-full opacity-0"
-                        class="w-full max-w-lg rounded-t-2xl bg-white p-6 dark:bg-zinc-800">
-                        <div class="mb-4 flex items-start justify-between">
-                            <div>
-                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Save Your Progress</h3>
-                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Your form is auto-saved</p>
-                            </div>
-                            <flux:button @click="showModal = false" type="button" variant="ghost" icon="x-mark"
-                                square size="sm" />
-                        </div>
+                <!-- Modal -->
+                <flux:modal x-model="showModal" name="save-progress-modal" class="space-y-6 md:hidden">
+                    <div>
+                        <flux:heading size="lg">Your progress is saved!</flux:heading>
+                        <flux:subheading>You can continue filling this form later using the link below.
+                        </flux:subheading>
+                    </div>
 
-                        <div class="space-y-4">
-                            <div>
-                                <label class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Resume
-                                    Link</label>
+                    <div class="space-y-2">
+                        <flux:label>Resume Link</flux:label>
+                        <div class="flex gap-2">
+                            <flux:input value="{{ $this->resumeUrl }}" readonly class="font-mono text-xs" />
+                            <flux:button @click="copyLink" icon="clipboard" size="sm" variant="ghost">
+                                Copy
+                            </flux:button>
+                        </div>
+                        <flux:text class="text-sm">Save this link or send it to your email to continue later.
+                        </flux:text>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <flux:button @click="showModal = false" variant="primary" class="flex-1">
+                            Got it
+                        </flux:button>
+                    </div>
+                </flux:modal>
+            </div>
+
+            <!-- Desktop: Accordion in sidebar -->
+            <div class="hidden md:block">
+                <div class="fixed bottom-6 right-6 z-40 w-80">
+                    <div class="overflow-hidden rounded-lg border border-emerald-200 bg-white shadow-lg dark:border-emerald-800 dark:bg-zinc-900"
+                        :class="{ 'h-auto': expanded, 'h-14': !expanded }">
+                        <!-- Header / Toggle -->
+                        <button type="button" @click="expanded = !expanded"
+                            class="flex w-full items-center justify-between p-4 transition hover:bg-emerald-50 dark:hover:bg-emerald-950/30">
+                            <div class="flex items-center gap-3">
+                                <flux:icon.bookmark class="size-5 text-emerald-600 dark:text-emerald-400" />
+                                <flux:heading size="base" class="text-emerald-900 dark:text-emerald-100">
+                                    Progress Saved
+                                </flux:heading>
+                            </div>
+                            <flux:icon.chevron-down
+                                class="size-5 text-emerald-600 transition-transform dark:text-emerald-400"
+                                ::class="{ 'rotate-180': expanded }" />
+                        </button>
+
+                        <!-- Content -->
+                        <div x-show="expanded" x-collapse
+                            class="border-t border-emerald-100 p-4 dark:border-emerald-900">
+                            <flux:subheading class="mb-4">
+                                Your progress is automatically saved. Use this link to continue later.
+                            </flux:subheading>
+
+                            <div class="space-y-2">
+                                <flux:label>Resume Link</flux:label>
                                 <div class="flex gap-2">
-                                    <input type="text" readonly value="{{ $this->resumeUrl }}"
-                                        class="flex-1 rounded-lg border border-zinc-300 bg-zinc-50 px-3 py-2 text-sm font-mono text-zinc-900 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100">
-                                    <flux:button @click="copyLink" type="button" variant="primary" size="sm">
+                                    <flux:input value="{{ $this->resumeUrl }}" readonly class="font-mono text-xs" />
+                                    <flux:button @click="copyLink" icon="clipboard" size="sm" variant="ghost">
                                         Copy
                                     </flux:button>
                                 </div>
                             </div>
-
-                            <div
-                                class="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-900/50 dark:bg-amber-900/20">
-                                <p class="text-sm text-amber-800 dark:text-amber-200">
-                                    <strong>Note:</strong> Text data is saved automatically. Images will not be saved in
-                                    drafts.
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Desktop: Collapsible widget in bottom-right corner -->
-            <div class="hidden md:block">
-                <!-- Collapsed state: Just a small button -->
-                <div x-show="!expanded" class="fixed bottom-6 right-6 z-40 transition-all duration-200">
-                    <flux:button @click="expanded = true" type="button" variant="primary" color="emerald"
-                        icon="bookmark" class="shadow-lg">
-                        Save Progress
-                    </flux:button>
-                </div>
-
-                <!-- Expanded state: Show details -->
-                <div x-show="expanded" x-cloak x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="translate-y-4 opacity-0"
-                    x-transition:enter-end="translate-y-0 opacity-100"
-                    x-transition:leave="transition ease-in duration-150"
-                    x-transition:leave-start="translate-y-0 opacity-100"
-                    x-transition:leave-end="translate-y-4 opacity-0"
-                    class="fixed bottom-6 right-6 z-40 w-96 rounded-lg border border-zinc-200 bg-white p-4 shadow-xl dark:border-zinc-700 dark:bg-zinc-800">
-                    <div class="mb-3 flex items-start justify-between">
-                        <div>
-                            <h3 class="font-semibold text-zinc-900 dark:text-white">Save Your Progress</h3>
-                            <p class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">Auto-saved</p>
-                        </div>
-                        <flux:button @click="expanded = false" type="button" variant="ghost" icon="x-mark" square
-                            size="xs" inset />
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <label class="mb-1.5 block text-xs font-medium text-zinc-700 dark:text-zinc-300">Resume
-                                Link</label>
-                            <div class="flex gap-2">
-                                <input type="text" readonly value="{{ $this->resumeUrl }}"
-                                    class="flex-1 rounded border border-zinc-300 bg-zinc-50 px-2.5 py-1.5 text-xs font-mono text-zinc-900 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100">
-                                <flux:button @click="copyLink" type="button" variant="primary" size="xs">
-                                    Copy
-                                </flux:button>
-                            </div>
-                        </div>
-
-                        <div
-                            class="rounded border border-amber-200 bg-amber-50 p-2.5 dark:border-amber-900/50 dark:bg-amber-900/20">
-                            <p class="text-xs text-amber-800 dark:text-amber-200">
-                                <strong>Note:</strong> Text data is saved. Images are not saved in drafts.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Toast notification for copy success -->
+            <!-- Toast for link copied -->
             <div x-data="{ show: false }" @link-copied.window="show = true; setTimeout(() => show = false, 2000)"
-                x-show="show" x-cloak x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="translate-y-2 opacity-0" x-transition:enter-end="translate-y-0 opacity-100"
-                x-transition:leave="transition ease-in duration-150"
-                x-transition:leave-start="translate-y-0 opacity-100" x-transition:leave-end="translate-y-2 opacity-0"
-                class="fixed bottom-20 right-6 z-50 flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm text-white shadow-lg dark:bg-green-500">
-                <flux:icon.check class="size-5" />
-                <span>Link copied!</span>
+                x-show="show" x-cloak x-transition
+                class="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg dark:bg-emerald-500 md:bottom-auto md:left-auto md:right-6 md:top-6 md:translate-x-0">
+                <div class="flex items-center gap-2">
+                    <flux:icon.check class="size-4" />
+                    <span>Link copied to clipboard!</span>
+                </div>
             </div>
         </div>
     @endif

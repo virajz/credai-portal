@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Exhibitor extends Model
 {
@@ -32,6 +33,16 @@ class Exhibitor extends Model
         'social_media_links',
         'facia_name',
         'additional_details',
+        'stall_type',
+        'stall_number',
+        'stall_size',
+        'total_payment',
+        'payment_received',
+        'payment_pending',
+        'extra_furniture_details',
+        'exhibitor_passes_details',
+        'momento_name',
+        'car_pass_details',
     ];
 
     /**
@@ -44,6 +55,14 @@ class Exhibitor extends Model
         return [
             'photos' => 'array',
             'social_media_links' => 'array',
+            'total_payment' => 'decimal:2',
+            'payment_received' => 'decimal:2',
+            'payment_pending' => 'decimal:2',
         ];
+    }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
     }
 }
