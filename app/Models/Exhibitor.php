@@ -17,6 +17,7 @@ class Exhibitor extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'company_id',
         'brand_name',
         'office_address',
         'city',
@@ -64,5 +65,10 @@ class Exhibitor extends Model
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

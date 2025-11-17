@@ -27,6 +27,12 @@
                     :current="request()->routeIs('exhibitors.drafts')" wire:navigate>{{ __('Drafts') }}
                 </flux:navlist.item>
             </flux:navlist.group>
+
+            <flux:navlist.group :heading="__('Management')" class="grid">
+                <flux:navlist.item icon="building-storefront" :href="route('companies.index')"
+                    :current="request()->routeIs('companies.*')" wire:navigate>{{ __('Companies') }}
+                </flux:navlist.item>
+            </flux:navlist.group>
         </flux:navlist>
 
         <flux:spacer />

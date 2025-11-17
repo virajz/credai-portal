@@ -17,6 +17,7 @@ class DraftExhibitor extends Model
      */
     protected $fillable = [
         'resume_token',
+        'company_id',
         'brand_name',
         'office_address',
         'city',
@@ -82,5 +83,10 @@ class DraftExhibitor extends Model
     public function getResumeUrlAttribute(): string
     {
         return route('exhibitor.public.register', ['resume' => $this->resume_token]);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

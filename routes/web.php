@@ -1,6 +1,9 @@
 <?php
 
+use App\Livewire\CompaniesList;
+use App\Livewire\CreateCompany;
 use App\Livewire\DraftExhibitorsList;
+use App\Livewire\EditCompany;
 use App\Livewire\ExhibitorForm;
 use App\Livewire\ExhibitorsList;
 use App\Livewire\PublicExhibitorForm;
@@ -46,4 +49,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('exhibitor/register', ExhibitorForm::class)->name('exhibitor.register');
     Route::get('exhibitors', ExhibitorsList::class)->name('exhibitors.index');
     Route::get('exhibitors/drafts', DraftExhibitorsList::class)->name('exhibitors.drafts');
+
+    // Admin: Company Management Routes
+    Route::get('companies', CompaniesList::class)->name('companies.index');
+    Route::get('companies/create', CreateCompany::class)->name('companies.create');
+    Route::get('companies/{company}/edit', EditCompany::class)->name('companies.edit');
 });

@@ -2,49 +2,95 @@
     <flux:card class="space-y-6">
         <div>
             <flux:heading size="lg">Stall Details</flux:heading>
+            @if (isset($isReadOnly) && $isReadOnly)
+                <flux:subheading class="mt-2">
+                    These details have been pre-filled from your company registration and cannot be modified.
+                </flux:subheading>
+            @endif
         </div>
 
         <flux:separator />
 
-        <!-- Stall Configuration -->
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <flux:input wire:model="stall_type" label="Stall Type" type="text" placeholder="e.g., Corner, Island, Linear"
-                badge="Optional" />
+        @if (isset($isReadOnly) && $isReadOnly)
+            <!-- Stall Configuration (Read-only) -->
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <flux:field>
+                    <flux:label>Stall Type</flux:label>
+                    <flux:text>{{ $stall_type ?: 'Not assigned' }}</flux:text>
+                </flux:field>
 
-            <flux:input wire:model="stall_number" label="Stall Number" type="text" placeholder="e.g., A-101"
-                badge="Optional" />
-        </div>
-
-        <flux:input wire:model="stall_size" label="Stall Size" type="text" placeholder="e.g., 3m x 3m, 50 sq ft"
-            badge="Optional" />
-
-        <!-- Payment Details -->
-        <div>
-            <flux:heading size="base">Payment Information</flux:heading>
-
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-                <flux:input wire:model="total_payment" label="Total Payment" type="number" step="0.01"
-                    placeholder="0.00" badge="Optional">
-                    <x-slot name="iconLeading">
-                        <flux:icon.currency-rupee />
-                    </x-slot>
-                </flux:input>
-
-                <flux:input wire:model="payment_received" label="Payment Received" type="number" step="0.01"
-                    placeholder="0.00" badge="Optional">
-                    <x-slot name="iconLeading">
-                        <flux:icon.currency-rupee />
-                    </x-slot>
-                </flux:input>
-
-                <flux:input wire:model="payment_pending" label="Payment Pending" type="number" step="0.01"
-                    placeholder="0.00" badge="Optional">
-                    <x-slot name="iconLeading">
-                        <flux:icon.currency-rupee />
-                    </x-slot>
-                </flux:input>
+                <flux:field>
+                    <flux:label>Stall Number</flux:label>
+                    <flux:text>{{ $stall_number ?: 'Not assigned' }}</flux:text>
+                </flux:field>
             </div>
-        </div>
+
+            <flux:field>
+                <flux:label>Stall Size</flux:label>
+                <flux:text>{{ $stall_size ?: 'Not assigned' }}</flux:text>
+            </flux:field>
+
+            <!-- Payment Details (Read-only) -->
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <flux:field>
+                    <flux:label>Total Payment</flux:label>
+                    <flux:text>{{ $total_payment ? '₹ ' . number_format((float) $total_payment, 2) : 'Not specified' }}
+                    </flux:text>
+                </flux:field>
+
+                <flux:field>
+                    <flux:label>Payment Received</flux:label>
+                    <flux:text>{{ $payment_received ? '₹ ' . number_format((float) $payment_received, 2) : '₹ 0.00' }}
+                    </flux:text>
+                </flux:field>
+
+                <flux:field>
+                    <flux:label>Payment Pending</flux:label>
+                    <flux:text>{{ $payment_pending ? '₹ ' . number_format((float) $payment_pending, 2) : '₹ 0.00' }}
+                    </flux:text>
+                </flux:field>
+            </div>
+        @else
+            <!-- Stall Configuration (Editable) -->
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <flux:input wire:model="stall_type" label="Stall Type" type="text"
+                    placeholder="e.g., Corner, Island, Linear" badge="Optional" />
+
+                <flux:input wire:model="stall_number" label="Stall Number" type="text" placeholder="e.g., A-101"
+                    badge="Optional" />
+            </div>
+
+            <flux:input wire:model="stall_size" label="Stall Size" type="text" placeholder="e.g., 3m x 3m, 50 sq ft"
+                badge="Optional" />
+
+            <!-- Payment Details (Editable) -->
+            <div>
+                <flux:heading size="base">Payment Information</flux:heading>
+
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <flux:input wire:model="total_payment" label="Total Payment" type="number" step="0.01"
+                        placeholder="0.00" badge="Optional">
+                        <x-slot name="iconLeading">
+                            <flux:icon.currency-rupee />
+                        </x-slot>
+                    </flux:input>
+
+                    <flux:input wire:model="payment_received" label="Payment Received" type="number" step="0.01"
+                        placeholder="0.00" badge="Optional">
+                        <x-slot name="iconLeading">
+                            <flux:icon.currency-rupee />
+                        </x-slot>
+                    </flux:input>
+
+                    <flux:input wire:model="payment_pending" label="Payment Pending" type="number" step="0.01"
+                        placeholder="0.00" badge="Optional">
+                        <x-slot name="iconLeading">
+                            <flux:icon.currency-rupee />
+                        </x-slot>
+                    </flux:input>
+                </div>
+            </div>
+        @endif
 
         <!-- Additional Requirements -->
         <flux:textarea wire:model="extra_furniture_details" label="Extra Furniture Details"

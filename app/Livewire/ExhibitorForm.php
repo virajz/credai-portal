@@ -507,7 +507,7 @@ class ExhibitorForm extends Component
             // Extract project index from key like "0.newPhoto"
             $projectIndex = (int) explode('.', $key)[0];
 
-            if (!isset($this->projects[$projectIndex]['newPhoto'])) {
+            if (! isset($this->projects[$projectIndex]['newPhoto'])) {
                 return;
             }
 
@@ -523,7 +523,7 @@ class ExhibitorForm extends Component
             ]);
 
             // Initialize photos array if it doesn't exist
-            if (!isset($this->projects[$projectIndex]['photos'])) {
+            if (! isset($this->projects[$projectIndex]['photos'])) {
                 $this->projects[$projectIndex]['photos'] = [];
             }
 
@@ -531,6 +531,7 @@ class ExhibitorForm extends Component
             if (count($this->projects[$projectIndex]['photos']) >= 5) {
                 $this->addError("projects.{$projectIndex}.newPhoto", 'You can upload a maximum of 5 photos.');
                 unset($this->projects[$projectIndex]['newPhoto']);
+
                 return;
             }
 
@@ -618,8 +619,12 @@ class ExhibitorForm extends Component
         // Filter empty social media links
         $socialMediaLinks = array_filter($this->social_media_links, fn($value) => ! empty($value));
 
+        // Get company_id if it exists (from PublicExhibitorForm)
+        $companyId = property_exists($this, 'selected_company_id') ? $this->selected_company_id : null;
+
         // Create exhibitor
         $exhibitor = Exhibitor::create([
+            'company_id' => $companyId,
             'brand_name' => $validated['brand_name'],
             'office_address' => $validated['office_address'],
             'city' => $validated['city'],
