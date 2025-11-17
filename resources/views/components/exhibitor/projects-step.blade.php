@@ -174,6 +174,17 @@
                                         </label>
                                     </div>
 
+                                    <div x-show="uploading" x-cloak
+                                        class="rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-800 dark:bg-blue-900/20">
+                                        <div class="text-xs font-medium text-blue-700 dark:text-blue-300">Uploading
+                                            PDF...</div>
+                                        <div
+                                            class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-blue-200 dark:bg-blue-900">
+                                            <div class="h-full w-full animate-pulse bg-blue-600 dark:bg-blue-400">
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     @if (isset($project['pdf']))
                                         <div class="mt-2">
                                             <flux:file-item :heading="$project['pdf']->getClientOriginalName()"
@@ -256,6 +267,17 @@
                                         </label>
                                     </div>
 
+                                    <div x-show="uploading" x-cloak
+                                        class="rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-800 dark:bg-blue-900/20">
+                                        <div class="text-xs font-medium text-blue-700 dark:text-blue-300">Uploading
+                                            logo...</div>
+                                        <div
+                                            class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-blue-200 dark:bg-blue-900">
+                                            <div class="h-full w-full animate-pulse bg-blue-600 dark:bg-blue-400">
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     @if (isset($project['logo']))
                                         <div class="mt-2">
                                             <flux:file-item :heading="$project['logo']->getClientOriginalName()"
@@ -285,27 +307,34 @@
                         <div x-data="{
                             uploading: false,
                             uploadQueue: [],
+                            currentUpload: 0,
+                            totalUploads: 0,
                             isDragging: false,
                             async uploadFiles(files) {
-                                this.uploadQueue = Array.from(files).filter(file => 
+                                this.uploadQueue = Array.from(files).filter(file =>
                                     file.type.match(/^image\/(png|jpeg|jpg)$/)
                                 );
-                                
+
                                 if (this.uploadQueue.length === 0) return;
-                                
+
                                 this.uploading = true;
-                                
+                                this.totalUploads = this.uploadQueue.length;
+                                this.currentUpload = 0;
+
                                 for (const file of this.uploadQueue) {
+                                    this.currentUpload++;
                                     await new Promise((resolve, reject) => {
-                                        @this.upload('projects.{{ $index }}.newPhoto', file, 
+                                        @this.upload('projects.{{ $index }}.newPhoto', file,
                                             () => resolve(),
                                             () => reject()
                                         );
                                     }).catch(() => {});
                                 }
-                                
+
                                 this.uploading = false;
                                 this.uploadQueue = [];
+                                this.currentUpload = 0;
+                                this.totalUploads = 0;
                             },
                             handleFiles(event) {
                                 this.uploadFiles(event.target.files);
@@ -324,6 +353,23 @@
                                         {{ count($project['photos']) }}/5 photos uploaded
                                     </flux:text>
                                 @endif
+                            </div>
+
+                            <!-- Upload Progress -->
+                            <div x-show="uploading" x-cloak
+                                class="mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/20">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="font-medium text-blue-700 dark:text-blue-300">
+                                        Uploading photo <span x-text="currentUpload"></span> of <span
+                                            x-text="totalUploads"></span>
+                                    </span>
+                                    <span class="text-blue-600 dark:text-blue-400"
+                                        x-text="Math.round((currentUpload / totalUploads) * 100) + '%'"></span>
+                                </div>
+                                <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-blue-200 dark:bg-blue-900">
+                                    <div class="h-full bg-blue-600 transition-all duration-300 dark:bg-blue-400"
+                                        :style="`width: ${(currentUpload / totalUploads) * 100}%`"></div>
+                                </div>
                             </div>
 
                             <div class="relative mt-3">
