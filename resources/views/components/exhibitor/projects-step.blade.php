@@ -285,26 +285,26 @@
                         <div x-data="{
                             uploading: false,
                             isDragging: false,
-                            handleFiles(event) {
-                                const files = Array.from(event.target.files);
-                                if (files.length > 0) {
+                            handleFile(event) {
+                                const file = event.target.files[0];
+                                if (file) {
                                     this.uploading = true;
-                                    @this.uploadMultiple('projects.{{ $index }}.photos', files, () => {
+                                    @this.upload('projects.{{ $index }}.newPhoto', file, () => {
                                         this.uploading = false;
+                                        event.target.value = '';
                                     }, () => {
                                         this.uploading = false;
+                                        event.target.value = '';
                                     })
                                 }
                             },
                             handleDrop(event) {
                                 event.preventDefault();
                                 this.isDragging = false;
-                                const files = Array.from(event.dataTransfer.files).filter(file =>
-                                    file.type.match(/^image\/(png|jpeg|jpg)$/)
-                                );
-                                if (files.length > 0) {
+                                const file = event.dataTransfer.files[0];
+                                if (file && file.type.match(/^image\/(png|jpeg|jpg)$/)) {
                                     this.uploading = true;
-                                    @this.uploadMultiple('projects.{{ $index }}.photos', files, () => {
+                                    @this.upload('projects.{{ $index }}.newPhoto', file, () => {
                                         this.uploading = false;
                                     }, () => {
                                         this.uploading = false;
@@ -322,9 +322,9 @@
                             </div>
 
                             <div class="relative mt-3">
-                                <input type="file" @change="handleFiles($event)"
+                                <input type="file" @change="handleFile($event)"
                                     accept="image/png,image/jpeg,image/jpg" class="hidden"
-                                    id="project-{{ $index }}-photos-upload" multiple :disabled="uploading" />
+                                    id="project-{{ $index }}-photos-upload" :disabled="uploading" />
                                 <label for="project-{{ $index }}-photos-upload"
                                     @dragover.prevent="isDragging = true" @dragleave.prevent="isDragging = false"
                                     @drop.prevent="handleDrop($event)"

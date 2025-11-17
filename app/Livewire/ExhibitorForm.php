@@ -498,6 +498,51 @@ class ExhibitorForm extends Component
     }
 
     /**
+     * Handle new photo upload for a project
+     */
+    public function updatedProjects($value, $key): void
+    {
+        // Check if this is a newPhoto update for a specific project
+        if (str_contains($key, '.newPhoto')) {
+            // Extract project index from key like "0.newPhoto"
+            $projectIndex = (int) explode('.', $key)[0];
+            
+            if (!isset($this->projects[$projectIndex]['newPhoto'])) {
+                return;
+            }
+
+            $newPhoto = $this->projects[$projectIndex]['newPhoto'];
+
+            // Validate the photo
+            $this->validate([
+                "projects.{$projectIndex}.newPhoto" => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
+            ], [
+                "projects.{$projectIndex}.newPhoto.image" => 'Photo must be an image file.',
+                "projects.{$projectIndex}.newPhoto.mimes" => 'Photo must be a PNG or JPG file.',
+                "projects.{$projectIndex}.newPhoto.max" => 'Photo file size should not exceed 2MB.',
+            ]);
+
+            // Initialize photos array if it doesn't exist
+            if (!isset($this->projects[$projectIndex]['photos'])) {
+                $this->projects[$projectIndex]['photos'] = [];
+            }
+
+            // Check if we haven't exceeded the limit
+            if (count($this->projects[$projectIndex]['photos']) >= 5) {
+                $this->addError("projects.{$projectIndex}.newPhoto", 'You can upload a maximum of 5 photos.');
+                unset($this->projects[$projectIndex]['newPhoto']);
+                return;
+            }
+
+            // Add to photos array
+            $this->projects[$projectIndex]['photos'][] = $newPhoto;
+
+            // Clear the newPhoto property
+            unset($this->projects[$projectIndex]['newPhoto']);
+        }
+    }
+
+    /**
      * Remove a photo from a project
      */
     public function removeProjectPhoto(int $projectIndex, int $photoIndex): void

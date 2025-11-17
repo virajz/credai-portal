@@ -81,8 +81,7 @@
 
             @if ($logo)
                 <div class="mt-3">
-                    <flux:file-item :heading="$logo->getClientOriginalName()" :image="$logo->temporaryUrl()"
-                        :size="$logo->getSize()">
+                    <flux:file-item :heading="$logo->getClientOriginalName()" :size="$logo->getSize()">
                         <x-slot name="actions">
                             <flux:file-item.remove wire:click="removeLogo" aria-label="Remove logo" />
                         </x-slot>
