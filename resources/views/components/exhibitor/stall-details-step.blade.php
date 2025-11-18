@@ -103,17 +103,20 @@
             placeholder="Number of car passes and vehicle details..." rows="3" badge="Optional" />
 
         <!-- Branding -->
-        <flux:field>
+        <flux:field variant="inline">
             <flux:label>Use Brand Name as Fascia</flux:label>
             <flux:switch wire:model.live="use_brand_name_as_facia" />
         </flux:field>
 
-        @if (!$use_brand_name_as_facia)
-            <flux:input wire:model="facia_name" label="Fascia Name" type="text"
-                placeholder="Enter custom fascia name" />
-        @endif
+        <flux:input wire:model="facia_name" label="Fascia Name" type="text" placeholder="Enter custom fascia name"
+            :readonly="$use_brand_name_as_facia" />
+
+        <flux:field variant="inline">
+            <flux:label>Use Brand Name as Momento</flux:label>
+            <flux:switch wire:model.live="use_brand_name_as_momento" />
+        </flux:field>
 
         <flux:input wire:model="momento_name" label="Momento Name" type="text"
-            placeholder="Name to be engraved on momento" badge="Optional" />
+            placeholder="Name to be engraved on momento" badge="Optional" :readonly="$use_brand_name_as_momento" />
     </flux:card>
 @endif

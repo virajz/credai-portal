@@ -22,12 +22,12 @@
         </flux:callout>
     @endif
 
-    <!-- Step 0: Company Selection & OTP Verification -->
+    <!-- Step 0: Company Selection -->
     @if ($currentStep === 0)
         <flux:card class="space-y-6">
             <div>
-                <flux:heading size="lg" class="mb-4">Company Verification</flux:heading>
-                <flux:subheading>Select your company and verify your registered number to continue</flux:subheading>
+                <flux:heading size="lg" class="mb-4">Company Selection</flux:heading>
+                <flux:subheading>Select your company to continue with the registration</flux:subheading>
             </div>
 
             <div class="space-y-6">
@@ -42,41 +42,11 @@
                     <flux:error name="selected_company_id" />
                 </flux:field>
 
-                @if ($selected_company_id && !$otp_sent)
-                    <flux:field>
-                        <flux:label>Registered Number <span class="text-red-500">*</span></flux:label>
-                        <flux:input wire:model="entered_registered_number"
-                            placeholder="Enter your registered contact number" type="tel"
-                            :disabled="$company_verified" />
-                        <flux:error name="entered_registered_number" />
-                        <flux:description>Enter the contact number registered with your company</flux:description>
-                    </flux:field>
-
-                    <flux:button type="button" wire:click="sendOtp" variant="primary" :disabled="$company_verified">
-                        Send OTP
+                @if ($selected_company_id && !$company_verified)
+                    <flux:button type="button" wire:click="verifyCompany" variant="primary"
+                        :disabled="$company_verified">
+                        Continue with Selected Company
                     </flux:button>
-                @endif
-
-                @if ($otp_sent && !$company_verified)
-                    <flux:callout variant="info">
-                        An OTP has been generated. Please check storage/logs/otp.log to find your verification code.
-                    </flux:callout>
-
-                    <flux:field>
-                        <flux:label>Enter OTP <span class="text-red-500">*</span></flux:label>
-                        <flux:input wire:model="otp_code" placeholder="Enter 4-digit OTP" type="text" maxlength="4"
-                            inputmode="numeric" />
-                        <flux:error name="otp_code" />
-                    </flux:field>
-
-                    <div class="flex gap-2">
-                        <flux:button type="button" wire:click="verifyOtp" variant="primary">
-                            Verify OTP
-                        </flux:button>
-                        <flux:button type="button" wire:click="sendOtp" variant="ghost">
-                            Resend OTP
-                        </flux:button>
-                    </div>
                 @endif
 
                 @if ($company_verified)
@@ -84,7 +54,7 @@
                         <div class="flex items-start gap-3">
                             <flux:icon.check-circle class="mt-0.5 size-5 shrink-0" />
                             <div>
-                                <div class="font-semibold">Company Verified!</div>
+                                <div class="font-semibold">Company Selected!</div>
                                 <div class="text-sm">{{ $selectedCompany->company_name }}</div>
                                 <div class="mt-2 text-sm">Your stall details have been pre-filled. You can now proceed
                                     with the registration.</div>
@@ -209,8 +179,8 @@
                         <flux:heading size="lg">Exhibitor Details</flux:heading>
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <flux:field>
-                                <flux:label>Brand Name</flux:label>
-                                <flux:text>{{ $brand_name }}</flux:text>
+                                <flux:label class="font-semibold">Brand Name</flux:label>
+                                <flux:text class="text-base font-medium">{{ $brand_name }}</flux:text>
                             </flux:field>
 
                             <flux:select wire:model="city" label="City" placeholder="Select city" variant="listbox"
@@ -239,13 +209,13 @@
                         <flux:heading size="lg">Contact Information</flux:heading>
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <flux:field>
-                                <flux:label>Contact Person Name</flux:label>
-                                <flux:text>{{ $contact_person_name }}</flux:text>
+                                <flux:label class="font-semibold">Contact Person Name</flux:label>
+                                <flux:text class="text-base font-medium">{{ $contact_person_name }}</flux:text>
                             </flux:field>
 
                             <flux:field>
-                                <flux:label>Mobile Number</flux:label>
-                                <flux:text>{{ $phone_number }}</flux:text>
+                                <flux:label class="font-semibold">Mobile Number</flux:label>
+                                <flux:text class="text-base font-medium">{{ $phone_number }}</flux:text>
                             </flux:field>
                         </div>
 

@@ -76,6 +76,8 @@ class ExhibitorForm extends Component
 
     public bool $use_brand_name_as_facia = false;
 
+    public bool $use_brand_name_as_momento = false;
+
     // Stall Details
     public string $stall_type = '';
 
@@ -222,7 +224,7 @@ class ExhibitorForm extends Component
     public function updated($propertyName): void
     {
         // Skip file uploads and internal properties
-        if (in_array($propertyName, ['logo', 'brochure', 'use_brand_name_as_facia', 'currentStep', 'completedSteps', 'showResumeLink'])) {
+        if (in_array($propertyName, ['logo', 'brochure', 'use_brand_name_as_facia', 'use_brand_name_as_momento', 'currentStep', 'completedSteps', 'showResumeLink'])) {
             return;
         }
 
@@ -324,6 +326,16 @@ class ExhibitorForm extends Component
     {
         if ($value) {
             $this->facia_name = strtoupper($this->brand_name);
+        }
+    }
+
+    /**
+     * Update momento name when switch is toggled
+     */
+    public function updatedUseBrandNameAsMomento($value): void
+    {
+        if ($value) {
+            $this->momento_name = $this->brand_name;
         }
     }
 

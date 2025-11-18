@@ -3,20 +3,15 @@
 namespace App\Livewire;
 
 use App\Models\Company;
-use App\Services\OtpService;
 use Flux\Flux;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 
+#[Layout('components.layouts.public')]
 class PublicExhibitorForm extends ExhibitorForm
 {
-    // Company selection and OTP verification
+    // Company selection
     public ?int $selected_company_id = null;
-
-    public string $entered_registered_number = '';
-
-    public string $otp_code = '';
-
-    public bool $otp_sent = false;
 
     public bool $company_verified = false;
 
@@ -42,7 +37,7 @@ class PublicExhibitorForm extends ExhibitorForm
                 $this->currentStep = max($this->currentStep, 1);
 
                 // Restore company data to form fields if not already set
-                if (!$this->brand_name && $this->selectedCompany) {
+                if (! $this->brand_name && $this->selectedCompany) {
                     $this->brand_name = $this->selectedCompany->company_name;
                     $this->contact_person_name = $this->selectedCompany->main_person_name ?? '';
                     $this->phone_number = $this->selectedCompany->registered_number;
@@ -52,90 +47,53 @@ class PublicExhibitorForm extends ExhibitorForm
     }
 
     /**
-     * Send OTP for company verification
+     * Verify company selection and continue
      */
-    public function sendOtp(): void
+    public function verifyCompany(): void
     {
         $this->validate([
             'selected_company_id' => ['required', 'exists:companies,id'],
-            'entered_registered_number' => ['required', 'string'],
         ]);
 
-        $company = Company::find($this->selected_company_id);
+        $this->selectedCompany = Company::find($this->selected_company_id);
+        $this->company_verified = true;
 
-        if ($company->registered_number !== $this->entered_registered_number) {
-            $this->addError('entered_registered_number', 'The registered number does not match our records.');
+        // Auto-fill exhibitor details from company
+        $this->brand_name = $this->selectedCompany->company_name;
+        $this->contact_person_name = $this->selectedCompany->main_person_name ?? '';
+        $this->phone_number = $this->selectedCompany->registered_number;
 
-            return;
-        }
+        // Auto-fill stall details from company
+        $this->stall_type = $this->selectedCompany->stall_type ?? '';
+        $this->stall_number = $this->selectedCompany->stall_number ?? '';
+        $this->stall_size = $this->selectedCompany->stall_size ?? '';
+        $this->total_payment = $this->selectedCompany->total_payment ? (string) $this->selectedCompany->total_payment : '';
+        $this->payment_received = $this->selectedCompany->payment_received ? (string) $this->selectedCompany->payment_received : '';
+        $this->payment_pending = $this->selectedCompany->payment_pending ? (string) $this->selectedCompany->payment_pending : '';
 
-        // Generate and send OTP
-        $otpService = new OtpService;
-        $otp = $otpService->generate("company:{$this->selected_company_id}");
+        // Save company_id to draft
+        $this->ensureDraftExists();
+        \App\Models\DraftExhibitor::where('id', $this->draftId)->update([
+            'company_id' => $this->selected_company_id,
+            'brand_name' => $this->brand_name,
+            'contact_person_name' => $this->contact_person_name,
+            'phone_number' => $this->phone_number,
+            'stall_type' => $this->stall_type ?: null,
+            'stall_number' => $this->stall_number ?: null,
+            'stall_size' => $this->stall_size ?: null,
+            'total_payment' => $this->total_payment ?: null,
+            'payment_received' => $this->payment_received ?: null,
+            'payment_pending' => $this->payment_pending ?: null,
+        ]);
 
-        $this->otp_sent = true;
-        $this->selectedCompany = $company;
+        // Move to step 1
+        $this->currentStep = 1;
 
         Flux::toast(
-            heading: 'OTP Sent',
-            text: 'Please check the OTP log to verify your registration.',
+            heading: 'Company Selected',
+            text: 'You can now continue with the exhibitor registration.',
             variant: 'success'
         );
-    }
-
-    /**
-     * Verify OTP and unlock the form
-     */
-    public function verifyOtp(): void
-    {
-        $this->validate([
-            'otp_code' => ['required', 'string', 'size:4'],
-        ]);
-
-        $otpService = new OtpService;
-
-        if ($otpService->verify("company:{$this->selected_company_id}", $this->otp_code)) {
-            $this->company_verified = true;
-
-            // Auto-fill exhibitor details from company
-            $this->brand_name = $this->selectedCompany->company_name;
-            $this->contact_person_name = $this->selectedCompany->main_person_name ?? '';
-            $this->phone_number = $this->selectedCompany->registered_number;
-
-            // Auto-fill stall details from company
-            $this->stall_type = $this->selectedCompany->stall_type ?? '';
-            $this->stall_number = $this->selectedCompany->stall_number ?? '';
-            $this->stall_size = $this->selectedCompany->stall_size ?? '';
-            $this->total_payment = $this->selectedCompany->total_payment ? (string) $this->selectedCompany->total_payment : '';
-            $this->payment_received = $this->selectedCompany->payment_received ? (string) $this->selectedCompany->payment_received : '';
-            $this->payment_pending = $this->selectedCompany->payment_pending ? (string) $this->selectedCompany->payment_pending : '';
-
-            // Save company_id to draft
-            $this->ensureDraftExists();
-            \App\Models\DraftExhibitor::where('id', $this->draftId)->update([
-                'company_id' => $this->selected_company_id,
-                'brand_name' => $this->brand_name,
-                'contact_person_name' => $this->contact_person_name,
-                'phone_number' => $this->phone_number,
-                'stall_type' => $this->stall_type ?: null,
-                'stall_number' => $this->stall_number ?: null,
-                'stall_size' => $this->stall_size ?: null,
-                'total_payment' => $this->total_payment ?: null,
-                'payment_received' => $this->payment_received ?: null,
-                'payment_pending' => $this->payment_pending ?: null,
-            ]);
-
-            // Move to step 1
-            $this->currentStep = 1;
-
-            Flux::toast(
-                heading: 'Verification Successful',
-                text: 'You can now continue with the exhibitor registration.',
-                variant: 'success'
-            );
-        } else {
-            $this->addError('otp_code', 'Invalid OTP code. Please try again.');
-        }
     }
 
     /**
@@ -191,6 +149,6 @@ class PublicExhibitorForm extends ExhibitorForm
 
         return view('livewire.public-exhibitor-form', [
             'companies' => $companies,
-        ])->layout('components.layouts.public');
+        ]);
     }
 }
