@@ -36,11 +36,19 @@ class PublicExhibitorForm extends ExhibitorForm
                 $this->company_verified = true;
                 $this->currentStep = max($this->currentStep, 1);
 
-                // Restore company data to form fields if not already set
-                if (! $this->brand_name && $this->selectedCompany) {
+                // Restore company data to form fields from the company (not draft)
+                if ($this->selectedCompany) {
                     $this->brand_name = $this->selectedCompany->company_name;
                     $this->contact_person_name = $this->selectedCompany->main_person_name ?? '';
                     $this->phone_number = $this->selectedCompany->registered_number;
+
+                    // Restore stall details from company
+                    $this->stall_type = $this->selectedCompany->stall_type ?? '';
+                    $this->stall_number = $this->selectedCompany->stall_number ?? '';
+                    $this->stall_size = $this->selectedCompany->stall_size ?? '';
+                    $this->total_payment = $this->selectedCompany->total_payment ? (string) $this->selectedCompany->total_payment : '';
+                    $this->payment_received = $this->selectedCompany->payment_received ? (string) $this->selectedCompany->payment_received : '';
+                    $this->payment_pending = $this->selectedCompany->payment_pending ? (string) $this->selectedCompany->payment_pending : '';
                 }
             }
         }

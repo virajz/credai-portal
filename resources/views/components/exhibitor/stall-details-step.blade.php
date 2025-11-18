@@ -16,37 +16,40 @@
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <flux:field>
                     <flux:label>Stall Type</flux:label>
-                    <flux:text>{{ $stall_type ?: 'Not assigned' }}</flux:text>
+                    <flux:text>{{ $this->stall_type ?: 'Not assigned' }}</flux:text>
                 </flux:field>
 
                 <flux:field>
                     <flux:label>Stall Number</flux:label>
-                    <flux:text>{{ $stall_number ?: 'Not assigned' }}</flux:text>
+                    <flux:text>{{ $this->stall_number ?: 'Not assigned' }}</flux:text>
                 </flux:field>
             </div>
 
             <flux:field>
                 <flux:label>Stall Size</flux:label>
-                <flux:text>{{ $stall_size ?: 'Not assigned' }}</flux:text>
+                <flux:text>{{ $this->stall_size ?: 'Not assigned' }}</flux:text>
             </flux:field>
 
             <!-- Payment Details (Read-only) -->
             <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <flux:field>
                     <flux:label>Total Payment</flux:label>
-                    <flux:text>{{ $total_payment ? '₹ ' . number_format((float) $total_payment, 2) : 'Not specified' }}
+                    <flux:text>
+                        {{ $this->total_payment ? '₹ ' . number_format((float) $this->total_payment, 2) : 'Not specified' }}
                     </flux:text>
                 </flux:field>
 
                 <flux:field>
                     <flux:label>Payment Received</flux:label>
-                    <flux:text>{{ $payment_received ? '₹ ' . number_format((float) $payment_received, 2) : '₹ 0.00' }}
+                    <flux:text>
+                        {{ $this->payment_received ? '₹ ' . number_format((float) $this->payment_received, 2) : '₹ 0.00' }}
                     </flux:text>
                 </flux:field>
 
                 <flux:field>
                     <flux:label>Payment Pending</flux:label>
-                    <flux:text>{{ $payment_pending ? '₹ ' . number_format((float) $payment_pending, 2) : '₹ 0.00' }}
+                    <flux:text>
+                        {{ $this->payment_pending ? '₹ ' . number_format((float) $this->payment_pending, 2) : '₹ 0.00' }}
                     </flux:text>
                 </flux:field>
             </div>

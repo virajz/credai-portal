@@ -18,8 +18,7 @@
                             placeholder="Enter main person name" />
 
                         <flux:input wire:model="registered_number" label="Registered Number (Contact)"
-                            placeholder="Enter contact number" type="tel"
-                            description:trailing="This will be used for OTP verification" />
+                            placeholder="Enter contact number" type="tel" />
                     </div>
                 </div>
             </div>
@@ -68,13 +67,12 @@
                     </flux:field>
 
                     <flux:field>
-                        <flux:label>Payment Pending</flux:label>
+                        <flux:label badge="Auto Calculated">Payment Pending</flux:label>
                         <flux:input.group>
                             <flux:input.group.prefix>₹</flux:input.group.prefix>
                             <flux:input wire:model="payment_pending" placeholder="0.00" type="number" step="0.01"
                                 readonly />
                         </flux:input.group>
-                        <flux:description>Auto-calculated</flux:description>
                         <flux:error name="payment_pending" />
                     </flux:field>
                 </div>
