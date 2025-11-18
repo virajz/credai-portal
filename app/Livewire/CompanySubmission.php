@@ -4,11 +4,17 @@ namespace App\Livewire;
 
 use App\Models\Company;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class CompanySubmission extends Component
 {
     public Company $company;
+
+    #[Url]
+    public string $tab = 'overview';
+
+    public ?int $selectedProjectIndex = null;
 
     public function mount(Company $company): void
     {
@@ -18,6 +24,11 @@ class CompanySubmission extends Component
         }
 
         $this->company = $company->load(['exhibitor.projects', 'draftExhibitor']);
+    }
+
+    public function selectProject(int $index): void
+    {
+        $this->selectedProjectIndex = $index;
     }
 
     #[Title('Company Submission')]

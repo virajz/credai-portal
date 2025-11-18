@@ -324,7 +324,7 @@
                             @if ($selectedProjectIndex !== null && isset($projects[$selectedProjectIndex]))
                                 @php $index = $selectedProjectIndex; @endphp
                                 @php $project = $projects[$index]; @endphp
-                                <flux:card>
+                                <flux:card wire:key="project-edit-{{ $selectedProjectIndex }}">
                                     <div class="space-y-4">
                                         <div class="flex items-center justify-between">
                                             <flux:heading size="base">Project {{ $index + 1 }}</flux:heading>
