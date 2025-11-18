@@ -20,6 +20,7 @@ class Company extends Model
         'registration_token',
         'has_submitted',
         'submitted_at',
+        'is_locked',
     ];
 
     protected function casts(): array
@@ -27,6 +28,7 @@ class Company extends Model
         return [
             'has_submitted' => 'boolean',
             'submitted_at' => 'datetime',
+            'is_locked' => 'boolean',
         ];
     }
 
@@ -66,7 +68,23 @@ class Company extends Model
      */
     public function canRegister(): bool
     {
-        return ! $this->has_submitted;
+        return ! $this->has_submitted && ! $this->is_locked;
+    }
+
+    /**
+     * Lock the registration link
+     */
+    public function lockRegistration(): void
+    {
+        $this->update(['is_locked' => true]);
+    }
+
+    /**
+     * Unlock the registration link
+     */
+    public function unlockRegistration(): void
+    {
+        $this->update(['is_locked' => false]);
     }
 
     public function exhibitor()

@@ -71,6 +71,9 @@
                             @if ($company->has_submitted)
                                 <flux:badge size="sm" color="green" icon="check-circle">Submitted</flux:badge>
                             @endif
+                            @if ($company->is_locked)
+                                <flux:badge size="sm" color="red" icon="lock-closed">Locked</flux:badge>
+                            @endif
                         </div>
                     </flux:table.cell>
                     <flux:table.cell>
@@ -109,6 +112,12 @@
                             <flux:button wire:click="generateAndCopyLink({{ $company->id }})" variant="ghost"
                                 size="sm" icon="clipboard" icon:variant="outline"
                                 x-tooltip="copied ? 'Copied!' : 'Copy registration link'" />
+
+                            <flux:button wire:click="toggleLock({{ $company->id }})" variant="ghost"
+                                size="sm"
+                                :icon="$company->is_locked ? 'lock-closed' : 'lock-open'"
+                                icon:variant="outline"
+                                x-tooltip="'{{ $company->is_locked ? 'Unlock registration link' : 'Lock registration link' }}'" />
 
                             <flux:dropdown position="bottom" align="end">
                                 <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" />

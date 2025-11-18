@@ -105,6 +105,11 @@ class ClientRegistrationForm extends Component
             abort(404, 'Invalid registration link');
         }
 
+        // Check if registration is locked
+        if ($this->company->is_locked) {
+            abort(403, 'This registration link has been locked by the administrator. Please contact support for assistance.');
+        }
+
         // Load existing exhibitor data if already submitted (allow edits)
         if ($this->company->has_submitted) {
             $this->loadExistingExhibitor();

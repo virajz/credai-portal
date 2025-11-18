@@ -97,6 +97,27 @@ class CompaniesList extends Component
         );
     }
 
+    public function toggleLock(int $companyId): void
+    {
+        $company = Company::findOrFail($companyId);
+
+        if ($company->is_locked) {
+            $company->unlockRegistration();
+            Flux::toast(
+                heading: 'Link unlocked',
+                text: "{$company->company_name} can now register using their link.",
+                variant: 'success'
+            );
+        } else {
+            $company->lockRegistration();
+            Flux::toast(
+                heading: 'Link locked',
+                text: "{$company->company_name} can no longer register using their link.",
+                variant: 'warning'
+            );
+        }
+    }
+
     #[Title('Companies')]
     public function render()
     {
