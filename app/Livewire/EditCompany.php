@@ -23,12 +23,6 @@ class EditCompany extends Component
 
     public string $stall_size = '';
 
-    public string $total_payment = '';
-
-    public string $payment_received = '';
-
-    public string $payment_pending = '';
-
     public bool $copied = false;
 
     public function mount(Company $company): void
@@ -40,9 +34,6 @@ class EditCompany extends Component
         $this->stall_type = $company->stall_type ?? '';
         $this->stall_number = $company->stall_number ?? '';
         $this->stall_size = $company->stall_size ?? '';
-        $this->total_payment = $company->total_payment ? (string) $company->total_payment : '';
-        $this->payment_received = $company->payment_received ? (string) $company->payment_received : '';
-        $this->payment_pending = $company->payment_pending ? (string) $company->payment_pending : '';
 
         // Ensure company has a registration token
         if (! $company->registration_token) {
@@ -59,23 +50,6 @@ class EditCompany extends Component
         $this->dispatch('registration-link-copied');
     }
 
-    public function updatedTotalPayment(): void
-    {
-        $this->calculatePaymentPending();
-    }
-
-    public function updatedPaymentReceived(): void
-    {
-        $this->calculatePaymentPending();
-    }
-
-    private function calculatePaymentPending(): void
-    {
-        $total = (float) ($this->total_payment ?: 0);
-        $received = (float) ($this->payment_received ?: 0);
-        $this->payment_pending = (string) ($total - $received);
-    }
-
     public function save(): void
     {
         $validated = $this->validate([
@@ -85,9 +59,6 @@ class EditCompany extends Component
             'stall_type' => ['nullable', 'string', 'max:255'],
             'stall_number' => ['nullable', 'string', 'max:255'],
             'stall_size' => ['nullable', 'string', 'max:255'],
-            'total_payment' => ['nullable', 'numeric', 'min:0'],
-            'payment_received' => ['nullable', 'numeric', 'min:0'],
-            'payment_pending' => ['nullable', 'numeric'],
         ]);
 
         $this->company->update($validated);

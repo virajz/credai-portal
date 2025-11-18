@@ -94,43 +94,6 @@
                 </div>
             </div>
 
-            <!-- Payment Information -->
-            <div>
-                <flux:heading size="lg" class="mb-4">Payment Information</flux:heading>
-
-                <div class="grid gap-4 md:grid-cols-3">
-                    <flux:field>
-                        <flux:label badge="Optional">Total Payment</flux:label>
-                        <flux:input.group>
-                            <flux:input.group.prefix>₹</flux:input.group.prefix>
-                            <flux:input wire:model.blur="total_payment" placeholder="0.00" type="number" step="0.01"
-                                min="0" />
-                        </flux:input.group>
-                        <flux:error name="total_payment" />
-                    </flux:field>
-
-                    <flux:field>
-                        <flux:label badge="Optional">Payment Received</flux:label>
-                        <flux:input.group>
-                            <flux:input.group.prefix>₹</flux:input.group.prefix>
-                            <flux:input wire:model.blur="payment_received" placeholder="0.00" type="number"
-                                step="0.01" min="0" />
-                        </flux:input.group>
-                        <flux:error name="payment_received" />
-                    </flux:field>
-
-                    <flux:field>
-                        <flux:label badge="Auto Calculated">Payment Pending</flux:label>
-                        <flux:input.group>
-                            <flux:input.group.prefix>₹</flux:input.group.prefix>
-                            <flux:input wire:model="payment_pending" placeholder="0.00" type="number" step="0.01"
-                                readonly />
-                        </flux:input.group>
-                        <flux:error name="payment_pending" />
-                    </flux:field>
-                </div>
-            </div>
-
             <!-- Actions -->
             <div class="flex items-center justify-between border-t border-zinc-200 pt-6 dark:border-zinc-700">
                 <flux:button variant="ghost" :href="route('companies.index')" wire:navigate>

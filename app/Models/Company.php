@@ -17,9 +17,6 @@ class Company extends Model
         'stall_type',
         'stall_number',
         'stall_size',
-        'total_payment',
-        'payment_received',
-        'payment_pending',
         'registration_token',
         'has_submitted',
         'submitted_at',
@@ -28,9 +25,6 @@ class Company extends Model
     protected function casts(): array
     {
         return [
-            'total_payment' => 'decimal:2',
-            'payment_received' => 'decimal:2',
-            'payment_pending' => 'decimal:2',
             'has_submitted' => 'boolean',
             'submitted_at' => 'datetime',
         ];

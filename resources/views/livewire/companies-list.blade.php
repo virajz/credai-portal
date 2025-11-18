@@ -43,7 +43,6 @@
             <flux:table.column>Main Person</flux:table.column>
             <flux:table.column>Registered Number</flux:table.column>
             <flux:table.column>Stall Details</flux:table.column>
-            <flux:table.column>Payment Status</flux:table.column>
             <flux:table.column>
                 <button wire:click="sortByColumn('created_at')"
                     class="flex items-center gap-1 hover:text-zinc-900 dark:hover:text-white">
@@ -100,22 +99,6 @@
                         @endif
                     </flux:table.cell>
                     <flux:table.cell>
-                        @if ($company->total_payment)
-                            <div class="text-sm">
-                                <div class="font-medium">₹{{ number_format($company->total_payment, 2) }}</div>
-                                @if ($company->payment_pending > 0)
-                                    <flux:badge size="sm" color="yellow">
-                                        ₹{{ number_format($company->payment_pending, 2) }}
-                                        pending</flux:badge>
-                                @else
-                                    <flux:badge size="sm" color="green">Paid</flux:badge>
-                                @endif
-                            </div>
-                        @else
-                            <span class="text-zinc-400">—</span>
-                        @endif
-                    </flux:table.cell>
-                    <flux:table.cell>
                         <time datetime="{{ $company->created_at->toISOString() }}" class="text-sm">
                             {{ $company->created_at->format('M d, Y') }}
                         </time>
@@ -147,7 +130,7 @@
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="8" class="text-center">
+                    <flux:table.cell colspan="7" class="text-center">
                         <div class="py-12">
                             <flux:icon.inbox class="mx-auto mb-4 text-zinc-400" variant="outline" />
                             <flux:heading size="lg" class="mb-2">No companies found</flux:heading>

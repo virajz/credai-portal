@@ -704,17 +704,19 @@ class ClientRegistrationForm extends Component
             ]);
         }
 
-        $message = $exhibitor->wasRecentlyCreated
-            ? 'Thank you! Your exhibitor registration has been submitted successfully.'
-            : 'Your exhibitor information has been updated successfully.';
+        // Mark company as submitted
+        $this->company->markAsSubmitted();
 
-        Flux::toast(
-            heading: 'Success!',
-            text: $message,
-            variant: 'success'
-        );
+        // Show thank you modal using Flux
+        Flux::modal('thank-you')->show();
+    }
 
-        // Reload the page to show updated data
+    /**
+     * Close the thank you modal and reload
+     */
+    public function closeThankYouModal(): void
+    {
+        Flux::modal('thank-you')->close();
         $this->redirect(route('client.register', ['token' => $this->token]), navigate: true);
     }
 

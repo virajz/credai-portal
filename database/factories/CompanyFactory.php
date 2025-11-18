@@ -16,9 +16,6 @@ class CompanyFactory extends Factory
      */
     public function definition(): array
     {
-        $totalPayment = fake()->randomFloat(2, 10000, 100000);
-        $paymentReceived = fake()->randomFloat(2, 0, $totalPayment);
-
         return [
             'company_name' => fake()->company(),
             'registered_number' => fake()->numerify('##########'),
@@ -26,9 +23,6 @@ class CompanyFactory extends Factory
             'stall_type' => fake()->randomElement(['Corner', 'Island', 'Linear']),
             'stall_number' => fake()->bothify('?-###'),
             'stall_size' => fake()->randomElement(['3m x 3m', '6m x 3m', '50 sq ft', '100 sq ft']),
-            'total_payment' => $totalPayment,
-            'payment_received' => $paymentReceived,
-            'payment_pending' => $totalPayment - $paymentReceived,
         ];
     }
 }

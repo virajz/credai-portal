@@ -64,37 +64,6 @@
                 </div>
             </div>
 
-            <!-- Payment Information -->
-            <div>
-                <flux:heading size="lg" class="mb-4">Payment Information</flux:heading>
-
-                <div class="space-y-4">
-                    <div class="grid gap-4 md:grid-cols-3">
-                        <flux:field>
-                            <flux:label>Total Payment</flux:label>
-                            <flux:input wire:model.blur="total_payment" placeholder="0.00" type="number" step="0.01"
-                                min="0" icon="currency-rupee" icon-trailing />
-                            <flux:error name="total_payment" />
-                        </flux:field>
-
-                        <flux:field>
-                            <flux:label>Payment Received</flux:label>
-                            <flux:input wire:model.blur="payment_received" placeholder="0.00" type="number"
-                                step="0.01" min="0" icon="currency-rupee" icon-trailing />
-                            <flux:error name="payment_received" />
-                        </flux:field>
-
-                        <flux:field>
-                            <flux:label>Payment Pending</flux:label>
-                            <flux:input wire:model="payment_pending" placeholder="0.00" type="number" step="0.01"
-                                readonly icon="currency-rupee" icon-trailing />
-                            <flux:error name="payment_pending" />
-                            <flux:description>Auto-calculated</flux:description>
-                        </flux:field>
-                    </div>
-                </div>
-            </div>
-
             <!-- Actions -->
             <div class="flex items-center justify-between border-t border-zinc-200 pt-6 dark:border-zinc-700">
                 <flux:button variant="ghost" :href="route('companies.index')" wire:navigate>

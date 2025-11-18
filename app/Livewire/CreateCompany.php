@@ -21,29 +21,6 @@ class CreateCompany extends Component
 
     public string $stall_size = '';
 
-    public string $total_payment = '';
-
-    public string $payment_received = '';
-
-    public string $payment_pending = '';
-
-    public function updatedTotalPayment(): void
-    {
-        $this->calculatePaymentPending();
-    }
-
-    public function updatedPaymentReceived(): void
-    {
-        $this->calculatePaymentPending();
-    }
-
-    private function calculatePaymentPending(): void
-    {
-        $total = (float) ($this->total_payment ?: 0);
-        $received = (float) ($this->payment_received ?: 0);
-        $this->payment_pending = (string) ($total - $received);
-    }
-
     public function save(): void
     {
         $validated = $this->validate([
@@ -53,9 +30,6 @@ class CreateCompany extends Component
             'stall_type' => ['nullable', 'string', 'max:255'],
             'stall_number' => ['nullable', 'string', 'max:255'],
             'stall_size' => ['nullable', 'string', 'max:255'],
-            'total_payment' => ['nullable', 'numeric', 'min:0'],
-            'payment_received' => ['nullable', 'numeric', 'min:0'],
-            'payment_pending' => ['nullable', 'numeric'],
         ]);
 
         // Generate registration token

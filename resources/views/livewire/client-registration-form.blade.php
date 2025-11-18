@@ -1,19 +1,31 @@
 <div class="mx-auto w-full">
-    <div class="mb-8">
-        <flux:heading size="xl" class="mb-2">
-            @if ($company->has_submitted)
-                Update Exhibitor Information
-            @else
-                Exhibitor Registration
-            @endif
-        </flux:heading>
-        <flux:subheading>
-            @if ($company->has_submitted)
-                You can update your exhibitor information below
-            @else
-                Complete your exhibitor information for the exhibition
-            @endif
-        </flux:subheading>
+    <div class="mb-8 flex items-start justify-between gap-6">
+        <div class="flex-1">
+            <flux:heading size="xl" class="mb-2">
+                @if ($company->has_submitted)
+                    Update Exhibitor Information
+                @else
+                    Exhibitor Registration
+                @endif
+            </flux:heading>
+            <flux:subheading>
+                @if ($company->has_submitted)
+                    You can update your exhibitor information below
+                @else
+                    Complete your exhibitor information for the exhibition
+                @endif
+            </flux:subheading>
+        </div>
+        <div
+            class="shrink-0 rounded-lg border border-yellow-300 bg-yellow-50 p-3 dark:border-yellow-700 dark:bg-yellow-900/20">
+            <div class="flex items-start gap-2">
+                <flux:icon.calendar class="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-yellow-500" />
+                <div class="text-sm text-yellow-800 dark:text-yellow-200">
+                    <strong>Important:</strong> Final submission deadline is 28th November, 2025. Please ensure all
+                    information is accurate and complete.
+                </div>
+            </div>
+        </div>
     </div>
 
     @if (session('success'))
@@ -771,4 +783,55 @@
             <flux:text class="text-sm">Saving...</flux:text>
         </div>
     </div>
+
+    <!-- Thank You Modal -->
+    <flux:modal name="thank-you" class="w-full max-w-lg">
+        <div class="space-y-6">
+            <!-- Success Icon -->
+            <div class="flex justify-center">
+                <div class="flex size-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                    <flux:icon.check-circle class="size-10 text-green-600 dark:text-green-500" variant="solid" />
+                </div>
+            </div>
+
+            <!-- Heading -->
+            <div class="text-center">
+                <flux:heading size="xl" class="mb-2">Thank You!</flux:heading>
+                <flux:subheading>Your exhibitor information has been saved successfully.</flux:subheading>
+            </div>
+
+            <!-- Important Notice -->
+            <flux:card class="border-2 border-yellow-300 bg-yellow-50 dark:border-yellow-700 dark:bg-yellow-900/20">
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3">
+                        <flux:icon.calendar class="mt-0.5 size-5 shrink-0 text-yellow-600 dark:text-yellow-500" />
+                        <div>
+                            <flux:heading size="base" class="mb-1 text-yellow-900 dark:text-yellow-100">
+                                Important Reminder
+                            </flux:heading>
+                            <flux:text class="text-sm text-yellow-800 dark:text-yellow-200">
+                                Final submission deadline is <strong>28th November, 2025</strong>. You can update your
+                                information anytime before this date using the same registration link.
+                            </flux:text>
+                        </div>
+                    </div>
+                </div>
+            </flux:card>
+
+            <!-- Additional Info -->
+            <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-800">
+                <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">
+                    We've saved your information. You can return to this page anytime to make updates or review your
+                    submission.
+                </flux:text>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3">
+                <flux:button wire:click="closeThankYouModal" variant="primary" class="flex-1">
+                    Got it, thanks!
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>
