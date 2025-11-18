@@ -18,13 +18,10 @@ class Exhibitor extends Model
      */
     protected $fillable = [
         'company_id',
-        'brand_name',
         'office_address',
         'city',
         'gst_number',
         'pan_number',
-        'contact_person_name',
-        'phone_number',
         'email',
         'website',
         'logo_path',
@@ -34,12 +31,6 @@ class Exhibitor extends Model
         'social_media_links',
         'facia_name',
         'additional_details',
-        'stall_type',
-        'stall_number',
-        'stall_size',
-        'total_payment',
-        'payment_received',
-        'payment_pending',
         'extra_furniture_details',
         'exhibitor_passes_details',
         'momento_name',
@@ -56,10 +47,31 @@ class Exhibitor extends Model
         return [
             'photos' => 'array',
             'social_media_links' => 'array',
-            'total_payment' => 'decimal:2',
-            'payment_received' => 'decimal:2',
-            'payment_pending' => 'decimal:2',
         ];
+    }
+
+    /**
+     * Get the brand name from the company
+     */
+    public function getBrandNameAttribute(): string
+    {
+        return $this->company->company_name ?? '';
+    }
+
+    /**
+     * Get the contact person name from the company
+     */
+    public function getContactPersonNameAttribute(): string
+    {
+        return $this->company->main_person_name ?? '';
+    }
+
+    /**
+     * Get the phone number from the company
+     */
+    public function getPhoneNumberAttribute(): string
+    {
+        return $this->company->registered_number ?? '';
     }
 
     public function projects(): HasMany

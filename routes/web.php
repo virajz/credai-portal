@@ -1,12 +1,11 @@
 <?php
 
+use App\Livewire\ClientRegistrationForm;
 use App\Livewire\CompaniesList;
 use App\Livewire\CreateCompany;
-use App\Livewire\DraftExhibitorsList;
 use App\Livewire\EditCompany;
-use App\Livewire\ExhibitorForm;
+use App\Livewire\ExhibitorDetails;
 use App\Livewire\ExhibitorsList;
-use App\Livewire\PublicExhibitorForm;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -18,11 +17,14 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Public exhibitor registration routes
-Route::get('register-exhibitor', PublicExhibitorForm::class)->name('exhibitor.public.register');
-Route::get('exhibitor/thank-you', function () {
-    return view('exhibitor.thank-you');
-})->name('exhibitor.public.thank-you');
+// Public client registration routes (no auth required)
+Route::get('register/{token}', ClientRegistrationForm::class)->name('client.register');
+Route::get('registration/complete', function () {
+    return view('client.complete');
+})->name('client.complete');
+Route::get('registration/expired', function () {
+    return view('client.expired');
+})->name('client.expired');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -46,12 +48,13 @@ Route::middleware(['auth'])->group(function () {
         )
         ->name('two-factor.show');
 
-    Route::get('exhibitor/register', ExhibitorForm::class)->name('exhibitor.register');
-    Route::get('exhibitors', ExhibitorsList::class)->name('exhibitors.index');
-    Route::get('exhibitors/drafts', DraftExhibitorsList::class)->name('exhibitors.drafts');
-
-    // Admin: Company Management Routes
+    // Company Management Routes
     Route::get('companies', CompaniesList::class)->name('companies.index');
     Route::get('companies/create', CreateCompany::class)->name('companies.create');
     Route::get('companies/{company}/edit', EditCompany::class)->name('companies.edit');
+    Route::get('companies/{company}/submission', \App\Livewire\CompanySubmission::class)->name('companies.submission');
+
+    // Exhibitor Management Routes
+    Route::get('exhibitors', ExhibitorsList::class)->name('exhibitors.index');
+    Route::get('exhibitors/{exhibitor}', ExhibitorDetails::class)->name('exhibitors.show');
 });

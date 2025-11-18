@@ -20,6 +20,9 @@ class Company extends Model
         'total_payment',
         'payment_received',
         'payment_pending',
+        'registration_token',
+        'has_submitted',
+        'submitted_at',
     ];
 
     protected function casts(): array
@@ -28,9 +31,63 @@ class Company extends Model
             'total_payment' => 'decimal:2',
             'payment_received' => 'decimal:2',
             'payment_pending' => 'decimal:2',
+            'has_submitted' => 'boolean',
+            'submitted_at' => 'datetime',
         ];
     }
 
+    /**
+     * Generate a unique registration token for the company
+     */
+    public static function generateRegistrationToken(): string
+    {
+        do {
+            $token = \Illuminate\Support\Str::random(32);
+        } while (self::where('registration_token', $token)->exists());
+
+        return $token;
+    }
+
+    /**
+     * Get the registration URL for this company
+     */
+    public function getRegistrationUrlAttribute(): string
+    {
+        return route('client.register', ['token' => $this->registration_token]);
+    }
+
+    /**
+     * Mark this company as having submitted their form
+     */
+    public function markAsSubmitted(): void
+    {
+        $this->update([
+            'has_submitted' => true,
+            'submitted_at' => now(),
+        ]);
+    }
+
+    /**
+     * Check if the company can still register
+     */
+    public function canRegister(): bool
+    {
+        return ! $this->has_submitted;
+    }
+
+    public function exhibitor()
+    {
+        return $this->hasOne(Exhibitor::class);
+    }
+
+    public function draftExhibitor()
+    {
+        return $this->hasOne(DraftExhibitor::class);
+    }
+
+    /**
+     * Legacy relationship - kept for backwards compatibility
+     */
     public function exhibitors()
     {
         return $this->hasMany(Exhibitor::class);

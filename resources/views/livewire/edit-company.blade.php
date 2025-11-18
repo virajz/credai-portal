@@ -4,6 +4,59 @@
         <flux:subheading class="mt-2">Update company details and stall allocation information</flux:subheading>
     </div>
 
+    <!-- Registration Link -->
+    @if ($company->registration_token)
+        <flux:card class="mb-6">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <flux:heading size="base">Client Registration Link</flux:heading>
+                        <flux:subheading class="mt-1">Share this link with the client to complete their exhibitor
+                            registration</flux:subheading>
+                    </div>
+
+                    @if ($company->has_submitted)
+                        <flux:badge variant="success" size="sm">
+                            Submitted
+                        </flux:badge>
+                    @else
+                        <flux:badge variant="warning" size="sm">
+                            Pending
+                        </flux:badge>
+                    @endif
+                </div>
+
+                <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-800" x-data="{ copied: false }">
+                    <div class="mb-2 flex items-center gap-2">
+                        <flux:icon.link class="size-4 text-zinc-500" />
+                        <flux:label class="text-xs">Registration URL</flux:label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <flux:input :value="$company->registration_url" readonly class="flex-1 font-mono text-sm"
+                            id="registration-url" />
+                        <flux:button
+                            @click="navigator.clipboard.writeText('{{ $company->registration_url }}').then(() => { copied = true; setTimeout(() => copied = false, 3000) })"
+                            variant="primary" size="sm" icon="clipboard">
+                            Copy
+                        </flux:button>
+                    </div>
+
+                    <div x-show="copied" x-cloak
+                        class="mt-2 flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                        <flux:icon.check class="size-4" />
+                        <span>Link copied to clipboard!</span>
+                    </div>
+                </div>
+
+                @if ($company->has_submitted && $company->submitted_at)
+                    <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Submitted on {{ $company->submitted_at->format('M d, Y h:i A') }}
+                    </div>
+                @endif
+            </div>
+        </flux:card>
+    @endif
+
     <form wire:submit="save">
         <flux:card class="space-y-6">
             <!-- Company Information -->

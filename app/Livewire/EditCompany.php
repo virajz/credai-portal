@@ -29,6 +29,8 @@ class EditCompany extends Component
 
     public string $payment_pending = '';
 
+    public bool $copied = false;
+
     public function mount(Company $company): void
     {
         $this->company = $company;
@@ -41,6 +43,20 @@ class EditCompany extends Component
         $this->total_payment = $company->total_payment ? (string) $company->total_payment : '';
         $this->payment_received = $company->payment_received ? (string) $company->payment_received : '';
         $this->payment_pending = $company->payment_pending ? (string) $company->payment_pending : '';
+
+        // Ensure company has a registration token
+        if (! $company->registration_token) {
+            $company->update([
+                'registration_token' => Company::generateRegistrationToken(),
+            ]);
+            $this->company->refresh();
+        }
+    }
+
+    public function copyRegistrationLink(): void
+    {
+        $this->copied = true;
+        $this->dispatch('registration-link-copied');
     }
 
     public function updatedTotalPayment(): void

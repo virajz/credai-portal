@@ -46,6 +46,6 @@ class CompanySeeder extends Seeder
             Company::create($companyData);
         }
 
-        $this->command->info('Successfully seeded ' . count($companies) . ' companies.');
+        $this->command->info('Successfully seeded '.count($companies).' companies.');
     }
 }

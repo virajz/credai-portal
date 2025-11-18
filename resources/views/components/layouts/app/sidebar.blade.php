@@ -19,14 +19,11 @@
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
 
-            <flux:navlist.group :heading="__('Exhibitors')" class="grid">
+            {{-- <flux:navlist.group :heading="__('Exhibitors')" class="grid">
                 <flux:navlist.item icon="building-office" :href="route('exhibitors.index')"
-                    :current="request()->routeIs('exhibitors.index')" wire:navigate>{{ __('Registrations') }}
+                    :current="request()->routeIs('exhibitors.*')" wire:navigate>{{ __('Registrations') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="document-text" :href="route('exhibitors.drafts')"
-                    :current="request()->routeIs('exhibitors.drafts')" wire:navigate>{{ __('Drafts') }}
-                </flux:navlist.item>
-            </flux:navlist.group>
+            </flux:navlist.group> --}}
 
             <flux:navlist.group :heading="__('Management')" class="grid">
                 <flux:navlist.item icon="building-storefront" :href="route('companies.index')"

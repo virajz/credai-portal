@@ -17,10 +17,10 @@ class CompaniesList extends Component
     public string $search = '';
 
     #[Url]
-    public string $sortBy = 'created_at';
+    public string $sortBy = 'company_name';
 
     #[Url]
-    public string $sortDirection = 'desc';
+    public string $sortDirection = 'asc';
 
     public ?int $companyToDelete = null;
 
@@ -41,7 +41,9 @@ class CompaniesList extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'sortBy', 'sortDirection']);
+        $this->reset(['search']);
+        $this->sortBy = 'company_name';
+        $this->sortDirection = 'asc';
         $this->resetPage();
     }
 
@@ -76,16 +78,35 @@ class CompaniesList extends Component
         $this->modal('delete-company')->close();
     }
 
+    public function generateAndCopyLink(int $companyId): void
+    {
+        $company = Company::findOrFail($companyId);
+
+        if (! $company->registration_token) {
+            $company->update([
+                'registration_token' => Company::generateRegistrationToken(),
+            ]);
+        }
+
+        $this->dispatch('copy-to-clipboard', url: $company->fresh()->registration_url);
+
+        Flux::toast(
+            heading: 'Link copied!',
+            text: 'Registration link has been copied to clipboard.',
+            variant: 'success'
+        );
+    }
+
     #[Title('Companies')]
     public function render()
     {
         $companies = Company::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('company_name', 'like', "%{$this->search}%")
-                        ->orWhere('main_person_name', 'like', "%{$this->search}%")
-                        ->orWhere('registered_number', 'like', "%{$this->search}%")
-                        ->orWhere('stall_number', 'like', "%{$this->search}%");
+                    $q->where('company_name', 'ilike', "%{$this->search}%")
+                        ->orWhere('main_person_name', 'ilike', "%{$this->search}%")
+                        ->orWhere('registered_number', 'ilike', "%{$this->search}%")
+                        ->orWhere('stall_number', 'ilike', "%{$this->search}%");
                 });
             })
             ->orderBy($this->sortBy, $this->sortDirection)

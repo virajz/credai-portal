@@ -2,11 +2,8 @@
     <div class="mb-6 flex items-center justify-between">
         <div>
             <flux:heading size="xl" class="mb-2">Exhibitors</flux:heading>
-            <flux:subheading>Manage all registered exhibitors for the exhibition</flux:subheading>
+            <flux:subheading>View all submitted exhibitor registrations</flux:subheading>
         </div>
-        <flux:button variant="primary" :href="route('exhibitor.register')" icon="plus" wire:navigate>
-            Add Exhibitor
-        </flux:button>
     </div>
 
     <!-- Search and Filters -->
@@ -127,8 +124,8 @@
                             <flux:dropdown position="bottom" align="end">
                                 <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" />
                                 <flux:menu class="w-40">
-                                    <flux:menu.item icon="eye">View Details</flux:menu.item>
-                                    <flux:menu.item icon="pencil">Edit</flux:menu.item>
+                                    <flux:menu.item icon="eye" :href="route('exhibitors.show', $exhibitor)"
+                                        wire:navigate>View Details</flux:menu.item>
                                     <flux:menu.separator />
                                     <flux:menu.item icon="trash" variant="danger"
                                         wire:click="confirmDelete({{ $exhibitor->id }})">Delete</flux:menu.item>
@@ -146,15 +143,9 @@
                                     @if ($search || $cityFilter)
                                         Try adjusting your search or filter criteria
                                     @else
-                                        Get started by adding your first exhibitor
+                                        No exhibitor registrations have been submitted yet
                                     @endif
                                 </flux:subheading>
-                                @if (!$search && !$cityFilter)
-                                    <flux:button variant="primary" :href="route('exhibitor.register')" icon="plus"
-                                        wire:navigate>
-                                        Add Exhibitor
-                                    </flux:button>
-                                @endif
                             </div>
                         </flux:table.cell>
                     </flux:table.row>

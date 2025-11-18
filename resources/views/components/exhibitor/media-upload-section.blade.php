@@ -1,8 +1,4 @@
 <div class="space-y-6">
-    <flux:separator />
-
-    <flux:heading size="lg">Media & Branding</flux:heading>
-
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
         <!-- Logo Upload -->
         <div x-data="{
@@ -83,6 +79,33 @@
                             <flux:file-item.remove wire:click="removeLogo" aria-label="Remove logo" />
                         </x-slot>
                     </flux:file-item>
+                </div>
+            @elseif (isset($logo_path) && $logo_path)
+                <div class="mt-3">
+                    <div
+                        class="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-700 dark:bg-zinc-800">
+                        <div class="rounded-md bg-blue-100 p-2 shrink-0 dark:bg-blue-900/30">
+                            <flux:icon.photo class="size-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="truncate text-sm font-medium text-zinc-900 dark:text-white"
+                                title="{{ preg_replace('/^\d+_/', '', basename($logo_path)) }}">
+                                {{ preg_replace('/^\d+_/', '', basename($logo_path)) }}
+                            </div>
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">Logo</div>
+                        </div>
+                        <div class="flex gap-1 shrink-0">
+                            <flux:button size="sm" variant="ghost" href="{{ Storage::url($logo_path) }}"
+                                download="{{ preg_replace('/^\d+_/', '', basename($logo_path)) }}" square
+                                aria-label="Download logo">
+                                <flux:icon.arrow-down-tray class="size-4" />
+                            </flux:button>
+                            <flux:button size="sm" variant="ghost" wire:click="removeLogo" square
+                                aria-label="Replace logo">
+                                <flux:icon.trash class="size-4" />
+                            </flux:button>
+                        </div>
+                    </div>
                 </div>
             @endif
 
@@ -169,6 +192,33 @@
                             <flux:file-item.remove wire:click="removeBrochure" aria-label="Remove brochure" />
                         </x-slot>
                     </flux:file-item>
+                </div>
+            @elseif (isset($brochure_path) && $brochure_path)
+                <div class="mt-3">
+                    <div
+                        class="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-700 dark:bg-zinc-800">
+                        <div class="rounded-md bg-red-100 p-2 shrink-0 dark:bg-red-900/30">
+                            <flux:icon.document class="size-5 text-red-600 dark:text-red-400" />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="truncate text-sm font-medium text-zinc-900 dark:text-white"
+                                title="{{ preg_replace('/^\d+_/', '', basename($brochure_path)) }}">
+                                {{ preg_replace('/^\d+_/', '', basename($brochure_path)) }}
+                            </div>
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">Brochure</div>
+                        </div>
+                        <div class="flex gap-1 shrink-0">
+                            <flux:button size="sm" variant="ghost" href="{{ Storage::url($brochure_path) }}"
+                                download="{{ preg_replace('/^\d+_/', '', basename($brochure_path)) }}" square
+                                aria-label="Download brochure">
+                                <flux:icon.arrow-down-tray class="size-4" />
+                            </flux:button>
+                            <flux:button size="sm" variant="ghost" wire:click="removeBrochure" square
+                                aria-label="Replace brochure">
+                                <flux:icon.trash class="size-4" />
+                            </flux:button>
+                        </div>
+                    </div>
                 </div>
             @endif
 

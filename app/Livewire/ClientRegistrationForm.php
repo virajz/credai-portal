@@ -2,17 +2,25 @@
 
 namespace App\Livewire;
 
+use App\Models\Company;
 use App\Models\DraftExhibitor;
 use App\Models\Exhibitor;
-use App\Models\Project;
+use Flux\Flux;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
-class ExhibitorForm extends Component
+#[Layout('components.layouts.public')]
+class ClientRegistrationForm extends Component
 {
     use WithFileUploads;
+
+    // Company & Token
+    public string $token;
+
+    public ?Company $company = null;
 
     // Step tracking
     public int $currentStep = 1;
@@ -20,12 +28,7 @@ class ExhibitorForm extends Component
     public array $completedSteps = [];
 
     // Draft functionality
-    #[Url(as: 'resume')]
-    public ?string $resumeToken = null;
-
     public ?int $draftId = null;
-
-    public bool $showResumeLink = false;
 
     public array $cities = [
         'Surat',
@@ -35,9 +38,7 @@ class ExhibitorForm extends Component
         'Others',
     ];
 
-    // Company Details
-    public string $brand_name = '';
-
+    // Company Details (fillable by client)
     public string $office_address = '';
 
     public string $city = '';
@@ -45,11 +46,6 @@ class ExhibitorForm extends Component
     public string $gst_number = '';
 
     public string $pan_number = '';
-
-    // Contact Person
-    public string $contact_person_name = '';
-
-    public string $phone_number = '';
 
     public string $email = '';
 
@@ -59,6 +55,10 @@ class ExhibitorForm extends Component
     public $logo;
 
     public $brochure;
+
+    public ?string $logo_path = null;
+
+    public ?string $brochure_path = null;
 
     public string $video_url = '';
 
@@ -78,19 +78,6 @@ class ExhibitorForm extends Component
 
     public bool $use_brand_name_as_momento = false;
 
-    // Stall Details
-    public string $stall_type = '';
-
-    public string $stall_number = '';
-
-    public string $stall_size = '';
-
-    public string $total_payment = '';
-
-    public string $payment_received = '';
-
-    public string $payment_pending = '';
-
     public string $extra_furniture_details = '';
 
     public string $exhibitor_passes_details = '';
@@ -102,91 +89,103 @@ class ExhibitorForm extends Component
     // Projects
     public array $projects = [];
 
-    public array $newProject = [
-        'name' => '',
-        'area' => '',
-        'area_other' => '',
-        'category' => '',
-        'sq_ft' => '',
-        'budget_range' => '',
-        'handover_date' => '',
-        'status' => '',
-        'pdf' => null,
-        'video_url' => '',
-        'usp' => '',
-        'contact_person' => '',
-        'logo' => null,
-        'photos' => [],
-    ];
+    public ?int $selectedProjectIndex = null;
 
     /**
      * Component initialization
      */
-    public function mount(): void
+    public function mount(string $token): void
     {
-        // Check if resume token is set via URL (Livewire's #[Url] attribute)
-        if ($this->resumeToken) {
-            $this->loadDraft($this->resumeToken);
+        // Load company by token
+        $this->token = $token;
+        $this->company = Company::where('registration_token', $token)->first();
+
+        // Check if company exists
+        if (! $this->company) {
+            abort(404, 'Invalid registration link');
+        }
+
+        // Load existing exhibitor data if already submitted (allow edits)
+        if ($this->company->has_submitted) {
+            $this->loadExistingExhibitor();
         } else {
-            // Check if user has a draft in session
-            $sessionToken = session('exhibitor_draft_token');
-            if ($sessionToken) {
-                $this->resumeToken = $sessionToken;
-                $this->loadDraft($sessionToken);
+            // Load existing draft if it exists
+            $this->loadDraft();
+        }
+    }
+
+    /**
+     * Load existing exhibitor data for editing
+     */
+    protected function loadExistingExhibitor(): void
+    {
+        $exhibitor = Exhibitor::where('company_id', $this->company->id)->first();
+
+        if ($exhibitor) {
+            $this->office_address = $exhibitor->office_address ?? '';
+            $this->city = $exhibitor->city ?? '';
+            $this->gst_number = $exhibitor->gst_number ?? '';
+            $this->logo_path = $exhibitor->logo_path;
+            $this->brochure_path = $exhibitor->brochure_path;
+            $this->pan_number = $exhibitor->pan_number ?? '';
+            $this->email = $exhibitor->email ?? '';
+            $this->website = $exhibitor->website ?? '';
+            $this->video_url = $exhibitor->video_url ?? '';
+            $this->social_media_links = $exhibitor->social_media_links ?? [
+                'facebook' => '',
+                'linkedin' => '',
+                'instagram' => '',
+                'youtube' => '',
+            ];
+            $this->facia_name = $exhibitor->facia_name ?? '';
+            $this->additional_details = $exhibitor->additional_details ?? '';
+            $this->extra_furniture_details = $exhibitor->extra_furniture_details ?? '';
+            $this->exhibitor_passes_details = $exhibitor->exhibitor_passes_details ?? '';
+            $this->momento_name = $exhibitor->momento_name ?? '';
+            $this->car_pass_details = $exhibitor->car_pass_details ?? '';
+
+            // Load projects
+            foreach ($exhibitor->projects as $project) {
+                $this->projects[] = [
+                    'id' => $project->id,
+                    'name' => $project->name,
+                    'area' => $project->area,
+                    'city' => $project->city ?? '',
+                    'category' => $project->category,
+                    'sq_ft' => $project->sq_ft,
+                    'budget_range' => $project->budget_range,
+                    'handover_date' => $project->handover_date,
+                    'status' => $project->status,
+                    'usp' => $project->usp,
+                    'contact_person' => $project->contact_person,
+                    'video_url' => $project->video_url,
+                    'pdf_path' => $project->pdf_path,
+                    'logo_path' => $project->logo_path,
+                ];
+            }
+
+            // Select first project if any exist
+            if (count($this->projects) > 0) {
+                $this->selectedProjectIndex = 0;
             }
         }
-        // Don't create a new draft on mount - wait until user starts filling
     }
 
     /**
-     * Create a new draft entry (called lazily when needed)
+     * Load draft data if it exists
      */
-    protected function createNewDraft(): void
+    protected function loadDraft(): void
     {
-        $draft = DraftExhibitor::create([
-            'resume_token' => DraftExhibitor::generateResumeToken(),
-            'last_activity_at' => now(),
-        ]);
-
-        $this->draftId = $draft->id;
-        $this->resumeToken = $draft->resume_token;
-        $this->showResumeLink = true;
-
-        // Store in session so user can refresh without losing draft
-        session(['exhibitor_draft_token' => $draft->resume_token]);
-
-        // The #[Url] attribute will automatically update the browser URL
-    }
-
-    /**
-     * Ensure a draft exists before saving
-     */
-    protected function ensureDraftExists(): void
-    {
-        if (! $this->draftId) {
-            $this->createNewDraft();
-        }
-    }
-
-    /**
-     * Load draft data from resume token
-     */
-    protected function loadDraft(string $token): void
-    {
-        $draft = DraftExhibitor::where('resume_token', $token)
+        $draft = DraftExhibitor::where('company_id', $this->company->id)
             ->where('is_completed', false)
             ->first();
 
         if ($draft) {
             $this->draftId = $draft->id;
-            $this->resumeToken = $draft->resume_token;
-            $this->brand_name = $draft->brand_name ?? '';
             $this->office_address = $draft->office_address ?? '';
             $this->city = $draft->city ?? '';
             $this->gst_number = $draft->gst_number ?? '';
             $this->pan_number = $draft->pan_number ?? '';
-            $this->contact_person_name = $draft->contact_person_name ?? '';
-            $this->phone_number = $draft->phone_number ?? '';
             $this->email = $draft->email ?? '';
             $this->website = $draft->website ?? '';
             $this->video_url = $draft->video_url ?? '';
@@ -198,23 +197,27 @@ class ExhibitorForm extends Component
             ];
             $this->facia_name = $draft->facia_name ?? '';
             $this->additional_details = $draft->additional_details ?? '';
-            $this->stall_type = $draft->stall_type ?? '';
-            $this->stall_number = $draft->stall_number ?? '';
-            $this->stall_size = $draft->stall_size ?? '';
-            $this->total_payment = $draft->total_payment ?? '';
-            $this->payment_received = $draft->payment_received ?? '';
-            $this->payment_pending = $draft->payment_pending ?? '';
             $this->extra_furniture_details = $draft->extra_furniture_details ?? '';
             $this->exhibitor_passes_details = $draft->exhibitor_passes_details ?? '';
             $this->momento_name = $draft->momento_name ?? '';
             $this->car_pass_details = $draft->car_pass_details ?? '';
             $this->currentStep = $draft->current_step ?? 1;
             $this->completedSteps = $draft->completed_steps ?? [];
-            $this->showResumeLink = true;
-        } else {
-            // Invalid or expired resume token - start fresh
-            $this->createNewDraft();
-            session()->flash('warning', 'The resume link was invalid or expired. Starting a new form.');
+        }
+    }
+
+    /**
+     * Ensure a draft exists before saving
+     */
+    protected function ensureDraftExists(): void
+    {
+        if (! $this->draftId) {
+            $draft = DraftExhibitor::create([
+                'company_id' => $this->company->id,
+                'last_activity_at' => now(),
+            ]);
+
+            $this->draftId = $draft->id;
         }
     }
 
@@ -224,7 +227,7 @@ class ExhibitorForm extends Component
     public function updated($propertyName): void
     {
         // Skip file uploads and internal properties
-        if (in_array($propertyName, ['logo', 'brochure', 'use_brand_name_as_facia', 'use_brand_name_as_momento', 'currentStep', 'completedSteps', 'showResumeLink'])) {
+        if (in_array($propertyName, ['logo', 'brochure', 'use_brand_name_as_facia', 'use_brand_name_as_momento', 'currentStep', 'completedSteps'])) {
             return;
         }
 
@@ -236,29 +239,19 @@ class ExhibitorForm extends Component
      */
     public function saveDraft(): void
     {
-        // Create draft if it doesn't exist yet
         $this->ensureDraftExists();
 
         DraftExhibitor::where('id', $this->draftId)->update([
-            'brand_name' => $this->brand_name ?: null,
             'office_address' => $this->office_address ?: null,
             'city' => $this->city ?: null,
             'gst_number' => $this->gst_number ?: null,
             'pan_number' => $this->pan_number ?: null,
-            'contact_person_name' => $this->contact_person_name ?: null,
-            'phone_number' => $this->phone_number ?: null,
             'email' => $this->email ?: null,
             'website' => $this->website ?: null,
             'video_url' => $this->video_url ?: null,
             'social_media_links' => array_filter($this->social_media_links) ?: null,
             'facia_name' => $this->facia_name ?: null,
             'additional_details' => $this->additional_details ?: null,
-            'stall_type' => $this->stall_type ?: null,
-            'stall_number' => $this->stall_number ?: null,
-            'stall_size' => $this->stall_size ?: null,
-            'total_payment' => $this->total_payment ?: null,
-            'payment_received' => $this->payment_received ?: null,
-            'payment_pending' => $this->payment_pending ?: null,
             'extra_furniture_details' => $this->extra_furniture_details ?: null,
             'exhibitor_passes_details' => $this->exhibitor_passes_details ?: null,
             'momento_name' => $this->momento_name ?: null,
@@ -270,34 +263,6 @@ class ExhibitorForm extends Component
     }
 
     /**
-     * Copy the resume link to clipboard
-     */
-    public function copyResumeLink(): void
-    {
-        $this->dispatch('resume-link-copied');
-    }
-
-    /**
-     * Check if this is a public form (not authenticated)
-     */
-    public function isPublicForm(): bool
-    {
-        return false;
-    }
-
-    /**
-     * Get the resume URL
-     */
-    public function getResumeUrlProperty(): string
-    {
-        if (! $this->resumeToken) {
-            return '';
-        }
-
-        return route('exhibitor.public.register', ['resume' => $this->resumeToken]);
-    }
-
-    /**
      * Remove the logo
      */
     public function removeLogo(): void
@@ -305,6 +270,19 @@ class ExhibitorForm extends Component
         if ($this->logo) {
             $this->logo->delete();
             $this->logo = null;
+        }
+
+        // Also clear the existing logo path to allow replacement
+        if ($this->logo_path) {
+            // Delete the existing file from storage
+            Storage::disk('public')->delete($this->logo_path);
+            $this->logo_path = null;
+
+            // Update the database if exhibitor exists
+            $exhibitor = Exhibitor::where('company_id', $this->company->id)->first();
+            if ($exhibitor) {
+                $exhibitor->update(['logo_path' => null]);
+            }
         }
     }
 
@@ -317,6 +295,19 @@ class ExhibitorForm extends Component
             $this->brochure->delete();
             $this->brochure = null;
         }
+
+        // Also clear the existing brochure path to allow replacement
+        if ($this->brochure_path) {
+            // Delete the existing file from storage
+            Storage::disk('public')->delete($this->brochure_path);
+            $this->brochure_path = null;
+
+            // Update the database if exhibitor exists
+            $exhibitor = Exhibitor::where('company_id', $this->company->id)->first();
+            if ($exhibitor) {
+                $exhibitor->update(['brochure_path' => null]);
+            }
+        }
     }
 
     /**
@@ -325,7 +316,7 @@ class ExhibitorForm extends Component
     public function updatedUseBrandNameAsFacia($value): void
     {
         if ($value) {
-            $this->facia_name = strtoupper($this->brand_name);
+            $this->facia_name = strtoupper($this->company->company_name);
         }
     }
 
@@ -335,7 +326,7 @@ class ExhibitorForm extends Component
     public function updatedUseBrandNameAsMomento($value): void
     {
         if ($value) {
-            $this->momento_name = $this->brand_name;
+            $this->momento_name = $this->company->company_name;
         }
     }
 
@@ -386,13 +377,10 @@ class ExhibitorForm extends Component
     {
         match ($this->currentStep) {
             1 => $this->validate([
-                'brand_name' => ['required', 'string', 'max:255'],
                 'office_address' => ['required', 'string', 'max:1000'],
                 'city' => ['required', 'string', 'in:Surat,Navsari,Ahmedabad,Baroda,Others'],
                 'gst_number' => ['nullable', 'string', 'max:255'],
                 'pan_number' => ['nullable', 'string', 'max:255'],
-                'contact_person_name' => ['required', 'string', 'max:255'],
-                'phone_number' => ['required', 'digits:10'],
                 'email' => ['nullable', 'email', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
                 'logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
@@ -405,68 +393,32 @@ class ExhibitorForm extends Component
                 'social_media_links.youtube' => ['nullable', 'url', 'max:255'],
                 'additional_details' => ['nullable', 'string', 'max:1000'],
             ], [
-                'brand_name.required' => 'Please enter your company or brand name.',
                 'office_address.required' => 'Company address is required for CREDAI records.',
                 'city.required' => 'Please select your main business location.',
                 'city.in' => 'Please select a valid city from the dropdown.',
-                'gst_number.max' => 'GST number should not exceed 255 characters.',
-                'pan_number.max' => 'PAN card number should not exceed 255 characters.',
-                'contact_person_name.required' => 'Please provide the main contact person\'s name.',
-                'phone_number.required' => 'Mobile number is required for event coordination.',
-                'phone_number.digits' => 'Mobile number must be exactly 10 digits.',
                 'email.email' => 'Please provide a valid email address.',
                 'website.url' => 'Please provide a valid website URL.',
-                'logo.file' => 'Logo must be a file.',
                 'logo.mimes' => 'Logo must be a PNG, JPG, PDF, or CDR file.',
                 'logo.max' => 'Logo file size should not exceed 5MB.',
                 'brochure.mimes' => 'Brochure must be a PDF file.',
                 'brochure.max' => 'Brochure file size should not exceed 10MB.',
                 'video_url.url' => 'Please provide a valid video URL (YouTube or Vimeo).',
-                'social_media_links.facebook.url' => 'Please provide a valid Facebook URL.',
-                'social_media_links.linkedin.url' => 'Please provide a valid LinkedIn URL.',
-                'social_media_links.instagram.url' => 'Please provide a valid Instagram URL.',
-                'social_media_links.youtube.url' => 'Please provide a valid YouTube URL.',
                 'additional_details.max' => 'Additional details should not exceed 1000 characters.',
             ]),
             2 => $this->validate([
-                'stall_type' => ['nullable', 'string', 'max:255'],
-                'stall_number' => ['nullable', 'string', 'max:255'],
-                'stall_size' => ['nullable', 'string', 'max:255'],
-                'total_payment' => ['nullable', 'numeric', 'min:0'],
-                'payment_received' => ['nullable', 'numeric', 'min:0'],
-                'payment_pending' => ['nullable', 'numeric', 'min:0'],
                 'extra_furniture_details' => ['nullable', 'string', 'max:1000'],
                 'exhibitor_passes_details' => ['nullable', 'string', 'max:1000'],
                 'momento_name' => ['nullable', 'string', 'max:255'],
                 'facia_name' => ['required', 'string', 'max:255'],
                 'car_pass_details' => ['nullable', 'string', 'max:1000'],
             ], [
-                'total_payment.numeric' => 'Total payment must be a number.',
-                'payment_received.numeric' => 'Payment received must be a number.',
-                'payment_pending.numeric' => 'Payment pending must be a number.',
                 'facia_name.required' => 'Please provide the name for your booth fascia board.',
             ]),
             3 => $this->validate([
                 'projects' => ['nullable', 'array'],
-            ], []),
+            ]),
             default => null,
         };
-    }
-
-    /**
-     * Get the redirect route after successful submission
-     */
-    protected function getRedirectRoute(): string
-    {
-        return route('dashboard');
-    }
-
-    /**
-     * Get the success message after submission
-     */
-    protected function getSuccessMessage(): string
-    {
-        return 'Exhibitor information submitted successfully!';
     }
 
     /**
@@ -477,6 +429,7 @@ class ExhibitorForm extends Component
         $this->projects[] = [
             'name' => '',
             'area' => '',
+            'city' => '',
             'category' => '',
             'sq_ft' => '',
             'budget_range' => '',
@@ -488,6 +441,17 @@ class ExhibitorForm extends Component
             'contact_person' => '',
             'logo' => null,
         ];
+
+        // Select the newly added project
+        $this->selectedProjectIndex = count($this->projects) - 1;
+    }
+
+    /**
+     * Select a project for editing
+     */
+    public function selectProject(int $index): void
+    {
+        $this->selectedProjectIndex = $index;
     }
 
     /**
@@ -497,6 +461,13 @@ class ExhibitorForm extends Component
     {
         unset($this->projects[$index]);
         $this->projects = array_values($this->projects);
+
+        // Adjust selected project index
+        if ($this->selectedProjectIndex === $index) {
+            $this->selectedProjectIndex = count($this->projects) > 0 ? 0 : null;
+        } elseif ($this->selectedProjectIndex !== null && $this->selectedProjectIndex > $index) {
+            $this->selectedProjectIndex--;
+        }
     }
 
     /**
@@ -504,8 +475,25 @@ class ExhibitorForm extends Component
      */
     public function removeProjectFile(int $index, string $type): void
     {
+        // Remove temporary uploaded file
         if (isset($this->projects[$index][$type])) {
             unset($this->projects[$index][$type]);
+        }
+
+        // Also clear the existing file path if it exists
+        $pathKey = $type.'_path';
+        if (isset($this->projects[$index][$pathKey])) {
+            // Delete the existing file from storage
+            Storage::disk('public')->delete($this->projects[$index][$pathKey]);
+            unset($this->projects[$index][$pathKey]);
+
+            // Update the database if this project already exists
+            if (isset($this->projects[$index]['id'])) {
+                $project = \App\Models\Project::find($this->projects[$index]['id']);
+                if ($project) {
+                    $project->update([$pathKey => null]);
+                }
+            }
         }
     }
 
@@ -516,14 +504,11 @@ class ExhibitorForm extends Component
     {
         // Check if this is a newPhoto update for a specific project
         if (str_contains($key, '.newPhoto')) {
-            // Extract project index from key like "0.newPhoto"
             $projectIndex = (int) explode('.', $key)[0];
 
             if (! isset($this->projects[$projectIndex]['newPhoto'])) {
                 return;
             }
-
-            $newPhoto = $this->projects[$projectIndex]['newPhoto'];
 
             // Validate the photo
             $this->validate([
@@ -548,7 +533,7 @@ class ExhibitorForm extends Component
             }
 
             // Add to photos array
-            $this->projects[$projectIndex]['photos'][] = $newPhoto;
+            $this->projects[$projectIndex]['photos'][] = $this->projects[$projectIndex]['newPhoto'];
 
             // Clear the newPhoto property
             unset($this->projects[$projectIndex]['newPhoto']);
@@ -573,15 +558,10 @@ class ExhibitorForm extends Component
     {
         $validated = $this->validate([
             // Company Details
-            'brand_name' => ['required', 'string', 'max:255'],
             'office_address' => ['required', 'string', 'max:1000'],
             'city' => ['required', 'string', 'in:Surat,Navsari,Ahmedabad,Baroda,Others'],
             'gst_number' => ['nullable', 'string', 'max:255'],
             'pan_number' => ['nullable', 'string', 'max:255'],
-
-            // Contact Person
-            'contact_person_name' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'digits:10'],
             'email' => ['nullable', 'email', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
 
@@ -590,87 +570,93 @@ class ExhibitorForm extends Component
             'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'video_url' => ['nullable', 'url', 'max:255'],
             'social_media_links' => ['nullable', 'array'],
-            'social_media_links.facebook' => ['nullable', 'url', 'max:255'],
-            'social_media_links.linkedin' => ['nullable', 'url', 'max:255'],
-            'social_media_links.instagram' => ['nullable', 'url', 'max:255'],
-            'social_media_links.youtube' => ['nullable', 'url', 'max:255'],
 
             // Exhibition Display
             'facia_name' => ['required', 'string', 'max:255'],
             'additional_details' => ['nullable', 'string', 'max:1000'],
-        ], [
-            'brand_name.required' => 'Please enter your company or brand name.',
-            'office_address.required' => 'Company address is required for CREDAI records.',
-            'city.required' => 'Please select your main business location.',
-            'city.in' => 'Please select a valid city from the dropdown.',
-            'gst_number.max' => 'GST number should not exceed 255 characters.',
-            'pan_number.max' => 'PAN card number should not exceed 255 characters.',
-            'contact_person_name.required' => 'Please provide the main contact person\'s name.',
-            'phone_number.required' => 'Mobile number is required for event coordination.',
-            'phone_number.digits' => 'Mobile number must be exactly 10 digits.',
-            'email.email' => 'Please provide a valid email address.',
-            'website.url' => 'Please provide a valid website URL.',
-            'logo.file' => 'Logo must be a file.',
-            'logo.mimes' => 'Logo must be a PNG, JPG, PDF, or CDR file.',
-            'logo.max' => 'Logo file size should not exceed 5MB.',
-            'brochure.mimes' => 'Brochure must be a PDF file.',
-            'brochure.max' => 'Brochure file size should not exceed 10MB.',
-            'video_url.url' => 'Please provide a valid video URL (YouTube or Vimeo).',
-            'social_media_links.facebook.url' => 'Please provide a valid Facebook URL.',
-            'social_media_links.linkedin.url' => 'Please provide a valid LinkedIn URL.',
-            'social_media_links.instagram.url' => 'Please provide a valid Instagram URL.',
-            'social_media_links.youtube.url' => 'Please provide a valid YouTube URL.',
-            'facia_name.required' => 'Please provide the name for your booth fascia board.',
-            'additional_details.max' => 'Additional details should not exceed 1000 characters.',
         ]);
 
-        // Handle file uploads
-        $logoPath = $this->logo ? $this->logo->store('exhibitors/logos', 'public') : null;
-        $brochurePath = $this->brochure ? $this->brochure->store('exhibitors/brochures', 'public') : null;
+        // Handle file uploads with original filenames
+        $logoPath = $this->logo ? $this->logo->storeAs(
+            'exhibitors/logos',
+            time().'_'.$this->logo->getClientOriginalName(),
+            'public'
+        ) : null;
+        $brochurePath = $this->brochure ? $this->brochure->storeAs(
+            'exhibitors/brochures',
+            time().'_'.$this->brochure->getClientOriginalName(),
+            'public'
+        ) : null;
 
         // Filter empty social media links
-        $socialMediaLinks = array_filter($this->social_media_links, fn($value) => ! empty($value));
+        $socialMediaLinks = array_filter($this->social_media_links, fn ($value) => ! empty($value));
 
-        // Get company_id if it exists (from PublicExhibitorForm)
-        $companyId = property_exists($this, 'selected_company_id') ? $this->selected_company_id : null;
+        // Check if exhibitor already exists (for updates)
+        $exhibitor = Exhibitor::where('company_id', $this->company->id)->first();
 
-        // Create exhibitor
-        $exhibitor = Exhibitor::create([
-            'company_id' => $companyId,
-            'brand_name' => $validated['brand_name'],
+        $exhibitorData = [
+            'company_id' => $this->company->id,
             'office_address' => $validated['office_address'],
             'city' => $validated['city'],
             'gst_number' => $validated['gst_number'] ?? null,
             'pan_number' => $validated['pan_number'] ?? null,
-            'contact_person_name' => $validated['contact_person_name'],
-            'phone_number' => $validated['phone_number'],
             'email' => $validated['email'] ?? null,
             'website' => $validated['website'] ?? null,
-            'logo_path' => $logoPath,
-            'brochure_path' => $brochurePath,
             'video_url' => $validated['video_url'] ?? null,
             'social_media_links' => ! empty($socialMediaLinks) ? $socialMediaLinks : null,
-            'facia_name' => $validated['facia_name'] ?? $this->facia_name,
+            'facia_name' => $validated['facia_name'],
             'additional_details' => $validated['additional_details'] ?? null,
-            'stall_type' => $this->stall_type ?: null,
-            'stall_number' => $this->stall_number ?: null,
-            'stall_size' => $this->stall_size ?: null,
-            'total_payment' => $this->total_payment ?: null,
-            'payment_received' => $this->payment_received ?: null,
-            'payment_pending' => $this->payment_pending ?: null,
             'extra_furniture_details' => $this->extra_furniture_details ?: null,
             'exhibitor_passes_details' => $this->exhibitor_passes_details ?: null,
             'momento_name' => $this->momento_name ?: null,
             'car_pass_details' => $this->car_pass_details ?: null,
-        ]);
+        ];
 
-        // Create projects
+        // Only update file paths if new files were uploaded
+        if ($logoPath) {
+            $exhibitorData['logo_path'] = $logoPath;
+        }
+        if ($brochurePath) {
+            $exhibitorData['brochure_path'] = $brochurePath;
+        }
+
+        if ($exhibitor) {
+            // Update existing exhibitor
+            $exhibitor->update($exhibitorData);
+        } else {
+            // Create new exhibitor
+            $exhibitor = Exhibitor::create($exhibitorData);
+        }
+
+        // Sync projects (delete removed ones, update existing, create new)
+        $existingProjectIds = [];
         if (! empty($this->projects)) {
             foreach ($this->projects as $projectData) {
                 if (! empty($projectData['name'])) {
-                    $exhibitor->projects()->create([
+                    // Handle project file uploads
+                    $projectPdfPath = null;
+                    $projectLogoPath = null;
+
+                    if (isset($projectData['pdf']) && is_object($projectData['pdf'])) {
+                        $projectPdfPath = $projectData['pdf']->storeAs(
+                            'projects/pdfs',
+                            time().'_'.$projectData['pdf']->getClientOriginalName(),
+                            'public'
+                        );
+                    }
+
+                    if (isset($projectData['logo']) && is_object($projectData['logo'])) {
+                        $projectLogoPath = $projectData['logo']->storeAs(
+                            'projects/logos',
+                            time().'_'.$projectData['logo']->getClientOriginalName(),
+                            'public'
+                        );
+                    }
+
+                    $projectUpdateData = [
                         'name' => $projectData['name'],
                         'area' => $projectData['area'] ?? null,
+                        'city' => $projectData['city'] ?? null,
                         'category' => $projectData['category'] ?? null,
                         'sq_ft' => $projectData['sq_ft'] ?? null,
                         'budget_range' => $projectData['budget_range'] ?? null,
@@ -679,10 +665,37 @@ class ExhibitorForm extends Component
                         'video_url' => $projectData['video_url'] ?? null,
                         'usp' => $projectData['usp'] ?? null,
                         'contact_person' => $projectData['contact_person'] ?? null,
-                    ]);
+                    ];
+
+                    // Only update file paths if new files were uploaded
+                    if ($projectPdfPath) {
+                        $projectUpdateData['pdf_path'] = $projectPdfPath;
+                    }
+                    if ($projectLogoPath) {
+                        $projectUpdateData['logo_path'] = $projectLogoPath;
+                    }
+
+                    if (isset($projectData['id'])) {
+                        // Update existing project
+                        $project = $exhibitor->projects()->find($projectData['id']);
+                        if ($project) {
+                            $project->update($projectUpdateData);
+                            $existingProjectIds[] = $project->id;
+                        }
+                    } else {
+                        // Create new project
+                        $project = $exhibitor->projects()->create($projectUpdateData);
+                        $existingProjectIds[] = $project->id;
+                    }
                 }
             }
         }
+
+        // Delete projects that were removed
+        $exhibitor->projects()->whereNotIn('id', $existingProjectIds)->delete();
+
+        // Mark company as submitted
+        $this->company->markAsSubmitted();
 
         // Mark draft as completed
         if ($this->draftId) {
@@ -691,17 +704,23 @@ class ExhibitorForm extends Component
             ]);
         }
 
-        // Clear the draft token from session
-        session()->forget('exhibitor_draft_token');
+        $message = $exhibitor->wasRecentlyCreated
+            ? 'Thank you! Your exhibitor registration has been submitted successfully.'
+            : 'Your exhibitor information has been updated successfully.';
 
-        session()->flash('success', $this->getSuccessMessage());
+        Flux::toast(
+            heading: 'Success!',
+            text: $message,
+            variant: 'success'
+        );
 
-        $this->redirect($this->getRedirectRoute(), navigate: true);
+        // Reload the page to show updated data
+        $this->redirect(route('client.register', ['token' => $this->token]), navigate: true);
     }
 
-    #[Title('Exhibitor Information Form')]
+    #[Title('Exhibitor Registration - CREDAI')]
     public function render()
     {
-        return view('livewire.exhibitor-form');
+        return view('livewire.client-registration-form');
     }
 }

@@ -58,15 +58,18 @@ class CreateCompany extends Component
             'payment_pending' => ['nullable', 'numeric'],
         ]);
 
-        Company::create($validated);
+        // Generate registration token
+        $validated['registration_token'] = Company::generateRegistrationToken();
+
+        $company = Company::create($validated);
 
         Flux::toast(
             heading: 'Company created',
-            text: "{$this->company_name} has been created successfully.",
+            text: "{$this->company_name} has been created successfully. Registration link generated.",
             variant: 'success'
         );
 
-        $this->redirect(route('companies.index'), navigate: true);
+        $this->redirect(route('companies.edit', $company), navigate: true);
     }
 
     #[Title('Create Company')]

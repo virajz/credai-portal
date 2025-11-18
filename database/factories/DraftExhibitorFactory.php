@@ -49,7 +49,7 @@ class DraftExhibitorFactory extends Factory
      */
     public function completed(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_completed' => true,
             'current_step' => 3,
             'completed_steps' => [1, 2, 3],
@@ -61,7 +61,7 @@ class DraftExhibitorFactory extends Factory
      */
     public function incomplete(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_completed' => false,
         ]);
     }

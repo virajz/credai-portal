@@ -196,6 +196,37 @@
                                                 </x-slot>
                                             </flux:file-item>
                                         </div>
+                                    @elseif (isset($project['pdf_path']) && $project['pdf_path'])
+                                        <div class="mt-2">
+                                            <div
+                                                class="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-700 dark:bg-zinc-800">
+                                                <div class="rounded-md bg-red-100 p-2 shrink-0 dark:bg-red-900/30">
+                                                    <flux:icon.document
+                                                        class="size-5 text-red-600 dark:text-red-400" />
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="truncate text-sm font-medium text-zinc-900 dark:text-white"
+                                                        title="{{ preg_replace('/^\d+_/', '', basename($project['pdf_path'])) }}">
+                                                        {{ preg_replace('/^\d+_/', '', basename($project['pdf_path'])) }}
+                                                    </div>
+                                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">Project
+                                                        Brochure</div>
+                                                </div>
+                                                <div class="flex gap-1 shrink-0">
+                                                    <flux:button size="sm" variant="ghost"
+                                                        href="{{ Storage::url($project['pdf_path']) }}"
+                                                        download="{{ preg_replace('/^\d+_/', '', basename($project['pdf_path'])) }}"
+                                                        square aria-label="Download PDF">
+                                                        <flux:icon.arrow-down-tray class="size-4" />
+                                                    </flux:button>
+                                                    <flux:button size="sm" variant="ghost"
+                                                        wire:click="removeProjectFile({{ $index }}, 'pdf')"
+                                                        square aria-label="Replace PDF">
+                                                        <flux:icon.trash class="size-4" />
+                                                    </flux:button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
 
                                     @error('projects.' . $index . '.pdf')
@@ -289,6 +320,36 @@
                                                         aria-label="Remove logo" />
                                                 </x-slot>
                                             </flux:file-item>
+                                        </div>
+                                    @elseif (isset($project['logo_path']) && $project['logo_path'])
+                                        <div class="mt-2">
+                                            <div
+                                                class="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-700 dark:bg-zinc-800">
+                                                <div class="rounded-md bg-blue-100 p-2 shrink-0 dark:bg-blue-900/30">
+                                                    <flux:icon.photo class="size-5 text-blue-600 dark:text-blue-400" />
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="truncate text-sm font-medium text-zinc-900 dark:text-white"
+                                                        title="{{ preg_replace('/^\d+_/', '', basename($project['logo_path'])) }}">
+                                                        {{ preg_replace('/^\d+_/', '', basename($project['logo_path'])) }}
+                                                    </div>
+                                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">Project Logo
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-1 shrink-0">
+                                                    <flux:button size="sm" variant="ghost"
+                                                        href="{{ Storage::url($project['logo_path']) }}"
+                                                        download="{{ preg_replace('/^\d+_/', '', basename($project['logo_path'])) }}"
+                                                        square aria-label="Download logo">
+                                                        <flux:icon.arrow-down-tray class="size-4" />
+                                                    </flux:button>
+                                                    <flux:button size="sm" variant="ghost"
+                                                        wire:click="removeProjectFile({{ $index }}, 'logo')"
+                                                        square aria-label="Replace logo">
+                                                        <flux:icon.trash class="size-4" />
+                                                    </flux:button>
+                                                </div>
+                                            </div>
                                         </div>
                                     @endif
 
