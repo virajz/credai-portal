@@ -13,6 +13,8 @@ class PublicExhibitorForm extends ExhibitorForm
     // Company selection
     public ?int $selected_company_id = null;
 
+    public string $entered_registered_number = '';
+
     public bool $company_verified = false;
 
     public ?Company $selectedCompany = null;
@@ -61,9 +63,17 @@ class PublicExhibitorForm extends ExhibitorForm
     {
         $this->validate([
             'selected_company_id' => ['required', 'exists:companies,id'],
+            'entered_registered_number' => ['required', 'string', 'digits:10'],
         ]);
 
         $this->selectedCompany = Company::find($this->selected_company_id);
+
+        // Verify the registered number matches
+        if ($this->selectedCompany->registered_number !== $this->entered_registered_number) {
+            $this->addError('entered_registered_number', 'The registered number does not match our records.');
+
+            return;
+        }
         $this->company_verified = true;
 
         // Auto-fill exhibitor details from company

@@ -43,9 +43,19 @@
                 </flux:field>
 
                 @if ($selected_company_id && !$company_verified)
+                    <flux:field>
+                        <flux:label>Registered Mobile Number <span class="text-red-500">*</span></flux:label>
+                        <flux:input wire:model="entered_registered_number"
+                            placeholder="Enter your registered mobile number" type="tel" inputmode="numeric"
+                            maxlength="10" :disabled="$company_verified" />
+                        <flux:error name="entered_registered_number" />
+                        <flux:description>Enter the 10-digit mobile number registered with your company
+                        </flux:description>
+                    </flux:field>
+
                     <flux:button type="button" wire:click="verifyCompany" variant="primary"
                         :disabled="$company_verified">
-                        Continue with Selected Company
+                        Verify and Continue
                     </flux:button>
                 @endif
 
