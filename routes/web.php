@@ -10,12 +10,30 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Models\Exhibitor;
+use App\Models\Project;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return view('welcome');
+    $exhibitors = Exhibitor::with(['company', 'projects'])->get();
+
+    return view('welcome', [
+        'exhibitors' => $exhibitors,
+    ]);
 })->name('home');
+
+Route::get('/exhibitor/{exhibitor}', function (Exhibitor $exhibitor) {
+    return view('exhibitor.show', [
+        'exhibitor' => $exhibitor->load(['company', 'projects']),
+    ]);
+})->name('exhibitor.show');
+
+Route::get('/project/{project}', function (Project $project) {
+    return view('project.show', [
+        'project' => $project->load(['exhibitor']),
+    ]);
+})->name('project.show');
 
 // Public client registration routes (no auth required)
 Route::get('register/{token}', ClientRegistrationForm::class)->name('client.register');

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Exhibitor extends Model
 {
@@ -17,6 +18,7 @@ class Exhibitor extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'slug',
         'company_id',
         'office_address',
         'city',
@@ -82,5 +84,50 @@ class Exhibitor extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (Exhibitor $exhibitor) {
+            if (empty($exhibitor->slug)) {
+                $exhibitor->slug = $exhibitor->generateUniqueSlug();
+            }
+        });
+
+        static::updating(function (Exhibitor $exhibitor) {
+            if (empty($exhibitor->slug)) {
+                $exhibitor->slug = $exhibitor->generateUniqueSlug();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique slug for the exhibitor.
+     */
+    public function generateUniqueSlug(): string
+    {
+        $baseName = $this->company?->company_name ?? 'exhibitor';
+        $slug = Str::slug($baseName);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->where('id', '!=', $this->id ?? 0)->exists()) {
+            $slug = $originalSlug.'-'.$count++;
+        }
+
+        return $slug;
     }
 }
