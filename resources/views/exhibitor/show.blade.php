@@ -1,44 +1,5 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>{{ $exhibitor->brand_name }} - {{ config('app.name') }}</title>
-
-    <link rel="icon" href="/favicon.png" type="image/png">
-    <link rel="apple-touch-icon" href="/favicon.png">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=poppins:300,400,500&display=swap" rel="stylesheet" />
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="min-h-screen bg-zinc-50 antialiased" style="font-family: 'Poppins', sans-serif;">
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full backdrop-blur-md bg-white/90 border-b border-zinc-200/50 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 lg:h-20">
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('home') }}" aria-label="Go to homepage">
-                        <img src="/logo.png" alt="{{ config('app.name') }}"
-                            class="h-10 lg:h-14 w-auto drop-shadow-sm" />
-                    </a>
-                </div>
-
-                <!-- Back Link -->
-                <a href="{{ route('home') }}#exhibitors"
-                    class="inline-flex items-center text-sm font-light text-zinc-600 hover:text-zinc-900 transition-colors">
-                    <x-heroicon-o-chevron-left class="w-4 h-4 mr-2" />
-                    Back to Exhibitors
-                </a>
-            </div>
-        </div>
-    </nav>
+<x-layouts.front :title="$exhibitor->brand_name . ' - ' . config('app.name')" :back-link="route('home') . '#exhibitors'"
+    back-text="Back to Exhibitors" body-class="bg-zinc-50">
 
     <!-- Hero Section with Banner -->
     <section class="pt-16 lg:pt-20">
@@ -383,26 +344,4 @@
             </div>
         </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-zinc-900 border-t border-zinc-800/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <img src="/logo.png" alt="{{ config('app.name') }}"
-                        class="h-8 w-auto brightness-0 invert opacity-60" />
-                </div>
-                <div class="text-center">
-                    <p class="text-xs font-light text-zinc-400">
-                        Vanita Vishram Ground, Surat &bull; January 9-11, 2026
-                    </p>
-                </div>
-                <p class="text-xs font-light text-zinc-500">
-                    &copy; {{ date('Y') }} {{ config('app.name') }}
-                </p>
-            </div>
-        </div>
-    </footer>
-</body>
-
-</html>
+</x-layouts.front>
