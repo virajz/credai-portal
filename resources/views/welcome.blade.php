@@ -58,7 +58,7 @@
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-3 justify-center max-w-md sm:max-w-none mx-auto">
-                    <a href="#register"
+                    <a href="{{ route('visitor.register') }}"
                         class="inline-flex items-center justify-center px-6 py-3 text-sm font-normal text-zinc-900 bg-white hover:bg-zinc-100 rounded-full transition-colors">
                         Get Your Free Pass
                     </a>
@@ -398,86 +398,45 @@
                 </p>
             </div>
 
-            <!-- Registration Form -->
-            <div class="max-w-lg mx-auto">
-                <form class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Name -->
-                        <div>
-                            <label for="name" class="block text-xs font-light text-zinc-400 mb-1.5">
-                                Full Name *
-                            </label>
-                            <input type="text" id="name" name="name" required
-                                class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-light"
-                                placeholder="Your name">
-                        </div>
+            <!-- Registration CTA -->
+            <div class="max-w-lg mx-auto text-center">
+                <div class="bg-zinc-800/50 border border-zinc-700/50 rounded-2xl p-8 backdrop-blur-sm">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-light text-white mb-2">Quick & Easy Registration</h3>
+                        <p class="text-sm text-zinc-400 font-light">
+                            Complete your visitor registration in just 2 simple steps
+                        </p>
+                    </div>
 
-                        <!-- Phone -->
-                        <div>
-                            <label for="phone" class="block text-xs font-light text-zinc-400 mb-1.5">
-                                Phone Number *
-                            </label>
-                            <input type="tel" id="phone" name="phone" required
-                                class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-light"
-                                placeholder="9876543210">
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="text-center">
+                            <div
+                                class="w-8 h-8 bg-emerald-600/20 border border-emerald-600/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium text-emerald-400">1</span>
+                            </div>
+                            <p class="text-xs text-zinc-400">Personal Info</p>
+                        </div>
+                        <div class="text-center">
+                            <div
+                                class="w-8 h-8 bg-emerald-600/20 border border-emerald-600/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium text-emerald-400">2</span>
+                            </div>
+                            <p class="text-xs text-zinc-400">Preferences</p>
+                        </div>
+                        <div class="text-center">
+                            <div
+                                class="w-8 h-8 bg-emerald-600/20 border border-emerald-600/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium text-emerald-400">✓</span>
+                            </div>
+                            <p class="text-xs text-zinc-400">Get Pass</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Email -->
-                        <div>
-                            <label for="email" class="block text-xs font-light text-zinc-400 mb-1.5">
-                                Email Address
-                            </label>
-                            <input type="email" id="email" name="email"
-                                class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-light"
-                                placeholder="email@example.com">
-                        </div>
-
-                        <!-- Company -->
-                        <div>
-                            <label for="company" class="block text-xs font-light text-zinc-400 mb-1.5">
-                                Company
-                            </label>
-                            <input type="text" id="company" name="company"
-                                class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-light"
-                                placeholder="Optional">
-                        </div>
-                    </div>
-
-                    <!-- Interest Selection -->
-                    <div>
-                        <label class="block text-xs font-light text-zinc-400 mb-2">
-                            Property Interests
-                        </label>
-                        <div class="flex flex-wrap gap-2">
-                            <label
-                                class="flex items-center gap-2 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors">
-                                <input type="checkbox" name="interests[]" value="residential"
-                                    class="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-700 text-white focus:ring-0">
-                                <span class="text-xs font-light text-zinc-300">Residential</span>
-                            </label>
-                            <label
-                                class="flex items-center gap-2 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors">
-                                <input type="checkbox" name="interests[]" value="commercial"
-                                    class="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-700 text-white focus:ring-0">
-                                <span class="text-xs font-light text-zinc-300">Commercial</span>
-                            </label>
-                            <label
-                                class="flex items-center gap-2 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors">
-                                <input type="checkbox" name="interests[]" value="plots"
-                                    class="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-700 text-white focus:ring-0">
-                                <span class="text-xs font-light text-zinc-300">Plots</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit"
-                        class="w-full px-6 py-3 bg-white text-zinc-900 text-sm font-normal rounded-lg hover:bg-zinc-100 transition-colors">
-                        Get Your Free Pass
-                    </button>
-                </form>
+                    <a href="{{ route('visitor.register') }}"
+                        class="inline-block w-full px-6 py-3 bg-white text-zinc-900 text-sm font-normal rounded-lg hover:bg-zinc-100 transition-colors">
+                        Start Registration →
+                    </a>
+                </div>
 
                 <!-- Additional Info -->
                 <div class="mt-6 flex items-center justify-center gap-6 text-xs font-light text-zinc-500">

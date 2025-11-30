@@ -1,5 +1,4 @@
-<x-layouts.front :title="$exhibitor->brand_name . ' - ' . config('app.name')" :back-link="route('home') . '#exhibitors'"
-    back-text="Back to Exhibitors" body-class="bg-zinc-50">
+<x-layouts.front :title="$exhibitor->brand_name . ' - ' . config('app.name')" :back-link="route('home') . '#exhibitors'" back-text="Back to Exhibitors" body-class="bg-zinc-50">
 
     <!-- Hero Section with Banner -->
     <section class="pt-16 lg:pt-20">

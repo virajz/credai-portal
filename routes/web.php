@@ -10,6 +10,7 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Livewire\VisitorRegistration;
 use App\Models\Exhibitor;
 use App\Models\Project;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,9 @@ Route::get('registration/complete', function () {
 Route::get('registration/expired', function () {
     return view('client.expired');
 })->name('client.expired');
+
+// Public visitor registration routes (no auth required)
+Route::get('visitor-register', VisitorRegistration::class)->name('visitor.register');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

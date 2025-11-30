@@ -1,5 +1,4 @@
-<x-layouts.front :title="$project->name . ' - ' . config('app.name')" :back-link="route('exhibitor.show', $project->exhibitor)"
-    :back-text="'Back to ' . $project->exhibitor->brand_name" body-class="bg-zinc-50">
+<x-layouts.front :title="$project->name . ' - ' . config('app.name')" :back-link="route('exhibitor.show', $project->exhibitor)" :back-text="'Back to ' . $project->exhibitor->brand_name" body-class="bg-zinc-50">
 
     <!-- Hero Section -->
     <section class="pt-16 lg:pt-20">

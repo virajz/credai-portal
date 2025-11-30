@@ -25,7 +25,7 @@
     @livewireStyles
 </head>
 
-<body class="min-h-screen {{ $bodyClass }} antialiased" style="font-family: 'Poppins', sans-serif;">
+<body class="flex min-h-screen flex-col {{ $bodyClass }} antialiased" style="font-family: 'Poppins', sans-serif;">
     <!-- Navigation -->
     <nav class="fixed top-0 w-full backdrop-blur-md bg-white/90 border-b border-zinc-200/50 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,7 +59,7 @@
 
                         <!-- CTA Button -->
                         <div class="ml-6">
-                            <a href="#register"
+                            <a href="{{ route('visitor.register') }}"
                                 class="inline-flex items-center px-5 py-2 bg-zinc-900 text-white text-sm font-normal rounded-full hover:bg-zinc-800 transition-colors">
                                 Get Free Pass
                             </a>
@@ -87,7 +87,8 @@
                                     class="block px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900">Why
                                     Visit</a>
                                 <div class="border-t border-zinc-100 my-2"></div>
-                                <a href="#register" class="block px-4 py-2 text-sm font-normal text-zinc-900">Get Free
+                                <a href="{{ route('visitor.register') }}"
+                                    class="block px-4 py-2 text-sm font-normal text-zinc-900">Get Free
                                     Pass</a>
                             </div>
                         </div>
@@ -98,10 +99,12 @@
     </nav>
 
     <!-- Main Content -->
-    {{ $slot }}
+    <main class="flex-1 pt-16 lg:pt-20">
+        {{ $slot }}
+    </main>
 
     <!-- Footer -->
-    <footer class="bg-zinc-900 border-t border-zinc-800/50">
+    <footer class="mt-auto bg-zinc-900 border-t border-zinc-800/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <!-- Logo -->
@@ -130,6 +133,8 @@
             </div>
         </div>
     </footer>
+
+    <flux:toast />
 
     @livewireScripts
     @fluxScripts
