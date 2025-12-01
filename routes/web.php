@@ -6,6 +6,7 @@ use App\Livewire\CreateCompany;
 use App\Livewire\EditCompany;
 use App\Livewire\ExhibitorDetails;
 use App\Livewire\ExhibitorsList;
+use App\Livewire\PublicExhibitorsList;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -24,17 +25,31 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+// Public exhibitors listing page
+Route::get('/explore-exhibitors', PublicExhibitorsList::class)->name('public.exhibitors');
+
 Route::get('/exhibitor/{exhibitor}', function (Exhibitor $exhibitor) {
+    \App\Services\Analytics::trackExhibitorView($exhibitor);
+
     return view('exhibitor.show', [
         'exhibitor' => $exhibitor->load(['company', 'projects']),
     ]);
 })->name('exhibitor.show');
 
 Route::get('/project/{project}', function (Project $project) {
+    \App\Services\Analytics::trackProjectView($project);
+
     return view('project.show', [
         'project' => $project->load(['exhibitor']),
     ]);
 })->name('project.show');
+
+// Analytics tracking routes
+Route::get('/track/exhibitor/{exhibitor}/brochure', [App\Http\Controllers\AnalyticsController::class, 'downloadExhibitorBrochure'])->name('track.exhibitor.brochure');
+Route::get('/track/project/{project}/brochure', [App\Http\Controllers\AnalyticsController::class, 'downloadProjectBrochure'])->name('track.project.brochure');
+Route::get('/track/exhibitor/{exhibitor}/call', [App\Http\Controllers\AnalyticsController::class, 'trackCallExhibitor'])->name('track.exhibitor.call');
+Route::get('/track/project/{project}/call', [App\Http\Controllers\AnalyticsController::class, 'trackCallProject'])->name('track.project.call');
+Route::get('/track/exhibitor/{exhibitor}/website', [App\Http\Controllers\AnalyticsController::class, 'trackWebsiteVisit'])->name('track.exhibitor.website');
 
 // Public client registration routes (no auth required)
 Route::get('register/{token}', ClientRegistrationForm::class)->name('client.register');
@@ -75,8 +90,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('companies/create', CreateCompany::class)->name('companies.create');
     Route::get('companies/{company}/edit', EditCompany::class)->name('companies.edit');
     Route::get('companies/{company}/submission', \App\Livewire\CompanySubmission::class)->name('companies.submission');
+    Route::get('companies/{company}/analytics', \App\Livewire\CompanyAnalytics::class)->name('companies.analytics');
 
     // Exhibitor Management Routes
     Route::get('exhibitors', ExhibitorsList::class)->name('exhibitors.index');
     Route::get('exhibitors/{exhibitor}', ExhibitorDetails::class)->name('exhibitors.show');
+    Route::get('exhibitors/{exhibitor}/analytics', \App\Livewire\ExhibitorAnalytics::class)->name('exhibitors.analytics');
 });

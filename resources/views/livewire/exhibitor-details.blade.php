@@ -5,9 +5,14 @@
             <flux:heading size="xl">{{ $exhibitor->company->company_name }}</flux:heading>
             <flux:subheading>Exhibitor Details</flux:subheading>
         </div>
-        <flux:button href="{{ route('exhibitors.index') }}" variant="ghost" icon="arrow-left">
-            Back to List
-        </flux:button>
+        <div class="flex items-center gap-3">
+            <flux:button href="{{ route('exhibitors.analytics', $exhibitor) }}" variant="primary" icon="chart-bar">
+                View Analytics
+            </flux:button>
+            <flux:button href="{{ route('exhibitors.index') }}" variant="ghost" icon="arrow-left">
+                Back to List
+            </flux:button>
+        </div>
     </div>
 
     <!-- Company Information -->

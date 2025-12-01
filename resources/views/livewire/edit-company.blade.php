@@ -1,7 +1,14 @@
 <div class="mx-auto w-full max-w-3xl">
-    <div class="mb-6">
-        <flux:heading size="xl">Edit Company</flux:heading>
-        <flux:subheading class="mt-2">Update company details and stall allocation information</flux:subheading>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <flux:heading size="xl">Edit Company</flux:heading>
+            <flux:subheading class="mt-2">Update company details and stall allocation information</flux:subheading>
+        </div>
+        @if ($company->exhibitor)
+            <flux:button href="{{ route('companies.analytics', $company) }}" variant="primary" icon="chart-bar">
+                View Analytics
+            </flux:button>
+        @endif
     </div>
 
     <!-- Registration Link -->

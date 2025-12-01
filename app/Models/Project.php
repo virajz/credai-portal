@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 
 class Project extends Model
@@ -35,6 +36,14 @@ class Project extends Model
     public function exhibitor(): BelongsTo
     {
         return $this->belongsTo(Exhibitor::class);
+    }
+
+    /**
+     * Get the analytics events for this project
+     */
+    public function analyticsEvents(): MorphMany
+    {
+        return $this->morphMany(AnalyticsEvent::class, 'trackable');
     }
 
     /**
@@ -76,7 +85,7 @@ class Project extends Model
         $count = 1;
 
         while (static::where('slug', $slug)->where('id', '!=', $this->id ?? 0)->exists()) {
-            $slug = $originalSlug . '-' . $count++;
+            $slug = $originalSlug.'-'.$count++;
         }
 
         return $slug;

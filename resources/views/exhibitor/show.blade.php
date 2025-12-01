@@ -1,7 +1,7 @@
-<x-layouts.front :title="$exhibitor->brand_name . ' - ' . config('app.name')" :back-link="route('home') . '#exhibitors'" back-text="Back to Exhibitors" body-class="bg-zinc-50">
+<x-layouts.front :title="$exhibitor->brand_name . ' - ' . config('app.name')" :back-link="route('public.exhibitors')" back-text="Back to Exhibitors" body-class="bg-zinc-50">
 
     <!-- Hero Section with Banner -->
-    <section class="pt-16 lg:pt-20">
+    <section>
         <div class="relative h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden">
             <!-- Background Pattern -->
             <div class="absolute inset-0 opacity-10">
@@ -27,7 +27,7 @@
                             </li>
                             <li class="text-zinc-600">/</li>
                             <li>
-                                <a href="{{ route('home') }}#exhibitors"
+                                <a href="{{ route('public.exhibitors') }}"
                                     class="text-zinc-400 hover:text-white transition-colors">Exhibitors</a>
                             </li>
                             <li class="text-zinc-600">/</li>
@@ -168,7 +168,7 @@
                                             <div class="flex items-center gap-2 flex-shrink-0">
                                                 @if ($project->pdf_path)
                                                     <span
-                                                        onclick="event.preventDefault(); event.stopPropagation(); window.open('{{ Storage::url($project->pdf_path) }}', '_blank');"
+                                                        onclick="event.preventDefault(); event.stopPropagation(); window.open('{{ route('track.project.brochure', $project) }}', '_blank');"
                                                         class="inline-flex items-center justify-center w-9 h-9 bg-zinc-200 hover:bg-zinc-300 text-zinc-600 rounded-lg transition-colors"
                                                         title="Download PDF">
                                                         <x-heroicon-o-document-arrow-down class="w-4 h-4" />
@@ -277,7 +277,7 @@
                                         <div class="flex-1 min-w-0">
                                             <span
                                                 class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Website</span>
-                                            <a href="{{ $exhibitor->website }}" target="_blank" rel="noopener"
+                                            <a href="{{ route('track.exhibitor.website', $exhibitor) }}" target="_blank" rel="noopener"
                                                 class="block text-sm text-zinc-700 font-light mt-0.5 hover:text-zinc-900 truncate">
                                                 {{ parse_url($exhibitor->website, PHP_URL_HOST) ?? $exhibitor->website }}
                                             </a>
@@ -305,7 +305,7 @@
                             <!-- Action Buttons -->
                             <div class="mt-6 pt-6 border-t border-zinc-100 space-y-3">
                                 @if ($exhibitor->phone_number)
-                                    <a href="tel:{{ $exhibitor->phone_number }}"
+                                    <a href="{{ route('track.exhibitor.call', $exhibitor) }}"
                                         class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-normal text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
                                         <x-heroicon-o-phone class="w-4 h-4" />
                                         Call Now
@@ -313,7 +313,7 @@
                                 @endif
 
                                 @if ($exhibitor->website)
-                                    <a href="{{ $exhibitor->website }}" target="_blank" rel="noopener"
+                                    <a href="{{ route('track.exhibitor.website', $exhibitor) }}" target="_blank" rel="noopener"
                                         class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-normal text-zinc-700 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors">
                                         <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
                                         Visit Website
@@ -332,7 +332,7 @@
                                 <h3 class="text-sm font-normal text-white mb-1">Company Brochure</h3>
                                 <p class="text-xs font-light text-zinc-400 mb-4">Download our detailed company profile
                                 </p>
-                                <a href="{{ Storage::url($exhibitor->brochure_path) }}" target="_blank"
+                                <a href="{{ route('track.exhibitor.brochure', $exhibitor) }}" target="_blank"
                                     class="inline-flex items-center px-5 py-2.5 text-sm font-normal text-zinc-900 bg-white hover:bg-zinc-100 rounded-lg transition-colors">
                                     Download PDF
                                 </a>

@@ -1,7 +1,7 @@
 <x-layouts.front :title="$project->name . ' - ' . config('app.name')" :back-link="route('exhibitor.show', $project->exhibitor)" :back-text="'Back to ' . $project->exhibitor->brand_name" body-class="bg-zinc-50">
 
     <!-- Hero Section -->
-    <section class="pt-16 lg:pt-20">
+    <section>
         <div class="relative h-64 sm:h-80 lg:h-[400px] bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden">
             <!-- Background Pattern -->
             <div class="absolute inset-0 opacity-10">
@@ -308,7 +308,7 @@
                             <!-- Action Buttons -->
                             <div class="mt-6 pt-6 border-t border-zinc-100 space-y-3">
                                 @if ($project->exhibitor->phone_number)
-                                    <a href="tel:{{ $project->exhibitor->phone_number }}"
+                                    <a href="{{ route('track.project.call', $project) }}"
                                         class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-normal text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
                                         <x-heroicon-o-phone class="w-4 h-4" />
                                         Call Now
@@ -333,7 +333,7 @@
                                 <h3 class="text-sm font-normal text-white mb-1">Project Brochure</h3>
                                 <p class="text-xs font-light text-zinc-400 mb-4">Download detailed project information
                                 </p>
-                                <a href="{{ Storage::url($project->pdf_path) }}" target="_blank"
+                                <a href="{{ route('track.project.brochure', $project) }}" target="_blank"
                                     class="inline-flex items-center px-5 py-2.5 text-sm font-normal text-zinc-900 bg-white hover:bg-zinc-100 rounded-lg transition-colors">
                                     Download PDF
                                 </a>

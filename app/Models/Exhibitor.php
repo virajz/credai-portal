@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 
 class Exhibitor extends Model
@@ -84,6 +85,14 @@ class Exhibitor extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the analytics events for this exhibitor
+     */
+    public function analyticsEvents(): MorphMany
+    {
+        return $this->morphMany(AnalyticsEvent::class, 'trackable');
     }
 
     /**

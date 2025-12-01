@@ -63,7 +63,7 @@
                         Get Your Free Pass
                     </a>
 
-                    <a href="#exhibitors"
+                    <a href="{{ route('public.exhibitors') }}"
                         class="inline-flex items-center justify-center px-6 py-3 text-sm font-light text-white border border-white/30 hover:bg-white/10 rounded-full transition-colors">
                         View Exhibitors
                     </a>
@@ -204,7 +204,7 @@
             @if ($exhibitors->count() > 6)
                 <!-- View All Button -->
                 <div class="text-center">
-                    <a href="#register"
+                    <a href="{{ route('public.exhibitors') }}"
                         class="inline-flex items-center px-6 py-2.5 text-sm font-normal text-white bg-zinc-900 hover:bg-zinc-800 rounded-full transition-colors">
                         View All {{ $exhibitors->count() }} Exhibitors
                     </a>
