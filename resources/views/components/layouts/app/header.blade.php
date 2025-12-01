@@ -96,18 +96,27 @@
                     {{ __('Dashboard') }}
                 </flux:navlist.item>
             </flux:navlist.group>
+
+            <flux:navlist.group :heading="__('Management')" class="grid">
+                <flux:navlist.item icon="building-storefront" :href="route('companies.index')"
+                    :current="request()->routeIs('companies.*')" wire:navigate>{{ __('Companies') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="user-group" :href="route('visitors.index')"
+                    :current="request()->routeIs('visitors.*')" wire:navigate>{{ __('Visitors') }}
+                </flux:navlist.item>
+            </flux:navlist.group>
         </flux:navlist>
 
         <flux:spacer />
 
         <flux:navlist variant="outline">
-            <flux:navlist.item icon="folder-git-2" href="#" target="_blank">
+            {{-- <flux:navlist.item icon="folder-git-2" href="#" target="_blank">
                 {{ __('Repository') }}
             </flux:navlist.item>
 
             <flux:navlist.item icon="book-open-text" href="#" target="_blank">
                 {{ __('Documentation') }}
-            </flux:navlist.item>
+            </flux:navlist.item> --}}
         </flux:navlist>
     </flux:sidebar>
 

@@ -10,6 +10,7 @@ use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
 use App\Livewire\VisitorRegistration;
+use App\Livewire\VisitorsList;
 use App\Models\Exhibitor;
 use App\Models\Project;
 use Illuminate\Support\Facades\Route;
@@ -89,4 +90,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('companies/{company}/edit', EditCompany::class)->name('companies.edit');
     Route::get('companies/{company}/submission', \App\Livewire\CompanySubmission::class)->name('companies.submission');
     Route::get('companies/{company}/analytics', \App\Livewire\CompanyAnalytics::class)->name('companies.analytics');
+
+    // Visitor Management Routes
+    Route::get('visitors', VisitorsList::class)->name('visitors.index');
 });

@@ -29,6 +29,9 @@
                 <flux:navlist.item icon="building-storefront" :href="route('companies.index')"
                     :current="request()->routeIs('companies.*')" wire:navigate>{{ __('Companies') }}
                 </flux:navlist.item>
+                <flux:navlist.item icon="user-group" :href="route('visitors.index')"
+                    :current="request()->routeIs('visitors.*')" wire:navigate>{{ __('Visitors') }}
+                </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 
