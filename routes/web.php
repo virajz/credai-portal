@@ -4,8 +4,6 @@ use App\Livewire\ClientRegistrationForm;
 use App\Livewire\CompaniesList;
 use App\Livewire\CreateCompany;
 use App\Livewire\EditCompany;
-use App\Livewire\ExhibitorDetails;
-use App\Livewire\ExhibitorsList;
 use App\Livewire\PublicExhibitorsList;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -91,9 +89,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('companies/{company}/edit', EditCompany::class)->name('companies.edit');
     Route::get('companies/{company}/submission', \App\Livewire\CompanySubmission::class)->name('companies.submission');
     Route::get('companies/{company}/analytics', \App\Livewire\CompanyAnalytics::class)->name('companies.analytics');
-
-    // Exhibitor Management Routes
-    Route::get('exhibitors', ExhibitorsList::class)->name('exhibitors.index');
-    Route::get('exhibitors/{exhibitor}', ExhibitorDetails::class)->name('exhibitors.show');
-    Route::get('exhibitors/{exhibitor}/analytics', \App\Livewire\ExhibitorAnalytics::class)->name('exhibitors.analytics');
 });
