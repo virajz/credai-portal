@@ -1,0 +1,338 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\Project;
+use Prism\Prism\Facades\Prism;
+use Prism\Prism\Facades\Tool;
+
+class ChatService
+{
+    public function chat(string $message, array $conversationHistory = []): array
+    {
+        // Extract search parameters from the user message
+        $searchResults = $this->searchPropertiesFromMessage($message);
+
+        // Build context with search results
+        $contextPrompt = $this->buildPromptWithResults($message, $searchResults, $conversationHistory);
+
+        $response = Prism::text()
+            ->using('groq', 'llama-3.3-70b-versatile')
+            ->withSystemPrompt($this->getSystemPrompt())
+            ->withPrompt($contextPrompt)
+            ->asText();
+
+        return [
+            'response' => $response->text,
+            'properties' => $searchResults,
+            'tool_calls' => [],
+        ];
+    }
+
+    protected function createSearchPropertiesTool(): object
+    {
+        return Tool::as('search_properties')
+            ->for('Search for properties in the database based on user criteria like area, budget, category, etc.')
+            ->withStringParameter('area', 'The area/location where the user wants to buy property (e.g., Vesu, Adajan, Pal). Leave empty if not specified.', required: false)
+            ->withStringParameter('category', 'The property category: "Residential", "Commercial", or "Plotting". Leave empty if not specified.', required: false)
+            ->withStringParameter('budget_min', 'Minimum budget in format like "20L", "50L", "1Cr", etc. Leave empty if not specified.', required: false)
+            ->withStringParameter('budget_max', 'Maximum budget in format like "50L", "1Cr", "2Cr", etc. Leave empty if not specified.', required: false)
+            ->withStringParameter('status', 'Project status: "Ongoing", "Completed", "Upcoming". Leave empty if not specified.', required: false)
+            ->using(function (
+                ?string $area = null,
+                ?string $category = null,
+                ?string $budget_min = null,
+                ?string $budget_max = null,
+                ?string $status = null
+            ): string {
+                $query = Project::query()
+                    ->with(['exhibitor.company']);
+
+                if ($area) {
+                    $query->where('area', 'ILIKE', "%{$area}%");
+                }
+
+                if ($category) {
+                    $query->where('category', 'ILIKE', "%{$category}%");
+                }
+
+                if ($budget_min || $budget_max) {
+                    $query->where(function ($q) use ($budget_min, $budget_max) {
+                        if ($budget_min) {
+                            $q->where('budget_range', 'ILIKE', "%{$budget_min}%");
+                        }
+                        if ($budget_max) {
+                            $q->where('budget_range', 'ILIKE', "%{$budget_max}%");
+                        }
+                    });
+                }
+
+                if ($status) {
+                    $query->where('status', 'ILIKE', "%{$status}%");
+                }
+
+                $projects = $query->limit(10)->get();
+
+                if ($projects->isEmpty()) {
+                    return json_encode([
+                        'count' => 0,
+                        'message' => 'No properties found matching the criteria.',
+                        'projects' => [],
+                    ]);
+                }
+
+                $result = [
+                    'count' => $projects->count(),
+                    'message' => "Found {$projects->count()} properties matching the criteria.",
+                    'projects' => $projects->map(function ($project) {
+                        return [
+                            'id' => $project->id,
+                            'name' => $project->name,
+                            'area' => $project->area,
+                            'category' => $project->category,
+                            'budget_range' => $project->budget_range,
+                            'sq_ft' => $project->sq_ft,
+                            'status' => $project->status,
+                            'handover_date' => $project->handover_date,
+                            'usp' => $project->usp,
+                            'exhibitor_name' => $project->exhibitor?->brand_name ?? 'N/A',
+                            'contact_person' => $project->contact_person,
+                            'url' => route('project.show', $project),
+                        ];
+                    })->toArray(),
+                ];
+
+                return json_encode($result);
+            });
+    }
+
+    protected function getSystemPrompt(): string
+    {
+        return <<<'PROMPT'
+You are a helpful real estate assistant for CREDAI Property Exhibition. Your role is to help visitors find properties that match their requirements.
+
+IMPORTANT RULES:
+- You will receive database search results in the context before each user message
+- Base your responses ONLY on the search results provided - do not make up or hallucinate property details
+- Keep your text responses SHORT and conversational (1-2 sentences max)
+- Property details will be displayed in interactive cards automatically - DO NOT list property details in your response
+- If search results show properties, say something like: "I found {count} properties matching your criteria!" or "Here's what I found:"
+- If no properties were found, be honest and suggest adjusting the search criteria
+- Always be polite, professional, and helpful
+- If you're not sure what the user wants, ask clarifying questions
+
+Examples of good responses:
+- "I found 2 properties in Vesu! Check them out below."
+- "Here are 3 upcoming residential projects matching your budget."
+- "No properties found with those exact criteria. Try adjusting your budget or area?"
+
+Remember: The property cards will show all details. Your job is just to provide a friendly, concise introduction to the results.
+PROMPT;
+    }
+
+    protected function buildPrompt(string $userMessage, array $conversationHistory): string
+    {
+        $prompt = '';
+
+        // Add conversation history context if exists
+        if (! empty($conversationHistory)) {
+            $prompt .= "Previous conversation:\n";
+            foreach ($conversationHistory as $msg) {
+                $role = $msg['role'] === 'assistant' ? 'Assistant' : 'User';
+                $prompt .= "{$role}: {$msg['content']}\n";
+            }
+            $prompt .= "\n";
+        }
+
+        $prompt .= "User: {$userMessage}";
+
+        return $prompt;
+    }
+
+    protected function searchPropertiesFromMessage(string $message): array
+    {
+        // Extract potential search criteria from message using simple keyword matching
+        $message = strtolower($message);
+
+        $query = Project::query()->with('exhibitor');
+
+        // Search for exhibitor/builder/developer/group/company mentions
+        if (
+            str_contains($message, 'from') || str_contains($message, 'by') ||
+            str_contains($message, 'group') || str_contains($message, 'builder') ||
+            str_contains($message, 'developer') || str_contains($message, 'company')
+        ) {
+            // Extract potential company name after these keywords
+            if (preg_match('/(?:from|by|group|company)\s+([a-z]+)/i', $message, $matches)) {
+                $companyName = $matches[1];
+                logger()->info('Searching for company', ['company_name' => $companyName, 'message' => $message]);
+                $query->whereHas('exhibitor.company', function ($q) use ($companyName) {
+                    $q->where('company_name', 'ILIKE', "%{$companyName}%");
+                });
+            }
+        }
+
+        // Search for area mentions
+        $areas = ['vesu', 'athwa', 'adajan', 'pal', 'citylight', 'katargam'];
+        foreach ($areas as $area) {
+            if (str_contains($message, $area)) {
+                $query->where('area', 'ILIKE', "%{$area}%");
+                break;
+            }
+        }
+
+        // Search for budget mentions (50L, 1Cr, etc.)
+        if (
+            preg_match('/(\d+)\s*(?:l|lakh|lakhs)/i', $message, $matches) ||
+            preg_match('/(\d+)\s*(?:cr|crore|crores)/i', $message, $matches)
+        ) {
+            $budget = $matches[0];
+            $query->where('budget_range', 'ILIKE', "%{$budget}%");
+        }
+
+        // Search for category
+        $categories = ['residential', 'commercial', 'plotting'];
+        foreach ($categories as $category) {
+            if (str_contains($message, $category)) {
+                $query->where('category', 'ILIKE', "%{$category}%");
+                break;
+            }
+        }
+
+        // Search for status - default to showing completed and upcoming
+        $statuses = ['ongoing', 'completed', 'upcoming'];
+        $statusFound = false;
+        foreach ($statuses as $status) {
+            if (str_contains($message, $status)) {
+                $query->where('status', 'ILIKE', "%{$status}%");
+                $statusFound = true;
+                break;
+            }
+        }
+
+        // If no specific status mentioned, show completed and upcoming (not ongoing)
+        if (! $statusFound) {
+            $query->whereIn('status', ['completed', 'upcoming']);
+        }
+
+        $projects = $query->limit(10)->get();
+
+        return $projects->map(function ($project) {
+            return [
+                'id' => $project->id,
+                'name' => $project->name,
+                'area' => $project->area,
+                'category' => $project->category,
+                'budget_range' => $project->budget_range,
+                'sq_ft' => $project->sq_ft,
+                'status' => $project->status,
+                'handover_date' => $project->handover_date,
+                'usp' => $project->usp,
+                'exhibitor_name' => $project->exhibitor?->brand_name ?? 'N/A',
+                'contact_person' => $project->contact_person,
+                'url' => route('project.show', $project),
+            ];
+        })->toArray();
+    }
+
+    protected function buildPromptWithResults(string $userMessage, array $searchResults, array $conversationHistory): string
+    {
+        $prompt = '';
+
+        // Add conversation history
+        if (! empty($conversationHistory)) {
+            $prompt .= "Previous conversation:\n";
+            foreach ($conversationHistory as $msg) {
+                $role = $msg['role'] === 'assistant' ? 'Assistant' : 'User';
+                $prompt .= "{$role}: {$msg['content']}\n";
+            }
+            $prompt .= "\n";
+        }
+
+        // Add search results context
+        if (! empty($searchResults)) {
+            $prompt .= 'Database search results (' . count($searchResults) . " properties found):\n";
+            foreach ($searchResults as $index => $property) {
+                $num = $index + 1;
+                $prompt .= "\nProperty {$num}:\n";
+                $prompt .= "- Name: {$property['name']}\n";
+                $prompt .= "- Developer: {$property['exhibitor_name']}\n";
+                $prompt .= "- Area: {$property['area']}\n";
+                $prompt .= "- Category: {$property['category']}\n";
+                $prompt .= "- Budget: {$property['budget_range']}\n";
+                $prompt .= "- Status: {$property['status']}\n";
+            }
+            $prompt .= "\n";
+        } else {
+            $prompt .= "Database search results: No properties found matching the criteria.\n\n";
+        }
+
+        $prompt .= "User: {$userMessage}";
+
+        return $prompt;
+    }
+
+    protected function extractToolCalls($response): array
+    {
+        $toolCalls = [];
+
+        if ($response->toolResults) {
+            foreach ($response->toolResults as $toolResult) {
+                $toolCalls[] = [
+                    'name' => $toolResult->toolName,
+                    'result' => $toolResult->result,
+                ];
+            }
+        }
+
+        return $toolCalls;
+    }
+
+    protected function extractProperties($response): array
+    {
+        $properties = [];
+
+        logger()->info('Extracting properties', [
+            'has_tool_results' => isset($response->toolResults),
+            'tool_results_type' => gettype($response->toolResults ?? null),
+            'tool_results_count' => is_array($response->toolResults) ? count($response->toolResults) : 0,
+            'tool_results_is_empty' => empty($response->toolResults),
+        ]);
+
+        if ($response->toolResults && ! empty($response->toolResults)) {
+            logger()->info('About to loop through tool results', [
+                'count' => count($response->toolResults),
+            ]);
+
+            foreach ($response->toolResults as $index => $toolResult) {
+                logger()->info('Processing tool result', [
+                    'index' => $index,
+                    'tool_name' => $toolResult->toolName ?? 'NO_NAME',
+                    'has_result' => isset($toolResult->result),
+                    'result_preview' => substr($toolResult->result ?? '', 0, 200),
+                ]);
+
+                if (isset($toolResult->toolName) && $toolResult->toolName === 'search_properties') {
+                    $data = json_decode($toolResult->result, true);
+                    logger()->info('Decoded tool result', [
+                        'data_structure' => array_keys($data ?? []),
+                        'has_projects' => isset($data['projects']),
+                        'projects_count' => count($data['projects'] ?? []),
+                    ]);
+
+                    if (isset($data['projects']) && is_array($data['projects'])) {
+                        $properties = $data['projects'];
+                    }
+                }
+            }
+        } else {
+            logger()->warning('toolResults is empty or falsy');
+        }
+
+        logger()->info('Final extracted properties', ['count' => count($properties)]);
+
+        return $properties;
+    }
+}

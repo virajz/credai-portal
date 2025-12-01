@@ -20,7 +20,8 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/flux": "^2.1.1",
         "livewire/flux-pro": "^2.6",
-        "livewire/volt": "^1.7.0"
+        "livewire/volt": "^1.7.0",
+        "prism-php/prism": "^0.98.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

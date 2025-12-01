@@ -136,6 +136,9 @@
 
     <flux:toast />
 
+    <!-- Property Chatbot -->
+    @livewire('property-chatbot')
+
     @livewireScripts
     @fluxScripts
 </body>
