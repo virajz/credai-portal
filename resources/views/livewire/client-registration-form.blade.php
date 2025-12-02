@@ -346,10 +346,10 @@
                                             </flux:button>
                                         </div>
 
-                                        <flux:input wire:model="projects.{{ $index }}.name"
-                                            label="Project Name" placeholder="Project name" required />
-
                                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                            <flux:input wire:model="projects.{{ $index }}.name"
+                                                label="Project Name" placeholder="Project name" required />
+
                                             <flux:select wire:model.live="projects.{{ $index }}.area"
                                                 label="Area/Location" placeholder="Select area..." variant="listbox"
                                                 searchable required>
@@ -371,9 +371,6 @@
                                                 </flux:select.option>
                                                 <flux:select.option value="Others">Others</flux:select.option>
                                             </flux:select>
-
-                                            <flux:input wire:model="projects.{{ $index }}.sq_ft"
-                                                label="Total Area (sq ft)" type="number" placeholder="0" required />
                                         </div>
 
                                         @if (isset($projects[$index]['area']) && $projects[$index]['area'] === 'Others')
@@ -383,11 +380,12 @@
                                         @endif
 
                                         <!-- Project Category -->
-                                        <flux:radio.group wire:model="projects.{{ $index }}.category"
-                                            label="Property Type" variant="cards" class="max-sm:flex-col">
+                                        <flux:radio.group wire:model.live="projects.{{ $index }}.category"
+                                            label="Property Type" variant="cards" class="grid grid-cols-2 gap-3">
                                             <flux:radio value="Residential" label="Residential" />
                                             <flux:radio value="Commercial" label="Commercial" />
                                             <flux:radio value="Plotting" label="Plotting" />
+                                            <flux:radio value="Weekend Home & Others" label="Weekend Home & Others" />
                                         </flux:radio.group>
                                         @error('projects.' . $index . '.category')
                                             <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">
@@ -395,20 +393,178 @@
                                             </flux:text>
                                         @enderror
 
-                                        <!-- Budget Range -->
-                                        <flux:radio.group wire:model="projects.{{ $index }}.budget_range"
-                                            label="Budget Range" variant="cards" class="max-sm:flex-col">
-                                            <flux:radio value="Below 50L" label="Below 50L" />
-                                            <flux:radio value="50L - 1Cr" label="50L - 1Cr" />
-                                            <flux:radio value="1Cr - 2Cr" label="1Cr - 2Cr" />
-                                            <flux:radio value="2Cr - 5Cr" label="2Cr - 5Cr" />
-                                            <flux:radio value="Above 5Cr" label="Above 5Cr" />
-                                        </flux:radio.group>
-                                        @error('projects.' . $index . '.budget_range')
-                                            <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                                {{ $message }}
-                                            </flux:text>
-                                        @enderror
+                                        <!-- Residential Units -->
+                                        @if (isset($projects[$index]['category']) && $projects[$index]['category'] === 'Residential')
+                                            <flux:card class="bg-zinc-50 dark:bg-zinc-900/50">
+                                                <div class="space-y-4">
+                                                    <div class="flex items-center justify-between">
+                                                        <flux:heading size="base">Residential Units</flux:heading>
+                                                        <flux:button type="button" size="sm" icon="plus"
+                                                            wire:click="addResidentialUnit({{ $index }})">
+                                                            Add Unit
+                                                        </flux:button>
+                                                    </div>
+
+                                                    @error('projects.' . $index . '.units')
+                                                        <flux:text class="text-sm text-red-600 dark:text-red-400">
+                                                            {{ $message }}
+                                                        </flux:text>
+                                                    @enderror
+
+                                                    @if (isset($projects[$index]['units']) && count($projects[$index]['units']) > 0)
+                                                        <div class="space-y-3">
+                                                            @foreach ($projects[$index]['units'] as $unitIndex => $unit)
+                                                                <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800"
+                                                                    wire:key="unit-{{ $index }}-{{ $unitIndex }}">
+                                                                    <div
+                                                                        class="mb-3 flex items-center justify-between">
+                                                                        <flux:subheading>Unit {{ $unitIndex + 1 }}
+                                                                        </flux:subheading>
+                                                                        <flux:button type="button" size="sm"
+                                                                            variant="danger" icon="trash"
+                                                                            wire:click="removeResidentialUnit({{ $index }}, {{ $unitIndex }})">
+                                                                            Remove
+                                                                        </flux:button>
+                                                                    </div>
+                                                                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                                                        <flux:select
+                                                                            wire:model="projects.{{ $index }}.units.{{ $unitIndex }}.bedrooms"
+                                                                            label="Bedrooms" placeholder="Select..."
+                                                                            variant="listbox">
+                                                                            <flux:select.option value="1 BHK">1 BHK
+                                                                            </flux:select.option>
+                                                                            <flux:select.option value="2 BHK">2 BHK
+                                                                            </flux:select.option>
+                                                                            <flux:select.option value="3 BHK">3 BHK
+                                                                            </flux:select.option>
+                                                                            <flux:select.option value="4 BHK">4 BHK
+                                                                            </flux:select.option>
+                                                                            <flux:select.option value="5+ BHK">5+ BHK
+                                                                            </flux:select.option>
+                                                                        </flux:select>
+
+                                                                        <flux:select
+                                                                            wire:model="projects.{{ $index }}.units.{{ $unitIndex }}.budget"
+                                                                            label="Budget" placeholder="Select..."
+                                                                            variant="listbox">
+                                                                            <flux:select.option value="Below 50L">Below
+                                                                                50L</flux:select.option>
+                                                                            <flux:select.option value="50L - 1Cr">50L -
+                                                                                1Cr</flux:select.option>
+                                                                            <flux:select.option value="1Cr - 2Cr">1Cr -
+                                                                                2Cr</flux:select.option>
+                                                                            <flux:select.option value="2Cr - 5Cr">2Cr -
+                                                                                5Cr</flux:select.option>
+                                                                            <flux:select.option value="Above 5Cr">Above
+                                                                                5Cr</flux:select.option>
+                                                                        </flux:select>
+
+                                                                        <flux:input
+                                                                            wire:model="projects.{{ $index }}.units.{{ $unitIndex }}.area"
+                                                                            label="Area (sq. ft.)" type="number"
+                                                                            placeholder="0" />
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    @else
+                                                        <flux:text class="text-sm text-zinc-500">No units added yet.
+                                                            Click "Add
+                                                            Unit" to add residential units.</flux:text>
+                                                    @endif
+                                                </div>
+                                            </flux:card>
+                                        @endif
+
+                                        <!-- Commercial Units -->
+                                        @if (isset($projects[$index]['category']) && $projects[$index]['category'] === 'Commercial')
+                                            <flux:card class="bg-zinc-50 dark:bg-zinc-900/50">
+                                                <div class="space-y-4">
+                                                    <div class="flex items-center justify-between">
+                                                        <flux:heading size="base">Commercial Units</flux:heading>
+                                                        <flux:button type="button" size="sm" icon="plus"
+                                                            wire:click="addCommercialUnit({{ $index }})">
+                                                            Add Unit
+                                                        </flux:button>
+                                                    </div>
+
+                                                    @error('projects.' . $index . '.units')
+                                                        <flux:text class="text-sm text-red-600 dark:text-red-400">
+                                                            {{ $message }}
+                                                        </flux:text>
+                                                    @enderror
+
+                                                    @if (isset($projects[$index]['units']) && count($projects[$index]['units']) > 0)
+                                                        <div class="space-y-3">
+                                                            @foreach ($projects[$index]['units'] as $unitIndex => $unit)
+                                                                <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800"
+                                                                    wire:key="unit-{{ $index }}-{{ $unitIndex }}">
+                                                                    <div
+                                                                        class="mb-3 flex items-center justify-between">
+                                                                        <flux:subheading>Unit {{ $unitIndex + 1 }}
+                                                                        </flux:subheading>
+                                                                        <flux:button type="button" size="sm"
+                                                                            variant="danger" icon="trash"
+                                                                            wire:click="removeCommercialUnit({{ $index }}, {{ $unitIndex }})">
+                                                                            Remove
+                                                                        </flux:button>
+                                                                    </div>
+                                                                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                                        <flux:input
+                                                                            wire:model="projects.{{ $index }}.units.{{ $unitIndex }}.area"
+                                                                            label="Area (sq. ft.)" type="number"
+                                                                            placeholder="0" />
+
+                                                                        <flux:select
+                                                                            wire:model="projects.{{ $index }}.units.{{ $unitIndex }}.budget"
+                                                                            label="Budget" placeholder="Select..."
+                                                                            variant="listbox">
+                                                                            <flux:select.option value="Below 50L">Below
+                                                                                50L</flux:select.option>
+                                                                            <flux:select.option value="50L - 1Cr">50L -
+                                                                                1Cr</flux:select.option>
+                                                                            <flux:select.option value="1Cr - 2Cr">1Cr -
+                                                                                2Cr</flux:select.option>
+                                                                            <flux:select.option value="2Cr - 5Cr">2Cr -
+                                                                                5Cr</flux:select.option>
+                                                                            <flux:select.option value="Above 5Cr">Above
+                                                                                5Cr</flux:select.option>
+                                                                        </flux:select>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    @else
+                                                        <flux:text class="text-sm text-zinc-500">No units added yet.
+                                                            Click "Add
+                                                            Unit" to add commercial units.</flux:text>
+                                                    @endif
+                                                </div>
+                                            </flux:card>
+                                        @endif
+
+                                        <!-- Plotting - Single Area Field -->
+                                        @if (isset($projects[$index]['category']) && $projects[$index]['category'] === 'Plotting')
+                                            <flux:input wire:model="projects.{{ $index }}.sq_ft"
+                                                label="Area (sq. ft.)" type="number" placeholder="0" required />
+                                        @endif
+
+                                        <!-- Budget Range (Hidden for Residential and Commercial as they use units) -->
+                                        @if (!isset($projects[$index]['category']) || !in_array($projects[$index]['category'], ['Residential', 'Commercial']))
+                                            <flux:radio.group wire:model="projects.{{ $index }}.budget_range"
+                                                label="Budget Range" variant="cards" class="max-sm:flex-col">
+                                                <flux:radio value="Below 50L" label="Below 50L" />
+                                                <flux:radio value="50L - 1Cr" label="50L - 1Cr" />
+                                                <flux:radio value="1Cr - 2Cr" label="1Cr - 2Cr" />
+                                                <flux:radio value="2Cr - 5Cr" label="2Cr - 5Cr" />
+                                                <flux:radio value="Above 5Cr" label="Above 5Cr" />
+                                            </flux:radio.group>
+                                            @error('projects.' . $index . '.budget_range')
+                                                <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                                    {{ $message }}
+                                                </flux:text>
+                                            @enderror
+                                        @endif
 
                                         <!-- Expected Handover Date -->
                                         <flux:radio.group wire:model="projects.{{ $index }}.handover_date"
@@ -736,41 +892,44 @@
             </div>
         @endif
 
-        <!-- Navigation Buttons -->
-        <div class="flex justify-between gap-4">
-            <div>
-                @if ($currentStep > 1)
-                    <flux:button type="button" variant="ghost" icon="arrow-left" wire:click="previousStep">
-                        Previous
-                    </flux:button>
-                @endif
-            </div>
+        <!-- Navigation Buttons - Sticky Footer -->
+        <div
+            class="sticky bottom-0 z-40 -mx-6 mt-6 border-t border-zinc-200 bg-white px-6 py-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)] md:mx-0 md:rounded-lg md:border md:shadow-lg">
+            <div class="flex justify-between gap-4">
+                <div>
+                    @if ($currentStep > 1)
+                        <flux:button type="button" variant="ghost" icon="arrow-left" wire:click="previousStep">
+                            Previous
+                        </flux:button>
+                    @endif
+                </div>
 
-            <div>
-                @if ($currentStep < 3)
-                    <flux:button type="button" variant="primary" icon:trailing="arrow-right" wire:click="nextStep"
-                        wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="nextStep">Next</span>
-                        <span wire:loading wire:target="nextStep">Validating...</span>
-                    </flux:button>
-                @else
-                    <flux:button type="submit" variant="primary" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="submit">
-                            @if ($company->has_submitted)
-                                Update Information
-                            @else
-                                Submit Registration
-                            @endif
-                        </span>
-                        <span wire:loading wire:target="submit">
-                            @if ($company->has_submitted)
-                                Updating...
-                            @else
-                                Submitting...
-                            @endif
-                        </span>
-                    </flux:button>
-                @endif
+                <div>
+                    @if ($currentStep < 3)
+                        <flux:button type="button" variant="primary" icon:trailing="arrow-right"
+                            wire:click="nextStep" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="nextStep">Next</span>
+                            <span wire:loading wire:target="nextStep">Validating...</span>
+                        </flux:button>
+                    @else
+                        <flux:button type="submit" variant="primary" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="submit">
+                                @if ($company->has_submitted)
+                                    Update Information
+                                @else
+                                    Submit Registration
+                                @endif
+                            </span>
+                            <span wire:loading wire:target="submit">
+                                @if ($company->has_submitted)
+                                    Updating...
+                                @else
+                                    Submitting...
+                                @endif
+                            </span>
+                        </flux:button>
+                    @endif
+                </div>
             </div>
         </div>
     </form>

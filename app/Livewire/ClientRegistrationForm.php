@@ -155,7 +155,6 @@ class ClientRegistrationForm extends Component
                     'id' => $project->id,
                     'name' => $project->name,
                     'area' => $project->area,
-                    'city' => $project->city ?? '',
                     'category' => $project->category,
                     'sq_ft' => $project->sq_ft,
                     'budget_range' => $project->budget_range,
@@ -166,6 +165,7 @@ class ClientRegistrationForm extends Component
                     'video_url' => $project->video_url,
                     'pdf_path' => $project->pdf_path,
                     'logo_path' => $project->logo_path,
+                    'units' => $project->units ?? [],
                 ];
             }
 
@@ -434,7 +434,6 @@ class ClientRegistrationForm extends Component
         $this->projects[] = [
             'name' => '',
             'area' => '',
-            'city' => '',
             'category' => '',
             'sq_ft' => '',
             'budget_range' => '',
@@ -445,6 +444,7 @@ class ClientRegistrationForm extends Component
             'usp' => '',
             'contact_person' => '',
             'logo' => null,
+            'units' => [],
         ];
 
         // Select the newly added project
@@ -472,6 +472,61 @@ class ClientRegistrationForm extends Component
             $this->selectedProjectIndex = count($this->projects) > 0 ? 0 : null;
         } elseif ($this->selectedProjectIndex !== null && $this->selectedProjectIndex > $index) {
             $this->selectedProjectIndex--;
+        }
+    }
+
+    /**
+     * Add a residential unit to a project
+     */
+    public function addResidentialUnit(int $projectIndex): void
+    {
+        if (! isset($this->projects[$projectIndex]['units'])) {
+            $this->projects[$projectIndex]['units'] = [];
+        }
+
+        $this->projects[$projectIndex]['units'][] = [
+            'type' => 'residential',
+            'bedrooms' => '',
+            'budget' => '',
+            'area' => '',
+        ];
+    }
+
+    /**
+     * Remove a residential unit from a project
+     */
+    public function removeResidentialUnit(int $projectIndex, int $unitIndex): void
+    {
+        if (isset($this->projects[$projectIndex]['units'][$unitIndex])) {
+            unset($this->projects[$projectIndex]['units'][$unitIndex]);
+            $this->projects[$projectIndex]['units'] = array_values($this->projects[$projectIndex]['units']);
+        }
+    }
+
+    /**
+     * Add a commercial unit to a project
+     */
+    public function addCommercialUnit(int $projectIndex): void
+    {
+        if (! isset($this->projects[$projectIndex]['units'])) {
+            $this->projects[$projectIndex]['units'] = [];
+        }
+
+        $this->projects[$projectIndex]['units'][] = [
+            'type' => 'commercial',
+            'area' => '',
+            'budget' => '',
+        ];
+    }
+
+    /**
+     * Remove a commercial unit from a project
+     */
+    public function removeCommercialUnit(int $projectIndex, int $unitIndex): void
+    {
+        if (isset($this->projects[$projectIndex]['units'][$unitIndex])) {
+            unset($this->projects[$projectIndex]['units'][$unitIndex]);
+            $this->projects[$projectIndex]['units'] = array_values($this->projects[$projectIndex]['units']);
         }
     }
 
@@ -557,10 +612,45 @@ class ClientRegistrationForm extends Component
     }
 
     /**
+     * Validate project units based on category
+     */
+    protected function validateProjectUnits(): void
+    {
+        foreach ($this->projects as $index => $project) {
+            if (! isset($project['category'])) {
+                continue;
+            }
+
+            if ($project['category'] === 'Residential') {
+                if (! isset($project['units']) || count($project['units']) === 0) {
+                    $this->addError("projects.{$index}.units", 'Please add at least one residential unit.');
+                }
+            } elseif ($project['category'] === 'Commercial') {
+                if (! isset($project['units']) || count($project['units']) === 0) {
+                    $this->addError("projects.{$index}.units", 'Please add at least one commercial unit.');
+                }
+            } elseif ($project['category'] === 'Plotting') {
+                if (empty($project['sq_ft'])) {
+                    $this->addError("projects.{$index}.sq_ft", 'Please enter the area for plotting.');
+                }
+            }
+        }
+    }
+
+    /**
      * Submit the exhibitor form
      */
     public function submit(): void
     {
+        // Validate project units
+        $this->validateProjectUnits();
+
+        if ($this->getErrorBag()->any()) {
+            $this->currentStep = 3;
+
+            return;
+        }
+
         $validated = $this->validate([
             // Company Details
             'office_address' => ['required', 'string', 'max:1000'],
@@ -661,7 +751,6 @@ class ClientRegistrationForm extends Component
                     $projectUpdateData = [
                         'name' => $projectData['name'],
                         'area' => $projectData['area'] ?? null,
-                        'city' => $projectData['city'] ?? null,
                         'category' => $projectData['category'] ?? null,
                         'sq_ft' => $projectData['sq_ft'] ?? null,
                         'budget_range' => $projectData['budget_range'] ?? null,
@@ -670,6 +759,7 @@ class ClientRegistrationForm extends Component
                         'video_url' => $projectData['video_url'] ?? null,
                         'usp' => $projectData['usp'] ?? null,
                         'contact_person' => $projectData['contact_person'] ?? null,
+                        'units' => $projectData['units'] ?? null,
                     ];
 
                     // Only update file paths if new files were uploaded

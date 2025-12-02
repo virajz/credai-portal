@@ -27,11 +27,16 @@ class Project extends Model
         'usp',
         'contact_person',
         'logo_path',
+        'units',
     ];
 
-    protected $casts = [
-        'total_payment' => 'decimal:2',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'total_payment' => 'decimal:2',
+            'units' => 'array',
+        ];
+    }
 
     public function exhibitor(): BelongsTo
     {

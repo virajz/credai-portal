@@ -19,33 +19,34 @@ class CompanySeeder extends Seeder
             ['company_name' => 'Raghuveer Developers', 'main_person_name' => 'Abhishek', 'registered_number' => '9825822213', 'stall_type' => 'Associate 5', 'stall_number' => 'A-5', 'stall_size' => '6x3'],
             ['company_name' => 'Atlanta', 'main_person_name' => 'Ketan Bhai', 'registered_number' => '9820020095', 'stall_type' => 'Co Sponsor 1', 'stall_number' => 'CS-1', 'stall_size' => '6x3'],
             ['company_name' => 'SNJ Prestige Group', 'main_person_name' => 'Jinal Italiya', 'registered_number' => '9825308965', 'stall_type' => 'Co Sponsor 2', 'stall_number' => 'CS-2', 'stall_size' => '6x3'],
-            ['company_name' => 'Piramyd Shubh Darsh', 'main_person_name' => 'Magukiya', 'registered_number' => '9978622383', 'stall_type' => 'Co Sponsor 3', 'stall_number' => 'CS-3', 'stall_size' => '6x3'],
+            ['company_name' => 'Piramyd Shubh', 'main_person_name' => 'Darsh Magukiya', 'registered_number' => '9978622383', 'stall_type' => 'Co Sponsor 3', 'stall_number' => 'CS-3', 'stall_size' => '6x3'],
             ['company_name' => 'Universal', 'main_person_name' => 'Saileshbhai', 'registered_number' => '9879449056', 'stall_type' => 'Co Sponsor 4', 'stall_number' => 'CS-4', 'stall_size' => '6x3'],
             ['company_name' => 'Jainam', 'main_person_name' => 'Shreyanshbhai', 'registered_number' => '9099468358', 'stall_type' => 'Co Sponsor 5', 'stall_number' => 'CS-5', 'stall_size' => '6x3'],
             ['company_name' => 'SNS', 'main_person_name' => 'Devangbhai', 'registered_number' => '9825041960', 'stall_type' => 'Co Sponsor 6', 'stall_number' => 'CS-6', 'stall_size' => '6x3'],
             ['company_name' => 'DMD', 'main_person_name' => 'Shipra', 'registered_number' => '7990273128', 'stall_type' => 'Co Sponsor 7', 'stall_number' => 'CS-7', 'stall_size' => '6x3'],
             ['company_name' => 'Dhanlaxmi', 'main_person_name' => 'Jimmybhai', 'registered_number' => '8758011999', 'stall_type' => 'Co Sponsor 8', 'stall_number' => 'CS-8', 'stall_size' => '6x3'],
-            ['company_name' => 'Ankit Agarwal', 'main_person_name' => 'Ankit Agarwal', 'registered_number' => '9712023155', 'stall_type' => 'Premium', 'stall_number' => 'P-1', 'stall_size' => '6x4'],
-            ['company_name' => 'Kachhani', 'main_person_name' => 'Rajeshbhai', 'registered_number' => '9879399587', 'stall_type' => 'Premium', 'stall_number' => 'P-3', 'stall_size' => '6x4'],
-            ['company_name' => 'Hiren Jagani', 'main_person_name' => 'Hiren Jagani', 'registered_number' => '9825959214', 'stall_type' => 'Premium', 'stall_number' => 'P-5', 'stall_size' => '6x4'],
-            ['company_name' => 'Sonani', 'main_person_name' => 'Nileshbhai', 'registered_number' => '9825140390', 'stall_type' => 'Premium', 'stall_number' => 'P-7', 'stall_size' => '6x4'],
-            ['company_name' => 'Jasani', 'main_person_name' => 'Nikulbhai', 'registered_number' => '9978383447', 'stall_type' => 'Premium', 'stall_number' => 'P-10', 'stall_size' => '6x4'],
-            ['company_name' => 'Dobariya Jay', 'main_person_name' => 'Kevadiya', 'registered_number' => '9537519400', 'stall_type' => 'Premium', 'stall_number' => 'P-11', 'stall_size' => '6x4'],
+            ['company_name' => 'Vacanza', 'main_person_name' => 'Ankit Agarwal', 'registered_number' => '9712023155', 'stall_type' => 'Premium', 'stall_number' => 'P-1, P-2', 'stall_size' => '6x4'],
+            ['company_name' => 'RRR', 'main_person_name' => 'Rajeshbhai Kachhani', 'registered_number' => '9879399587', 'stall_type' => 'Premium', 'stall_number' => 'P-3, P-4', 'stall_size' => '6x4'],
+            ['company_name' => 'Siddhivinayak', 'main_person_name' => 'Hiren Jagani', 'registered_number' => '9825959214', 'stall_type' => 'Premium', 'stall_number' => 'P-5, P-6', 'stall_size' => '6x4'],
+            ['company_name' => 'Satva', 'main_person_name' => 'Nileshbhai Sonani', 'registered_number' => '9825140390', 'stall_type' => 'Premium', 'stall_number' => 'P-7, P-8', 'stall_size' => '6x4'],
+            ['company_name' => 'Asthvinayak', 'main_person_name' => 'Nikulbhai Jasani', 'registered_number' => '9978383447', 'stall_type' => 'Premium', 'stall_number' => 'P-9, P-10', 'stall_size' => '6x4'],
+            ['company_name' => 'Dobariya', 'main_person_name' => 'Jay Kevadiya', 'registered_number' => '9537519400', 'stall_type' => 'Premium', 'stall_number' => 'P-11', 'stall_size' => '6x4'],
             ['company_name' => 'Victoria', 'main_person_name' => 'Girdharbhai', 'registered_number' => '9825173221', 'stall_type' => 'Premium', 'stall_number' => 'P-12', 'stall_size' => '6x4'],
             ['company_name' => 'Foresta', 'main_person_name' => 'Kaushal Lehari', 'registered_number' => '9979947677', 'stall_type' => 'Premium', 'stall_number' => 'P-13', 'stall_size' => '6x4'],
             ['company_name' => 'Kelly', 'main_person_name' => 'Piyushbhai', 'registered_number' => '6353369899', 'stall_type' => 'Premium', 'stall_number' => 'P-14', 'stall_size' => '6x4'],
-            ['company_name' => 'Sunny', 'main_person_name' => 'Chandwani', 'registered_number' => '9879397643', 'stall_type' => 'Premium', 'stall_number' => 'P-15', 'stall_size' => '6x4'],
-            ['company_name' => 'Hardikbhai', 'main_person_name' => 'Hardikbhai', 'registered_number' => '9978624294', 'stall_type' => 'Premium', 'stall_number' => 'P-17', 'stall_size' => '6x4'],
-            ['company_name' => 'Rajubhai', 'main_person_name' => 'Rajubhai', 'registered_number' => '9825861011', 'stall_type' => 'Premium', 'stall_number' => 'P-19', 'stall_size' => '6x4'],
-            ['company_name' => 'Harnishbhai', 'main_person_name' => 'Harnishbhai', 'registered_number' => '9978111118', 'stall_type' => 'Platinum', 'stall_number' => 'PL-1', 'stall_size' => '6x3'],
+            ['company_name' => 'Oliva', 'main_person_name' => 'Sunny Chandwani', 'registered_number' => '9879397643', 'stall_type' => 'Premium', 'stall_number' => 'P-15, P-16', 'stall_size' => '6x4'],
+            ['company_name' => 'Vedanta', 'main_person_name' => 'Hardikbhai', 'registered_number' => '9978624294', 'stall_type' => 'Premium', 'stall_number' => 'P-17, P-18', 'stall_size' => '6x4'],
+            ['company_name' => 'Prayosha', 'main_person_name' => 'Rajubhai', 'registered_number' => '9825861011', 'stall_type' => 'Premium', 'stall_number' => 'P-19, P-20', 'stall_size' => '6x4'],
+            ['company_name' => 'Devshree', 'main_person_name' => 'Harnishbhai', 'registered_number' => '9978111118', 'stall_type' => 'Platinum', 'stall_number' => 'PL-1, PL-2', 'stall_size' => '6x3'],
             ['company_name' => 'Tej', 'main_person_name' => 'Jigneshbhai', 'registered_number' => '9375544000', 'stall_type' => 'Platinum', 'stall_number' => 'PL-3', 'stall_size' => '6x3'],
-            ['company_name' => 'Karshanbhai', 'main_person_name' => 'Karshanbhai', 'registered_number' => '9727712315', 'stall_type' => 'Platinum', 'stall_number' => 'PL-5', 'stall_size' => '6x3'],
+            ['company_name' => 'Karshanbhai', 'main_person_name' => 'Karshanbhai', 'registered_number' => '9727712315', 'stall_type' => 'Platinum', 'stall_number' => 'PL-5, PL-6', 'stall_size' => '6x3'],
+            ['company_name' => 'Sangini', 'main_person_name' => 'Jigarbhai Sheta', 'registered_number' => '9727719350', 'stall_type' => 'Platinum', 'stall_number' => 'A-1', 'stall_size' => '6x3'],
         ];
 
         foreach ($companies as $companyData) {
             Company::create($companyData);
         }
 
-        $this->command->info('Successfully seeded '.count($companies).' companies.');
+        $this->command->info('Successfully seeded ' . count($companies) . ' companies.');
     }
 }

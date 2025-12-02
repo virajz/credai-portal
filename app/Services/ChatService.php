@@ -253,7 +253,7 @@ PROMPT;
 
         // Add search results context
         if (! empty($searchResults)) {
-            $prompt .= 'Database search results (' . count($searchResults) . " properties found):\n";
+            $prompt .= 'Database search results ('.count($searchResults)." properties found):\n";
             foreach ($searchResults as $index => $property) {
                 $num = $index + 1;
                 $prompt .= "\nProperty {$num}:\n";
