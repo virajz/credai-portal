@@ -4,12 +4,17 @@
             <flux:heading size="xl" class="mb-2">Companies</flux:heading>
             <flux:subheading>Manage companies and their stall allocations</flux:subheading>
         </div>
-        <flux:button variant="primary" :href="route('companies.create')" icon="plus" wire:navigate>
-            Add Company
-        </flux:button>
+        <div class="flex gap-2">
+            <flux:button variant="ghost" icon="arrow-down-tray" wire:click="exportCompanies">
+                Export
+            </flux:button>
+            <flux:button variant="primary" :href="route('companies.create')" icon="plus" wire:navigate>
+                Add Company
+            </flux:button>
+        </div>
     </div>
 
-    <!-- Search -->
+    <!-- Search and Filters -->
     <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end">
         <div class="flex-1">
             <flux:input wire:model.live.debounce.300ms="search"
@@ -17,11 +22,22 @@
                 icon="magnifying-glass" />
         </div>
 
-        @if ($search)
-            <flux:button variant="ghost" icon="x-mark" wire:click="clearFilters">
-                Clear Filters
+        <div class="flex gap-2">
+            <flux:button variant="ghost" icon="funnel" icon:variant="outline" wire:click="toggleFilterDrawer">
+                Filters
+                @if ($this->hasActiveFilters())
+                    <flux:badge size="sm" color="blue">
+                        {{ collect([$filterStatus, $filterLockStatus, $filterStallAssignment])->filter()->count() }}
+                    </flux:badge>
+                @endif
             </flux:button>
-        @endif
+
+            @if ($this->hasActiveFilters())
+                <flux:button variant="ghost" icon="x-mark" wire:click="clearFilters">
+                    Clear All
+                </flux:button>
+            @endif
+        </div>
     </div>
 
     <!-- Companies Table -->
@@ -113,10 +129,8 @@
                                 size="sm" icon="clipboard" icon:variant="outline"
                                 x-tooltip="copied ? 'Copied!' : 'Copy registration link'" />
 
-                            <flux:button wire:click="toggleLock({{ $company->id }})" variant="ghost"
-                                size="sm"
-                                :icon="$company->is_locked ? 'lock-closed' : 'lock-open'"
-                                icon:variant="outline"
+                            <flux:button wire:click="toggleLock({{ $company->id }})" variant="ghost" size="sm"
+                                :icon="$company->is_locked ? 'lock-closed' : 'lock-open'" icon:variant="outline"
                                 x-tooltip="'{{ $company->is_locked ? 'Unlock registration link' : 'Lock registration link' }}'" />
 
                             <flux:dropdown position="bottom" align="end">
@@ -168,6 +182,60 @@
             {{ $companies->links() }}
         </div>
     @endif
+
+    <!-- Filter Drawer -->
+    <flux:modal name="filter-drawer" variant="flyout" wire:model="filterDrawerOpen">
+        <form class="space-y-6" wire:submit="applyFilters">
+            <div>
+                <flux:heading size="lg">Filter Companies</flux:heading>
+                <flux:subheading>Refine your company list with advanced filters</flux:subheading>
+            </div>
+
+            <flux:separator />
+
+            <!-- Submission Status Filter -->
+            <flux:field>
+                <flux:label>Submission Status</flux:label>
+                <flux:radio.group wire:model.live="filterStatus">
+                    <flux:radio value="" label="All Companies" />
+                    <flux:radio value="submitted" label="Submitted" />
+                    <flux:radio value="pending" label="Pending" />
+                </flux:radio.group>
+            </flux:field>
+
+            <flux:separator />
+
+            <!-- Lock Status Filter -->
+            <flux:field>
+                <flux:label>Lock Status</flux:label>
+                <flux:radio.group wire:model.live="filterLockStatus">
+                    <flux:radio value="" label="All" />
+                    <flux:radio value="locked" label="Locked" />
+                    <flux:radio value="unlocked" label="Unlocked" />
+                </flux:radio.group>
+            </flux:field>
+
+            <flux:separator />
+
+            <!-- Stall Assignment Filter -->
+            <flux:field>
+                <flux:label>Stall Assignment</flux:label>
+                <flux:radio.group wire:model.live="filterStallAssignment">
+                    <flux:radio value="" label="All" />
+                    <flux:radio value="assigned" label="Assigned" />
+                    <flux:radio value="unassigned" label="Not Assigned" />
+                </flux:radio.group>
+            </flux:field>
+
+            <flux:separator />
+
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:button variant="ghost" wire:click="clearFilters" type="button">Clear All</flux:button>
+                <flux:button variant="primary" type="submit">Apply Filters</flux:button>
+            </div>
+        </form>
+    </flux:modal>
 
     <!-- Delete Confirmation Modal -->
     <flux:modal name="delete-company" class="min-w-[22rem]">
