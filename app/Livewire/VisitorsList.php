@@ -130,15 +130,15 @@ class VisitorsList extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'ilike', "%{$this->search}%")
-                        ->orWhere('email', 'ilike', "%{$this->search}%")
                         ->orWhere('phone', 'ilike', "%{$this->search}%")
-                        ->orWhere('company_name', 'ilike', "%{$this->search}%");
+                        ->orWhere('company_name', 'ilike', "%{$this->search}%")
+                        ->orWhere('current_residential_area', 'ilike', "%{$this->search}%");
                 });
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->get();
 
-        $filename = 'visitors_' . now()->format('Y-m-d_His') . '.csv';
+        $filename = 'visitors_'.now()->format('Y-m-d_His').'.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -153,12 +153,14 @@ class VisitorsList extends Component
                 'ID',
                 'Name',
                 'Phone',
-                'Email',
+                'Age Group',
+                'Current Residential Area',
                 'Company Name',
                 'Interests',
                 'Residential Types',
                 'Commercial Types',
                 'Plotting Types',
+                'Weekend Home Types',
                 'Planning to Buy',
                 'Areas',
                 'Tracking Medium',
@@ -171,12 +173,14 @@ class VisitorsList extends Component
                     $visitor->id,
                     $visitor->name,
                     $visitor->phone,
-                    $visitor->email,
+                    $visitor->age_group,
+                    $visitor->current_residential_area,
                     $visitor->company_name,
                     is_array($visitor->interests) ? implode(', ', $visitor->interests) : '',
                     is_array($visitor->residential_types) ? implode(', ', $visitor->residential_types) : '',
                     is_array($visitor->commercial_types) ? implode(', ', $visitor->commercial_types) : '',
                     is_array($visitor->plotting_types) ? implode(', ', $visitor->plotting_types) : '',
+                    is_array($visitor->weekend_home_types) ? implode(', ', $visitor->weekend_home_types) : '',
                     $visitor->planning_to_buy,
                     is_array($visitor->areas) ? implode(', ', $visitor->areas) : '',
                     $visitor->tracking_medium,
@@ -197,9 +201,9 @@ class VisitorsList extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'ilike', "%{$this->search}%")
-                        ->orWhere('email', 'ilike', "%{$this->search}%")
                         ->orWhere('phone', 'ilike', "%{$this->search}%")
-                        ->orWhere('company_name', 'ilike', "%{$this->search}%");
+                        ->orWhere('company_name', 'ilike', "%{$this->search}%")
+                        ->orWhere('current_residential_area', 'ilike', "%{$this->search}%");
                 });
             })
             ->orderBy($this->sortBy, $this->sortDirection)

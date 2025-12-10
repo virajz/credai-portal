@@ -141,6 +141,11 @@
 
     @livewireScripts
     @fluxScripts
+
+    <!-- Google Maps Places API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key') }}&libraries=places"></script>
+
+    @stack('scripts')
 </body>
 
 </html>

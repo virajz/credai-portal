@@ -1,4 +1,4 @@
-<div class="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
     <div class="mb-12 text-center">
         <!-- Breadcrumb -->
         <div
@@ -87,6 +87,21 @@
                     </div>
 
                     <div class="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
+                        <!-- Age Group -->
+                        <flux:field>
+                            <flux:label>Age Group <span class="text-red-500">*</span></flux:label>
+                            <flux:select wire:model.blur="age_group" variant="listbox"
+                                placeholder="Select your age group">
+                                <flux:select.option value="18-25">18-25</flux:select.option>
+                                <flux:select.option value="26-35">26-35</flux:select.option>
+                                <flux:select.option value="36-45">36-45</flux:select.option>
+                                <flux:select.option value="46-55">46-55</flux:select.option>
+                                <flux:select.option value="56-65">56-65</flux:select.option>
+                                <flux:select.option value="65+">65+</flux:select.option>
+                            </flux:select>
+                            <flux:error name="age_group" />
+                        </flux:field>
+
                         <!-- Company Name -->
                         <flux:field>
                             <flux:label>Company Name <flux:badge size="sm" color="zinc">Optional</flux:badge>
@@ -94,28 +109,14 @@
                             <flux:input wire:model.blur="company_name" placeholder="Enter your company name" />
                             <flux:error name="company_name" />
                         </flux:field>
-
-                        <!-- Email -->
-                        <flux:field>
-                            <flux:label>Email Address <flux:badge size="sm" color="zinc">Optional</flux:badge>
-                            </flux:label>
-                            <flux:input wire:model.blur="email" type="email" placeholder="your.email@example.com" />
-                            <flux:error name="email" />
-                        </flux:field>
                     </div>
 
-                    <!-- Photo -->
+                    <!-- Current Residential Area with Google Places -->
                     <flux:field>
-                        <flux:label>Photo <flux:badge size="sm" color="zinc">Optional</flux:badge>
-                        </flux:label>
-                        <flux:input wire:model="photo" type="file" accept="image/*" />
-                        <flux:error name="photo" />
-                        @if ($photo)
-                            <div class="mt-3">
-                                <img src="{{ $photo->temporaryUrl() }}"
-                                    class="size-24 rounded-lg border-2 border-zinc-200 object-cover dark:border-zinc-700">
-                            </div>
-                        @endif
+                        <flux:label>Current Residential Area <span class="text-red-500">*</span></flux:label>
+                        <flux:input wire:model="current_residential_area" placeholder="Start typing your area..."
+                            id="autocomplete-input" autocomplete="off" />
+                        <flux:error name="current_residential_area" />
                     </flux:field>
                 </div>
             @endif
@@ -131,8 +132,8 @@
                     <flux:field>
                         <flux:label>Property Types <span class="text-red-500">*</span></flux:label>
                         <flux:checkbox.group wire:model.live="interests">
-                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                                @foreach (['Residential', 'Commercial', 'Plotting'] as $interest)
+                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                @foreach (['Residential', 'Commercial', 'Plotting', 'Weekend Home & Others'] as $interest)
                                     <flux:checkbox value="{{ $interest }}" label="{{ $interest }}" />
                                 @endforeach
                             </div>
@@ -208,7 +209,7 @@
                         <flux:label>Preferred Areas <span class="text-red-500">*</span></flux:label>
                         <flux:checkbox.group wire:model="areas">
                             <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                                @foreach (['Athwa - Vesu', 'Pal - Adajan - Rander', 'Katargam', 'Varachha', 'Udhna - Sachin', 'Dindoli', 'Kamrej', 'Saroli', 'Within City', 'Outer City', 'Puna Kumbhaiya'] as $area)
+                                @foreach (['Athwa - Vesu', 'Pal - Adajan - Rander', 'Katargam', 'Olpad', 'Puna Kumbhaiya', 'Varachha', 'Udhna - Sachin', 'Dindoli', 'Kamrej', 'Saroli', 'Old City', 'Outer City Area'] as $area)
                                     <flux:checkbox value="{{ $area }}" label="{{ $area }}" />
                                 @endforeach
                             </div>
@@ -243,3 +244,66 @@
         </form>
     </flux:card>
 </div>
+
+@push('scripts')
+    <script>
+        (function() {
+            let visitorAutocomplete;
+            let isAutocompleteInitialized = false;
+
+            function initVisitorAutocomplete() {
+                if (isAutocompleteInitialized) return;
+
+                const input = document.getElementById('autocomplete-input');
+                if (!input) return;
+
+                isAutocompleteInitialized = true;
+
+                // Initialize autocomplete
+                visitorAutocomplete = new google.maps.places.Autocomplete(input, {
+                    componentRestrictions: {
+                        country: 'in'
+                    },
+                    fields: ['formatted_address', 'name'],
+                    types: ['geocode']
+                });
+
+                visitorAutocomplete.addListener('place_changed', () => {
+                    const place = visitorAutocomplete.getPlace();
+
+                    if (!place || !place.formatted_address) {
+                        return;
+                    }
+
+                    // Update Livewire component
+                    @this.set('current_residential_area', place.formatted_address);
+                });
+
+                console.log('Google Places Autocomplete initialized for visitor registration');
+            }
+
+            function initWhenReady() {
+                if (typeof google !== 'undefined' &&
+                    google.maps &&
+                    google.maps.places) {
+                    initVisitorAutocomplete();
+                } else {
+                    setTimeout(initWhenReady, 100);
+                }
+            }
+
+            // Listen for Livewire navigation events
+            document.addEventListener('livewire:navigated', () => {
+                isAutocompleteInitialized = false;
+                initWhenReady();
+            });
+
+            // Initial load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initWhenReady);
+            } else {
+                initWhenReady();
+            }
+        })();
+    </script>
+@endpush

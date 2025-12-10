@@ -12,13 +12,14 @@ class Visitor extends Model
     protected $fillable = [
         'name',
         'phone',
-        'email',
+        'age_group',
+        'current_residential_area',
         'company_name',
-        'photo_path',
         'interests',
         'residential_types',
         'commercial_types',
         'plotting_types',
+        'weekend_home_types',
         'planning_to_buy',
         'areas',
         'tracking_medium',
@@ -31,6 +32,7 @@ class Visitor extends Model
             'residential_types' => 'array',
             'commercial_types' => 'array',
             'plotting_types' => 'array',
+            'weekend_home_types' => 'array',
             'areas' => 'array',
         ];
     }

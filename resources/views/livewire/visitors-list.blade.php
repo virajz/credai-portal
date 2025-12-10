@@ -18,7 +18,7 @@
     <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end">
         <div class="flex-1">
             <flux:input wire:model.live.debounce.300ms="search"
-                placeholder="Search by name, email, phone, or company name..." icon="magnifying-glass" />
+                placeholder="Search by name, phone, company name, or area..." icon="magnifying-glass" />
         </div>
 
         @if ($search)
@@ -72,11 +72,11 @@
                     </flux:table.cell>
                     <flux:table.cell>
                         <div class="text-sm">
-                            @if ($visitor->email)
-                                <div>{{ $visitor->email }}</div>
-                            @endif
                             @if ($visitor->phone)
-                                <div class="text-xs text-zinc-500">{{ $visitor->phone }}</div>
+                                <div>{{ $visitor->phone }}</div>
+                            @endif
+                            @if ($visitor->age_group)
+                                <div class="text-xs text-zinc-500">Age: {{ $visitor->age_group }}</div>
                             @endif
                         </div>
                     </flux:table.cell>

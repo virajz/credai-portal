@@ -7,13 +7,10 @@ use Flux\Flux;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.front')]
 class VisitorRegistration extends Component
 {
-    use WithFileUploads;
-
     // Step tracking
     public int $currentStep = 1;
 
@@ -25,11 +22,11 @@ class VisitorRegistration extends Component
 
     public string $phone = '';
 
-    public string $email = '';
+    public string $age_group = '';
+
+    public string $current_residential_area = '';
 
     public string $company_name = '';
-
-    public $photo;
 
     // Step 2: Interests & Preferences
     public array $interests = [];
@@ -39,6 +36,8 @@ class VisitorRegistration extends Component
     public array $commercial_types = [];
 
     public array $plotting_types = [];
+
+    public array $weekend_home_types = [];
 
     public string $planning_to_buy = '';
 
@@ -57,16 +56,16 @@ class VisitorRegistration extends Component
             $rules = [
                 'name' => 'required|string|max:255',
                 'phone' => 'required|digits:10|unique:visitors,phone',
-                'email' => 'nullable|email|max:255',
+                'age_group' => 'required|in:18-25,26-35,36-45,46-55,56-65,65+',
+                'current_residential_area' => 'required|string|max:255',
                 'company_name' => 'nullable|string|max:255',
-                'photo' => 'nullable|image|max:2048',
             ];
         }
 
         if ($this->currentStep == 2) {
             $rules = [
                 'interests' => 'required|array|min:1',
-                'interests.*' => 'in:Residential,Commercial,Plotting',
+                'interests.*' => 'in:Residential,Commercial,Plotting,Weekend Home & Others',
                 'planning_to_buy' => 'required|in:Within 3 months,Within 6 months,Within a year',
                 'areas' => 'required|array|min:1',
                 'areas.*' => 'string',
@@ -117,23 +116,18 @@ class VisitorRegistration extends Component
     {
         $this->validate();
 
-        // Handle photo upload
-        $photoPath = null;
-        if ($this->photo) {
-            $photoPath = $this->photo->store('visitor-photos', 'public');
-        }
-
         // Create visitor record
         Visitor::create([
             'name' => $this->name,
             'phone' => $this->phone,
-            'email' => $this->email,
+            'age_group' => $this->age_group,
+            'current_residential_area' => $this->current_residential_area,
             'company_name' => $this->company_name,
-            'photo_path' => $photoPath,
             'interests' => $this->interests,
             'residential_types' => $this->residential_types,
             'commercial_types' => $this->commercial_types,
             'plotting_types' => $this->plotting_types,
+            'weekend_home_types' => $this->weekend_home_types,
             'planning_to_buy' => $this->planning_to_buy,
             'areas' => $this->areas,
             'tracking_medium' => $this->tracking_medium,
@@ -143,13 +137,14 @@ class VisitorRegistration extends Component
         $this->reset([
             'name',
             'phone',
-            'email',
+            'age_group',
+            'current_residential_area',
             'company_name',
-            'photo',
             'interests',
             'residential_types',
             'commercial_types',
             'plotting_types',
+            'weekend_home_types',
             'planning_to_buy',
             'areas',
             'currentStep',
