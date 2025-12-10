@@ -21,6 +21,7 @@ class Visitor extends Model
         'plotting_types',
         'planning_to_buy',
         'areas',
+        'tracking_medium',
     ];
 
     protected function casts(): array

@@ -4,9 +4,14 @@
             <flux:heading size="xl" class="mb-2">Visitors</flux:heading>
             <flux:subheading>Manage visitor registrations and information</flux:subheading>
         </div>
-        <flux:button variant="primary" wire:click="exportVisitors" icon="arrow-down-tray" icon:variant="outline">
-            Export Data
-        </flux:button>
+        <div class="flex gap-3">
+            <flux:button variant="outline" wire:click="openQrModal" icon="qr-code" icon:variant="outline">
+                Generate QR Code
+            </flux:button>
+            <flux:button variant="primary" wire:click="exportVisitors" icon="arrow-down-tray" icon:variant="outline">
+                Export Data
+            </flux:button>
+        </div>
     </div>
 
     <!-- Search -->
@@ -167,6 +172,151 @@
                 <flux:spacer />
                 <flux:button variant="ghost" wire:click="cancelDelete">Cancel</flux:button>
                 <flux:button variant="danger" wire:click="deleteVisitor">Delete visitor</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <!-- QR Code Generation Modal -->
+    <flux:modal name="generate-qr-code" class="max-w-4xl" @close="closeQrModal" wire:model="showQrModal">
+        <div class="space-y-6">
+            <div class="text-center">
+                <flux:heading size="lg">Generate Registration QR Code</flux:heading>
+                <flux:text>Enter a tracking medium to generate a unique QR code for visitor registration</flux:text>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <!-- Left Column: Input Fields -->
+                <div class="space-y-4">
+                    <flux:field>
+                        <flux:label>Tracking Medium</flux:label>
+                        <div class="flex gap-2">
+                            <flux:input wire:model="qrMedium"
+                                placeholder="e.g., Facebook, Instagram, Newspaper, Billboard" class="flex-1" />
+                            <flux:button variant="primary" wire:click="generateQrCode" icon="qr-code"
+                                icon:variant="outline">
+                                Generate
+                            </flux:button>
+                        </div>
+                        <flux:description>
+                            This will be recorded with each visitor registration to track the source
+                        </flux:description>
+                        @error('qrMedium')
+                            <flux:error>{{ $message }}</flux:error>
+                        @enderror
+                    </flux:field>
+
+                    <flux:field>
+                        <flux:label>Registration URL</flux:label>
+                        <div class="flex items-stretch overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700"
+                            x-data="{
+                                url: @entangle('generatedUrl'),
+                                copied: false,
+                                async copy() {
+                                    try {
+                                        const urlToCopy = this.url || '{{ route('visitor.register') }}';
+                                        await navigator.clipboard.writeText(urlToCopy);
+                                        this.copied = true;
+                                        setTimeout(() => this.copied = false, 1500);
+                                    } catch (e) {
+                                        console.warn('Could not copy to clipboard');
+                                    }
+                                }
+                            }">
+                            <input type="text" readonly x-bind:value="url || '{{ route('visitor.register') }}'"
+                                class="w-full bg-transparent p-3 text-sm outline-none dark:text-zinc-100" />
+                            <button @click="copy()"
+                                class="cursor-pointer border-l border-zinc-200 px-3 transition-colors dark:border-zinc-700">
+                                <flux:icon.document-duplicate x-show="!copied" variant="micro" />
+                                <flux:icon.check x-show="copied" variant="micro" class="text-green-500" />
+                            </button>
+                        </div>
+                        <flux:description>
+                            Share this URL to track visitor registrations
+                        </flux:description>
+                    </flux:field>
+
+                    <div x-data="{
+                        hasQrCode: @entangle('qrCodeSvg'),
+                        downloadPng() {
+                            const svg = document.querySelector('#qr-code-svg');
+                            if (svg) {
+                                const svgElement = svg.querySelector('svg');
+                                if (svgElement) {
+                                    const svgData = new XMLSerializer().serializeToString(svgElement);
+                                    const canvas = document.createElement('canvas');
+                                    const ctx = canvas.getContext('2d');
+                                    const img = new Image();
+                                    img.onload = () => {
+                                        canvas.width = 1200;
+                                        canvas.height = 1200;
+                                        ctx.fillStyle = 'white';
+                                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                        ctx.drawImage(img, 0, 0, 1200, 1200);
+                                        const link = document.createElement('a');
+                                        link.download = 'visitor-registration-qr-{{ Str::slug($qrMedium ?: 'code') }}.png';
+                                        link.href = canvas.toDataURL('image/png');
+                                        link.click();
+                                    };
+                                    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                                }
+                            }
+                        },
+                        downloadSvg() {
+                            const svg = document.querySelector('#qr-code-svg');
+                            if (svg) {
+                                const svgElement = svg.querySelector('svg');
+                                if (svgElement) {
+                                    const svgData = new XMLSerializer().serializeToString(svgElement);
+                                    const blob = new Blob([svgData], { type: 'image/svg+xml' });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement('a');
+                                    link.download = 'visitor-registration-qr-{{ Str::slug($qrMedium ?: 'code') }}.svg';
+                                    link.href = url;
+                                    link.click();
+                                    URL.revokeObjectURL(url);
+                                }
+                            }
+                        }
+                    }">
+                        <div class="grid grid-cols-2 gap-3">
+                            <flux:button variant="outline" @click="downloadPng" icon="arrow-down-tray"
+                                icon:variant="outline" x-bind:disabled="!hasQrCode">
+                                PNG
+                            </flux:button>
+                            <flux:button variant="outline" @click="downloadSvg" icon="arrow-down-tray"
+                                icon:variant="outline" x-bind:disabled="!hasQrCode">
+                                SVG
+                            </flux:button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: QR Code Preview -->
+                <div class="flex flex-col items-center justify-center space-y-4">
+                    <div
+                        class="relative aspect-square w-full max-w-sm overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+                        @if ($qrCodeSvg)
+                            <div class="flex h-full items-center justify-center bg-white p-6">
+                                <div id="qr-code-svg" class="max-w-full max-h-full">
+                                    {!! preg_replace('/<svg/', '<svg class="w-full h-full"', $qrCodeSvg) !!}
+                                </div>
+                            </div>
+                        @else
+                            <div
+                                class="flex h-full flex-col items-center justify-center bg-zinc-50 p-6 text-center dark:bg-zinc-800">
+                                <flux:icon.qr-code class="mb-3 h-16 w-16 text-zinc-300 dark:text-zinc-600" />
+                                <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    QR code will appear here
+                                </flux:text>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+                <flux:spacer />
+                <flux:button variant="ghost" wire:click="closeQrModal">Close</flux:button>
             </div>
         </div>
     </flux:modal>

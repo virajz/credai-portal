@@ -3,6 +3,12 @@
 namespace App\Livewire;
 
 use App\Models\Visitor;
+use BaconQrCode\Renderer\Color\Rgb;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\Fill;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -23,6 +29,14 @@ class VisitorsList extends Component
     public string $sortDirection = 'desc';
 
     public ?int $visitorToDelete = null;
+
+    public bool $showQrModal = false;
+
+    public string $qrMedium = '';
+
+    public string $qrCodeSvg = '';
+
+    public string $generatedUrl = '';
 
     public function updatingSearch(): void
     {
@@ -78,14 +92,102 @@ class VisitorsList extends Component
         $this->modal('delete-visitor')->close();
     }
 
-    public function exportVisitors(): void
+    public function openQrModal(): void
     {
-        // Export functionality can be added later if needed
-        Flux::toast(
-            heading: 'Export started',
-            text: 'Visitor data export will begin shortly.',
-            variant: 'info'
-        );
+        $this->showQrModal = true;
+        $this->reset('qrMedium', 'qrCodeSvg', 'generatedUrl');
+        $this->modal('generate-qr-code')->show();
+    }
+
+    public function generateQrCode(): void
+    {
+        $this->validate([
+            'qrMedium' => 'required|string|max:255',
+        ]);
+
+        $this->generatedUrl = route('visitor.register', ['medium' => $this->qrMedium]);
+
+        $svg = (new Writer(
+            new ImageRenderer(
+                new RendererStyle(600, 4, null, null, Fill::uniformColor(new Rgb(255, 255, 255), new Rgb(0, 0, 0))),
+                new SvgImageBackEnd
+            )
+        ))->writeString($this->generatedUrl);
+
+        $this->qrCodeSvg = trim(substr($svg, strpos($svg, "\n") + 1));
+    }
+
+    public function closeQrModal(): void
+    {
+        $this->showQrModal = false;
+        $this->reset('qrMedium', 'qrCodeSvg', 'generatedUrl');
+        $this->modal('generate-qr-code')->close();
+    }
+
+    public function exportVisitors()
+    {
+        $visitors = Visitor::query()
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'ilike', "%{$this->search}%")
+                        ->orWhere('email', 'ilike', "%{$this->search}%")
+                        ->orWhere('phone', 'ilike', "%{$this->search}%")
+                        ->orWhere('company_name', 'ilike', "%{$this->search}%");
+                });
+            })
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->get();
+
+        $filename = 'visitors_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($visitors) {
+            $file = fopen('php://output', 'w');
+
+            // Add CSV headers
+            fputcsv($file, [
+                'ID',
+                'Name',
+                'Phone',
+                'Email',
+                'Company Name',
+                'Interests',
+                'Residential Types',
+                'Commercial Types',
+                'Plotting Types',
+                'Planning to Buy',
+                'Areas',
+                'Tracking Medium',
+                'Registered At',
+            ]);
+
+            // Add data rows
+            foreach ($visitors as $visitor) {
+                fputcsv($file, [
+                    $visitor->id,
+                    $visitor->name,
+                    $visitor->phone,
+                    $visitor->email,
+                    $visitor->company_name,
+                    is_array($visitor->interests) ? implode(', ', $visitor->interests) : '',
+                    is_array($visitor->residential_types) ? implode(', ', $visitor->residential_types) : '',
+                    is_array($visitor->commercial_types) ? implode(', ', $visitor->commercial_types) : '',
+                    is_array($visitor->plotting_types) ? implode(', ', $visitor->plotting_types) : '',
+                    $visitor->planning_to_buy,
+                    is_array($visitor->areas) ? implode(', ', $visitor->areas) : '',
+                    $visitor->tracking_medium,
+                    $visitor->created_at?->format('Y-m-d H:i:s'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     #[Title('Visitors')]

@@ -17,6 +17,9 @@ class VisitorRegistration extends Component
     // Step tracking
     public int $currentStep = 1;
 
+    // Tracking medium
+    public string $tracking_medium = '';
+
     // Step 1: Personal Information
     public string $name = '';
 
@@ -40,6 +43,11 @@ class VisitorRegistration extends Component
     public string $planning_to_buy = '';
 
     public array $areas = [];
+
+    public function mount(): void
+    {
+        $this->tracking_medium = request()->query('medium', '');
+    }
 
     public function rules(): array
     {
@@ -128,6 +136,7 @@ class VisitorRegistration extends Component
             'plotting_types' => $this->plotting_types,
             'planning_to_buy' => $this->planning_to_buy,
             'areas' => $this->areas,
+            'tracking_medium' => $this->tracking_medium,
         ]);
 
         // Reset form
