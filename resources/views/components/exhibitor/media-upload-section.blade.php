@@ -269,8 +269,4 @@
             </flux:input>
         </div>
     </div>
-
-    <!-- Additional Details -->
-    <flux:textarea wire:model="additional_details" label="Additional Details"
-        placeholder="e.g., Established in 2010, Specializing in luxury villas..." rows="4" badge="Optional" />
 </div>

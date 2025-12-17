@@ -17,7 +17,7 @@
         </flux:heading>
 
         <flux:subheading size="lg" class="mx-auto mb-12 max-w-4xl">
-            Register for your free pass to CREDAI Glam 2026 - Surat's biggest property show
+            Register for your free pass to CREDAI Glam Property Show 2026 - Surat's biggest property show
         </flux:subheading>
     </div>
 

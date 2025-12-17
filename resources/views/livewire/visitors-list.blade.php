@@ -46,6 +46,7 @@
             </flux:table.column>
             <flux:table.column>Contact</flux:table.column>
             <flux:table.column>Company</flux:table.column>
+            <flux:table.column>Campaign</flux:table.column>
             <flux:table.column>Interests</flux:table.column>
             <flux:table.column>Planning to Buy</flux:table.column>
             <flux:table.column>
@@ -83,6 +84,13 @@
                     <flux:table.cell>
                         @if ($visitor->company_name)
                             {{ $visitor->company_name }}
+                        @else
+                            <span class="text-zinc-400">—</span>
+                        @endif
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        @if ($visitor->tracking_medium)
+                            <flux:badge size="sm" color="blue">{{ $visitor->tracking_medium }}</flux:badge>
                         @else
                             <span class="text-zinc-400">—</span>
                         @endif
@@ -134,7 +142,7 @@
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="7" class="text-center">
+                    <flux:table.cell colspan="8" class="text-center">
                         <div class="py-12">
                             <flux:icon.user-group class="mx-auto mb-4 text-zinc-400" variant="outline" />
                             <flux:heading size="lg" class="mb-2">No visitors found</flux:heading>

@@ -75,7 +75,7 @@ class PublicExhibitorsList extends Component
             ->toArray();
     }
 
-    #[Title('Exhibitors - CREDAI Glam 2026')]
+    #[Title('Exhibitors - CREDAI Glam Property Show 2026')]
     public function render()
     {
         $query = Exhibitor::query()
@@ -85,10 +85,10 @@ class PublicExhibitorsList extends Component
         if ($this->search) {
             $query->where(function ($q) {
                 $q->whereHas('company', function ($companyQuery) {
-                    $companyQuery->where('company_name', 'ilike', '%'.$this->search.'%');
+                    $companyQuery->where('company_name', 'ilike', '%' . $this->search . '%');
                 })
-                    ->orWhere('city', 'ilike', '%'.$this->search.'%')
-                    ->orWhere('office_address', 'ilike', '%'.$this->search.'%');
+                    ->orWhere('city', 'ilike', '%' . $this->search . '%')
+                    ->orWhere('office_address', 'ilike', '%' . $this->search . '%');
             });
         }
 

@@ -153,12 +153,12 @@ class VisitorRegistration extends Component
         // Show success toast
         Flux::toast(
             heading: 'Registration Successful!',
-            text: 'Thank you for registering for CREDAI Glam 2026. Your visitor pass details will be sent to you soon.',
+            text: 'Thank you for registering for CREDAI Glam Property Show 2026. Your visitor pass details will be sent to you soon.',
             variant: 'success'
         );
     }
 
-    #[Title('Visitor Registration - CREDAI Glam 2026')]
+    #[Title('Visitor Registration - CREDAI Glam Property Show 2026')]
     public function render()
     {
         return view('livewire.visitor-registration');
