@@ -21,7 +21,7 @@
             <div class="flex items-start gap-2">
                 <flux:icon.calendar class="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-yellow-500" />
                 <div class="text-sm text-yellow-800 dark:text-yellow-200">
-                    <strong>Important:</strong> Final submission deadline is 28th November, 2025. Please ensure all
+                    <strong>Important:</strong> Final submission deadline is 20th December, 2025. Please ensure all
                     information is accurate and complete.
                 </div>
             </div>
@@ -931,6 +931,13 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Developer Contact Info -->
+            <div class="mt-3 border-t border-zinc-200 pt-3 text-center dark:border-zinc-700">
+                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                    Developed by <span class="font-medium text-zinc-700 dark:text-zinc-300">Viraj Zaveri</span> &bull; For any queries, contact: <a href="tel:+917874949091" class="font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100">7874949091</a>
+                </flux:text>
+            </div>
         </div>
     </form>
 
@@ -969,7 +976,7 @@
                                 Important Reminder
                             </flux:heading>
                             <flux:text class="text-sm text-yellow-800 dark:text-yellow-200">
-                                Final submission deadline is <strong>28th November, 2025</strong>. You can update your
+                                Final submission deadline is <strong>20th December, 2025</strong>. You can update your
                                 information anytime before this date using the same registration link.
                             </flux:text>
                         </div>
