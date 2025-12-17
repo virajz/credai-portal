@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\ActivityLog;
 use App\Models\Company;
 use Flux\Flux;
 use Livewire\Attributes\Title;
@@ -39,6 +40,12 @@ class CreateCompany extends Component
         $validated['registration_token'] = Company::generateRegistrationToken();
 
         $company = Company::create($validated);
+
+        ActivityLog::log(
+            'company_created',
+            "Created company: {$company->company_name}",
+            ['company_id' => $company->id, 'company_name' => $company->company_name, 'category' => $company->category]
+        );
 
         Flux::toast(
             heading: 'Company created',

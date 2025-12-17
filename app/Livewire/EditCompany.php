@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\ActivityLog;
 use App\Models\Company;
 use Flux\Flux;
 use Livewire\Attributes\Title;
@@ -66,6 +67,12 @@ class EditCompany extends Component
         ]);
 
         $this->company->update($validated);
+
+        ActivityLog::log(
+            'company_updated',
+            "Updated company: {$this->company->company_name}",
+            ['company_id' => $this->company->id, 'company_name' => $this->company->company_name]
+        );
 
         Flux::toast(
             heading: 'Company updated',

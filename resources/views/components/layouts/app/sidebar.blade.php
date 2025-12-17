@@ -33,6 +33,17 @@
                     :current="request()->routeIs('visitors.*')" wire:navigate>{{ __('Visitors') }}
                 </flux:navlist.item>
             </flux:navlist.group>
+
+            @can('admin-access')
+                <flux:navlist.group :heading="__('Administration')" class="grid">
+                    <flux:navlist.item icon="users" :href="route('admin.users')"
+                        :current="request()->routeIs('admin.users')" wire:navigate>{{ __('User Management') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item icon="clipboard-document-list" :href="route('admin.activity-logs')"
+                        :current="request()->routeIs('admin.activity-logs')" wire:navigate>{{ __('Activity Logs') }}
+                    </flux:navlist.item>
+                </flux:navlist.group>
+            @endcan
         </flux:navlist>
 
         <flux:spacer />

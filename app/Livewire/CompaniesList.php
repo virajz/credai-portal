@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\ActivityLog;
 use App\Models\Company;
 use Flux\Flux;
 use Livewire\Attributes\Title;
@@ -91,6 +92,12 @@ class CompaniesList extends Component
             $company = Company::findOrFail($this->companyToDelete);
             $companyName = $company->company_name;
 
+            ActivityLog::log(
+                'company_deleted',
+                "Deleted company: {$companyName}",
+                ['company_id' => $company->id, 'company_name' => $companyName]
+            );
+
             $company->delete();
 
             $this->companyToDelete = null;
@@ -118,6 +125,12 @@ class CompaniesList extends Component
             $company->update([
                 'registration_token' => Company::generateRegistrationToken(),
             ]);
+
+            ActivityLog::log(
+                'registration_link_generated',
+                "Generated registration link for: {$company->company_name}",
+                ['company_id' => $company->id, 'company_name' => $company->company_name]
+            );
         }
 
         $this->dispatch('copy-to-clipboard', url: $company->fresh()->registration_url);
@@ -135,6 +148,13 @@ class CompaniesList extends Component
 
         if ($company->is_locked) {
             $company->unlockRegistration();
+
+            ActivityLog::log(
+                'company_unlocked',
+                "Unlocked registration for: {$company->company_name}",
+                ['company_id' => $company->id, 'company_name' => $company->company_name]
+            );
+
             Flux::toast(
                 heading: 'Link unlocked',
                 text: "{$company->company_name} can now register using their link.",
@@ -142,6 +162,13 @@ class CompaniesList extends Component
             );
         } else {
             $company->lockRegistration();
+
+            ActivityLog::log(
+                'company_locked',
+                "Locked registration for: {$company->company_name}",
+                ['company_id' => $company->id, 'company_name' => $company->company_name]
+            );
+
             Flux::toast(
                 heading: 'Link locked',
                 text: "{$company->company_name} can no longer register using their link.",

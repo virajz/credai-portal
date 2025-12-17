@@ -93,4 +93,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Visitor Management Routes
     Route::get('visitors', VisitorsList::class)->name('visitors.index');
+
+    // Admin Routes (restricted to viraj@glam2026.com)
+    Route::middleware('can:admin-access')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('users', \App\Livewire\Admin\Users::class)->name('users');
+        Route::get('activity-logs', \App\Livewire\Admin\ActivityLogs::class)->name('activity-logs');
+    });
 });
