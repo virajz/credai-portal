@@ -24,7 +24,7 @@ class VisitorFactory extends Factory
             ? fake()->randomElements(['Showroom', 'Shops', 'Offices', 'Others'], fake()->numberBetween(1, 2))
             : [];
         $plottingTypes = in_array('Plotting', $interests)
-            ? fake()->randomElements(['Industrial', 'Open'], fake()->numberBetween(1, 2))
+            ? fake()->randomElements(['Industrial', 'Residential'], fake()->numberBetween(1, 2))
             : [];
 
         return [

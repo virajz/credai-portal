@@ -182,7 +182,7 @@
                                     class="text-red-500">*</span></flux:label>
                             <flux:checkbox.group wire:model="plotting_types">
                                 <div class="grid grid-cols-2 gap-3">
-                                    @foreach (['Industrial', 'Open'] as $type)
+                                    @foreach (['Industrial', 'Residential'] as $type)
                                         <flux:checkbox value="{{ $type }}" label="{{ $type }}"
                                             variant="cards" />
                                     @endforeach

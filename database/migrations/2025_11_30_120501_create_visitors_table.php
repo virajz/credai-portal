@@ -25,7 +25,7 @@ return new class extends Migration
             $table->json('interests'); // ['Residential', 'Commercial', 'Plotting']
             $table->json('residential_types')->nullable(); // ['2 BHK', '3 BHK', etc.]
             $table->json('commercial_types')->nullable(); // ['Showroom', 'Shops', etc.]
-            $table->json('plotting_types')->nullable(); // ['Industrial', 'Open']
+            $table->json('plotting_types')->nullable(); // ['Industrial', 'Residential']
             $table->string('planning_to_buy'); // 'Within 3 months', etc.
             $table->json('areas'); // ['Athwa - Vesu', 'Pal - Adajan - Rander', etc.]
 

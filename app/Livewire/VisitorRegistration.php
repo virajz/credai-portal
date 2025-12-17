@@ -71,7 +71,7 @@ class VisitorRegistration extends Component
                 'areas.*' => 'string',
                 'residential_types.*' => 'in:2 BHK,3 BHK,4 BHK,5 BHK,Others',
                 'commercial_types.*' => 'in:Showroom,Shops,Offices,Others',
-                'plotting_types.*' => 'in:Industrial,Open',
+                'plotting_types.*' => 'in:Industrial,Residential',
             ];
 
             // Require subtypes when main property type is selected
