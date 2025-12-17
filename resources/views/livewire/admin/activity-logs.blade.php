@@ -13,10 +13,10 @@
         </div>
 
         <div class="flex gap-2">
-            <flux:select wire:model.live="filterAction" placeholder="All Actions" class="w-48">
-                <option value="">All Actions</option>
+            <flux:select wire:model.live="filterAction" placeholder="All Actions" class="w-48" variant="listbox">
+                <flux:select.option value="">All Actions</flux:select.option>
                 @foreach ($actions as $action)
-                    <option value="{{ $action }}">{{ $action }}</option>
+                    <flux:select.option value="{{ $action }}">{{ $action }}</flux:select.option>
                 @endforeach
             </flux:select>
 
@@ -55,20 +55,7 @@
                         @endif
                     </flux:table.cell>
                     <flux:table.cell>
-                        <flux:badge size="sm"
-                            :color="match ($log->action) {
-                                'user_created' => 'green',
-                                'user_updated' => 'blue',
-                                'user_deleted' => 'red',
-                                'company_created' => 'green',
-                                'company_updated' => 'blue',
-                                'company_deleted' => 'red',
-                                'company_locked' => 'orange',
-                                'company_unlocked' => 'lime',
-                                'registration_link_generated' => 'sky',
-                                'visitor_registered' => 'emerald',
-                                default => 'purple',
-                            }">
+                        <flux:badge size="sm">
                             {{ $log->action }}
                         </flux:badge>
                     </flux:table.cell>
