@@ -13,6 +13,8 @@ class CompanyForm extends Component
 
     public string $company_name = '';
 
+    public string $category = 'Builders';
+
     public string $registered_number = '';
 
     public string $main_person_name = '';
@@ -28,6 +30,7 @@ class CompanyForm extends Component
         if ($company && $company->exists) {
             $this->company = $company;
             $this->company_name = $company->company_name;
+            $this->category = $company->category ?? 'Builders';
             $this->registered_number = $company->registered_number;
             $this->main_person_name = $company->main_person_name;
             $this->stall_type = $company->stall_type ?? '';
@@ -40,6 +43,7 @@ class CompanyForm extends Component
     {
         $validated = $this->validate([
             'company_name' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'in:Builders,Allied'],
             'registered_number' => ['required', 'string', 'max:255'],
             'main_person_name' => ['required', 'string', 'max:255'],
             'stall_type' => ['nullable', 'string', 'max:255'],

@@ -56,6 +56,7 @@
                     @endif
                 </button>
             </flux:table.column>
+            <flux:table.column>Category</flux:table.column>
             <flux:table.column>Main Person</flux:table.column>
             <flux:table.column>Registered Number</flux:table.column>
             <flux:table.column>Stall Details</flux:table.column>
@@ -91,6 +92,11 @@
                                 <flux:badge size="sm" color="red" icon="lock-closed">Locked</flux:badge>
                             @endif
                         </div>
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        <flux:badge size="sm" :color="$company->category === 'Builders' ? 'blue' : 'purple'">
+                            {{ $company->category }}
+                        </flux:badge>
                     </flux:table.cell>
                     <flux:table.cell>
                         <div>{{ $company->main_person_name }}</div>
@@ -153,7 +159,7 @@
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="7" class="text-center">
+                    <flux:table.cell colspan="8" class="text-center">
                         <div class="py-12">
                             <flux:icon.inbox class="mx-auto mb-4 text-zinc-400" variant="outline" />
                             <flux:heading size="lg" class="mb-2">No companies found</flux:heading>

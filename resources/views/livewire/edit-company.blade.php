@@ -73,6 +73,15 @@
                 <div class="space-y-4">
                     <flux:input wire:model="company_name" label="Company Name" placeholder="Enter company name" />
 
+                    <flux:field>
+                        <flux:label>Category</flux:label>
+                        <flux:radio.group wire:model="category" variant="cards" class="grid grid-cols-2 gap-3">
+                            <flux:radio value="Builders" label="Builders" />
+                            <flux:radio value="Allied" label="Allied" />
+                        </flux:radio.group>
+                        <flux:description>Builders will have project details, Allied will not show projects tab</flux:description>
+                    </flux:field>
+
                     <div class="grid gap-4 md:grid-cols-2">
                         <flux:input wire:model="main_person_name" label="Main Person Name"
                             placeholder="Enter main person name" />

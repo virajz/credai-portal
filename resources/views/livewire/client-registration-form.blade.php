@@ -81,7 +81,7 @@
     <!-- Progress Indicator -->
     <div class="mb-6">
         <div class="flex items-center justify-between">
-            @for ($i = 1; $i <= 3; $i++)
+            @for ($i = 1; $i <= ($company->category === 'Allied' ? 2 : 3); $i++)
                 <button type="button" wire:click="goToStep({{ $i }})"
                     class="{{ implode(
                         ' ',
@@ -130,7 +130,7 @@
                     </span>
                 </button>
 
-                @if ($i < 3)
+                @if ($i < ($company->category === 'Allied' ? 2 : 3))
                     <div
                         class="{{ implode(
                             ' ',
@@ -161,7 +161,7 @@
                     @endif
                 </div>
                 <div>
-                    <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Step {{ $currentStep }} of 3
+                    <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Step {{ $currentStep }} of {{ $company->category === 'Allied' ? 2 : 3 }}
                     </div>
                     <div class="text-base font-semibold text-zinc-900 dark:text-white">
                         @if ($currentStep === 1)
@@ -905,7 +905,7 @@
                 </div>
 
                 <div>
-                    @if ($currentStep < 3)
+                    @if ($currentStep < ($company->category === 'Allied' ? 2 : 3))
                         <flux:button type="button" variant="primary" icon:trailing="arrow-right"
                             wire:click="nextStep" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="nextStep">Next</span>

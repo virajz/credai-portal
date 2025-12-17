@@ -19,6 +19,16 @@
                         <flux:error name="company_name" />
                     </flux:field>
 
+                    <flux:field>
+                        <flux:label>Category <span class="text-red-500">*</span></flux:label>
+                        <flux:radio.group wire:model="category" variant="cards" class="grid grid-cols-2 gap-3">
+                            <flux:radio value="Builders" label="Builders" />
+                            <flux:radio value="Allied" label="Allied" />
+                        </flux:radio.group>
+                        <flux:error name="category" />
+                        <flux:description>Builders will have project details, Allied will not show projects tab</flux:description>
+                    </flux:field>
+
                     <div class="grid gap-4 md:grid-cols-2">
                         <flux:field>
                             <flux:label>Main Person Name <span class="text-red-500">*</span></flux:label>

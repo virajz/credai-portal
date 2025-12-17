@@ -11,6 +11,8 @@ class CreateCompany extends Component
 {
     public string $company_name = '';
 
+    public string $category = 'Builders';
+
     public string $registered_number = '';
 
     public string $main_person_name = '';
@@ -25,6 +27,7 @@ class CreateCompany extends Component
     {
         $validated = $this->validate([
             'company_name' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'in:Builders,Allied'],
             'registered_number' => ['required', 'string', 'max:255'],
             'main_person_name' => ['required', 'string', 'max:255'],
             'stall_type' => ['nullable', 'string', 'max:255'],
