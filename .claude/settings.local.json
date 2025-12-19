@@ -1,12 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(php artisan migrate:fresh:*)",
+      "Bash(vendor/bin/pint:*)"
+    ]
+  },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "laravel-boost",
     "herd"
-  ],
-  "permissions": {
-    "allow": [
-      "Bash(php artisan migrate:fresh:*)"
-    ]
-  }
+  ]
 }

@@ -61,6 +61,8 @@ Route::get('registration/expired', function () {
 
 // Public visitor registration routes (no auth required)
 Route::get('visitor-register', VisitorRegistration::class)->name('visitor.register');
+Route::get('visitor-success/{visitor}', \App\Livewire\VisitorSuccess::class)->name('visitor.success');
+Route::get('visitors/{visitor}', \App\Livewire\VisitorShow::class)->name('visitor.show');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

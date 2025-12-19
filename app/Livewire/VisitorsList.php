@@ -3,12 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Visitor;
-use BaconQrCode\Renderer\Color\Rgb;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\Fill;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
+use App\Services\QrCodeService;
 use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -37,6 +32,12 @@ class VisitorsList extends Component
     public string $qrCodeSvg = '';
 
     public string $generatedUrl = '';
+
+    public bool $showVisitorQrModal = false;
+
+    public ?Visitor $selectedVisitor = null;
+
+    public string $visitorQrCodeSvg = '';
 
     public function updatingSearch(): void
     {
@@ -107,14 +108,8 @@ class VisitorsList extends Component
 
         $this->generatedUrl = route('visitor.register', ['medium' => $this->qrMedium]);
 
-        $svg = (new Writer(
-            new ImageRenderer(
-                new RendererStyle(600, 4, null, null, Fill::uniformColor(new Rgb(255, 255, 255), new Rgb(0, 0, 0))),
-                new SvgImageBackEnd
-            )
-        ))->writeString($this->generatedUrl);
-
-        $this->qrCodeSvg = trim(substr($svg, strpos($svg, "\n") + 1));
+        $qrCodeService = new QrCodeService;
+        $this->qrCodeSvg = $qrCodeService->generate($this->generatedUrl);
     }
 
     public function closeQrModal(): void
@@ -122,6 +117,26 @@ class VisitorsList extends Component
         $this->showQrModal = false;
         $this->reset('qrMedium', 'qrCodeSvg', 'generatedUrl');
         $this->modal('generate-qr-code')->close();
+    }
+
+    public function showVisitorQrCode(int $visitorId): void
+    {
+        $this->selectedVisitor = Visitor::findOrFail($visitorId);
+        $url = route('visitor.show', $this->selectedVisitor);
+
+        $qrCodeService = new QrCodeService;
+        $this->visitorQrCodeSvg = $qrCodeService->generate($url);
+
+        $this->showVisitorQrModal = true;
+        $this->modal('visitor-qr-code')->show();
+    }
+
+    public function closeVisitorQrModal(): void
+    {
+        $this->showVisitorQrModal = false;
+        $this->selectedVisitor = null;
+        $this->visitorQrCodeSvg = '';
+        $this->modal('visitor-qr-code')->close();
     }
 
     public function exportVisitors()

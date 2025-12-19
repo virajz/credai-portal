@@ -132,6 +132,10 @@
                                         wire:click="$dispatch('show-visitor-details', { visitorId: {{ $visitor->id }} })">
                                         View Details
                                     </flux:menu.item>
+                                    <flux:menu.item icon="qr-code" icon:variant="outline"
+                                        wire:click="showVisitorQrCode({{ $visitor->id }})">
+                                        QR Code
+                                    </flux:menu.item>
                                     <flux:menu.separator />
                                     <flux:menu.item icon="trash" icon:variant="outline" variant="danger"
                                         wire:click="confirmDelete({{ $visitor->id }})">Delete</flux:menu.item>
@@ -326,6 +330,97 @@
                 <flux:spacer />
                 <flux:button variant="ghost" wire:click="closeQrModal">Close</flux:button>
             </div>
+        </div>
+    </flux:modal>
+
+    <!-- Visitor QR Code Modal -->
+    <flux:modal name="visitor-qr-code" class="max-w-2xl" @close="closeVisitorQrModal" wire:model="showVisitorQrModal">
+        <div class="space-y-6">
+            @if ($selectedVisitor)
+                <div class="text-center">
+                    <flux:heading size="lg">Visitor QR Code</flux:heading>
+                    <flux:text class="mt-2">{{ $selectedVisitor->name }}</flux:text>
+                </div>
+
+                <div class="flex flex-col items-center justify-center space-y-4">
+                    <div
+                        class="relative aspect-square w-full max-w-sm overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+                        @if ($visitorQrCodeSvg)
+                            <div class="flex h-full items-center justify-center bg-white p-6">
+                                <div id="visitor-qr-code-svg" class="max-h-full max-w-full">
+                                    {!! preg_replace('/<svg/', '<svg class="w-full h-full"', $visitorQrCodeSvg) !!}
+                                </div>
+                            </div>
+                        @else
+                            <div
+                                class="flex h-full flex-col items-center justify-center bg-zinc-50 p-6 text-center dark:bg-zinc-800">
+                                <flux:icon.qr-code class="mb-3 h-16 w-16 text-zinc-300 dark:text-zinc-600" />
+                                <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    Loading QR code...
+                                </flux:text>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="grid w-full max-w-sm grid-cols-2 gap-3" x-data="{
+                        visitorName: '{{ $selectedVisitor ? \Illuminate\Support\Str::slug($selectedVisitor->name) : '' }}',
+                        downloadPng() {
+                            const svg = document.querySelector('#visitor-qr-code-svg');
+                            if (svg) {
+                                const svgElement = svg.querySelector('svg');
+                                if (svgElement) {
+                                    const svgData = new XMLSerializer().serializeToString(svgElement);
+                                    const canvas = document.createElement('canvas');
+                                    const ctx = canvas.getContext('2d');
+                                    const img = new Image();
+                                    img.onload = () => {
+                                        canvas.width = 1200;
+                                        canvas.height = 1200;
+                                        ctx.fillStyle = 'white';
+                                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                        ctx.drawImage(img, 0, 0, 1200, 1200);
+                                        const link = document.createElement('a');
+                                        link.download = this.visitorName + '-visitor-qr-code.png';
+                                        link.href = canvas.toDataURL('image/png');
+                                        link.click();
+                                    };
+                                    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                                }
+                            }
+                        },
+                        downloadSvg() {
+                            const svg = document.querySelector('#visitor-qr-code-svg');
+                            if (svg) {
+                                const svgElement = svg.querySelector('svg');
+                                if (svgElement) {
+                                    const svgData = new XMLSerializer().serializeToString(svgElement);
+                                    const blob = new Blob([svgData], { type: 'image/svg+xml' });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement('a');
+                                    link.download = this.visitorName + '-visitor-qr-code.svg';
+                                    link.href = url;
+                                    link.click();
+                                    URL.revokeObjectURL(url);
+                                }
+                            }
+                        }
+                    }">
+                        <flux:button variant="outline" @click="downloadPng" icon="arrow-down-tray"
+                            icon:variant="outline">
+                            Download PNG
+                        </flux:button>
+                        <flux:button variant="outline" @click="downloadSvg" icon="arrow-down-tray"
+                            icon:variant="outline">
+                            Download SVG
+                        </flux:button>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+                    <flux:spacer />
+                    <flux:button variant="ghost" wire:click="closeVisitorQrModal">Close</flux:button>
+                </div>
+            @endif
         </div>
     </flux:modal>
 </div>

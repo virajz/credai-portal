@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\Visitor;
-use Flux\Flux;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -117,7 +116,7 @@ class VisitorRegistration extends Component
         $this->validate();
 
         // Create visitor record
-        Visitor::create([
+        $visitor = Visitor::create([
             'name' => $this->name,
             'phone' => $this->phone,
             'age_group' => $this->age_group,
@@ -133,29 +132,8 @@ class VisitorRegistration extends Component
             'tracking_medium' => $this->tracking_medium,
         ]);
 
-        // Reset form
-        $this->reset([
-            'name',
-            'phone',
-            'age_group',
-            'current_residential_area',
-            'company_name',
-            'interests',
-            'residential_types',
-            'commercial_types',
-            'plotting_types',
-            'weekend_home_types',
-            'planning_to_buy',
-            'areas',
-            'currentStep',
-        ]);
-
-        // Show success toast
-        Flux::toast(
-            heading: 'Registration Successful!',
-            text: 'Thank you for registering for CREDAI Glam Property Show 2026. Your visitor pass details will be sent to you soon.',
-            variant: 'success'
-        );
+        // Redirect to success page with QR code
+        $this->redirect(route('visitor.success', $visitor), navigate: true);
     }
 
     #[Title('Visitor Registration - CREDAI Glam Property Show 2026')]

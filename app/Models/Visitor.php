@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Visitor extends Model
 {
@@ -35,5 +36,19 @@ class Visitor extends Model
             'weekend_home_types' => 'array',
             'areas' => 'array',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Visitor $visitor) {
+            if (empty($visitor->uuid)) {
+                $visitor->uuid = (string) Str::uuid();
+            }
+        });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
     }
 }
