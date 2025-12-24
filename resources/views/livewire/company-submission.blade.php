@@ -145,10 +145,12 @@
                                             </div>
                                         @endif
                                     </div>
-                                    <flux:button variant="primary" size="sm" icon="arrow-down-tray"
-                                        href="{{ Storage::url($company->exhibitor->logo_path) }}" download>
-                                        Download
-                                    </flux:button>
+                                    <a href="{{ Storage::url($company->exhibitor->logo_path) }}"
+                                        download="{{ basename($company->exhibitor->logo_path) }}">
+                                        <flux:button variant="primary" size="sm" icon="arrow-down-tray">
+                                            Download
+                                        </flux:button>
+                                    </a>
                                 </div>
                             </div>
                         @endif
