@@ -47,12 +47,6 @@
         <flux:textarea wire:model="extra_furniture_details" label="Extra Furniture Details"
             placeholder="List any additional furniture or equipment required..." rows="3" badge="Optional" />
 
-        <flux:textarea wire:model="exhibitor_passes_details" label="Exhibitor Passes Details"
-            placeholder="Number and type of passes required..." rows="3" badge="Optional" />
-
-        <flux:textarea wire:model="car_pass_details" label="Car Pass Details"
-            placeholder="Number of car passes and vehicle details..." rows="3" badge="Optional" />
-
         <!-- Branding -->
         <flux:field variant="inline">
             <flux:label>Use Brand Name as Fascia</flux:label>
