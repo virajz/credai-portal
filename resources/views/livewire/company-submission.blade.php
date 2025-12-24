@@ -128,9 +128,28 @@
                             <div>
                                 <div class="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Company Logo
                                 </div>
-                                <img src="{{ Storage::url($company->exhibitor->logo_path) }}"
-                                    alt="{{ $company->company_name }} logo"
-                                    class="h-20 w-auto rounded-lg border border-zinc-200 bg-white p-2 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+                                <div class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                                    <flux:icon.photo class="size-10 text-zinc-400 dark:text-zinc-500" />
+                                    <div class="flex-1 min-w-0">
+                                        <div class="truncate text-sm font-medium">{{ basename($company->exhibitor->logo_path) }}</div>
+                                        @php
+                                            try {
+                                                $fileSize = Storage::disk('public')->size($company->exhibitor->logo_path);
+                                            } catch (\Exception $e) {
+                                                $fileSize = null;
+                                            }
+                                        @endphp
+                                        @if ($fileSize)
+                                            <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                {{ number_format($fileSize / 1024, 2) }} KB
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <flux:button variant="primary" size="sm" icon="arrow-down-tray"
+                                        href="{{ Storage::url($company->exhibitor->logo_path) }}" download>
+                                        Download
+                                    </flux:button>
+                                </div>
                             </div>
                         @endif
 

@@ -131,29 +131,35 @@
                     <flux:table.cell>
                         <div class="flex items-center gap-2" x-data="{ copied: false }"
                             @copy-to-clipboard.window="if ($event.detail.url) { navigator.clipboard.writeText($event.detail.url).then(() => { copied = true; setTimeout(() => copied = false, 2000) }) }">
-                            <flux:button wire:click="generateAndCopyLink({{ $company->id }})" variant="ghost"
-                                size="sm" icon="clipboard" icon:variant="outline"
-                                x-tooltip="copied ? 'Copied!' : 'Copy registration link'" />
+                            @if ($company->has_submitted)
+                                <flux:tooltip content="View Submission" position="top">
+                                    <flux:button :href="route('companies.submission', $company)" variant="ghost"
+                                        size="sm" icon="document-magnifying-glass" icon:variant="outline" wire:navigate />
+                                </flux:tooltip>
+                            @endif
 
-                            <flux:button wire:click="toggleLock({{ $company->id }})" variant="ghost" size="sm"
-                                :icon="$company->is_locked ? 'lock-closed' : 'lock-open'" icon:variant="outline"
-                                x-tooltip="'{{ $company->is_locked ? 'Unlock registration link' : 'Lock registration link' }}'" />
+                            <div x-tooltip="copied ? 'Copied!' : 'Copy registration link'">
+                                <flux:button wire:click="generateAndCopyLink({{ $company->id }})" variant="ghost"
+                                    size="sm" icon="clipboard" icon:variant="outline" />
+                            </div>
 
-                            <flux:dropdown position="bottom" align="end">
-                                <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" />
-                                <flux:menu class="w-48">
-                                    @if ($company->has_submitted)
-                                        <flux:menu.item icon="eye" icon:variant="outline"
-                                            :href="route('companies.submission', $company)" wire:navigate>View
-                                            Submission</flux:menu.item>
-                                    @endif
-                                    <flux:menu.item icon="pencil" icon:variant="outline"
-                                        :href="route('companies.edit', $company)" wire:navigate>Edit</flux:menu.item>
-                                    <flux:menu.separator />
-                                    <flux:menu.item icon="trash" icon:variant="outline" variant="danger"
-                                        wire:click="confirmDelete({{ $company->id }})">Delete</flux:menu.item>
-                                </flux:menu>
-                            </flux:dropdown>
+                            <div x-tooltip="'{{ $company->is_locked ? 'Unlock registration link' : 'Lock registration link' }}'">
+                                <flux:button wire:click="toggleLock({{ $company->id }})" variant="ghost" size="sm"
+                                    :icon="$company->is_locked ? 'lock-closed' : 'lock-open'" icon:variant="outline" />
+                            </div>
+
+                            <flux:tooltip content="More actions" position="top">
+                                <flux:dropdown position="bottom" align="end">
+                                    <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" />
+                                    <flux:menu class="w-48">
+                                        <flux:menu.item icon="pencil" icon:variant="outline"
+                                            :href="route('companies.edit', $company)" wire:navigate>Edit</flux:menu.item>
+                                        <flux:menu.separator />
+                                        <flux:menu.item icon="trash" icon:variant="outline" variant="danger"
+                                            wire:click="confirmDelete({{ $company->id }})">Delete</flux:menu.item>
+                                    </flux:menu>
+                                </flux:dropdown>
+                            </flux:tooltip>
                         </div>
                     </flux:table.cell>
                 </flux:table.row>
