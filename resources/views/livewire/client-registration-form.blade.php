@@ -90,6 +90,7 @@
                             $currentStep === $i ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white' : '',
                             in_array($i, $completedSteps) && $currentStep !== $i ? 'text-green-600 dark:text-green-500' : '',
                             !in_array($i, $completedSteps) && $currentStep !== $i ? 'text-zinc-400 dark:text-zinc-600' : '',
+                            in_array($i, $stepsWithErrors) ? 'ring-2 ring-red-500 ring-offset-2 dark:ring-red-600 dark:ring-offset-zinc-950' : '',
                         ]),
                     ) }}">
                     <span
@@ -99,13 +100,16 @@
                                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full md:h-6 md:w-6',
                                 $currentStep === $i ? 'bg-zinc-600 text-white dark:bg-zinc-400 dark:text-zinc-900' : '',
                                 in_array($i, $completedSteps) && $currentStep !== $i ? 'bg-green-600 text-white dark:bg-green-500' : '',
-                                !in_array($i, $completedSteps) && $currentStep !== $i
+                                in_array($i, $stepsWithErrors) && !in_array($i, $completedSteps) ? 'bg-red-600 text-white dark:bg-red-500' : '',
+                                !in_array($i, $completedSteps) && !in_array($i, $stepsWithErrors) && $currentStep !== $i
                                     ? 'bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600'
                                     : '',
                             ]),
                         ) }}">
                         @if (in_array($i, $completedSteps))
                             <flux:icon.check variant="outline" class="size-4 md:size-3.5" />
+                        @elseif (in_array($i, $stepsWithErrors))
+                            <flux:icon.exclamation-triangle variant="outline" class="size-4 md:size-3.5" />
                         @else
                             <span class="text-xs font-semibold md:hidden">{{ $i }}</span>
                             <span class="hidden md:inline">

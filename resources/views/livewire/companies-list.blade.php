@@ -27,7 +27,7 @@
                 Filters
                 @if ($this->hasActiveFilters())
                     <flux:badge size="sm" color="blue">
-                        {{ collect([$filterStatus, $filterLockStatus, $filterStallAssignment, $filterCategory])->filter()->count() }}
+                        {{ collect([$filterStatus, $filterLockStatus, $filterStallAssignment, $filterCategory, $filterLogoStatus])->filter()->count() }}
                     </flux:badge>
                 @endif
             </flux:button>
@@ -248,6 +248,19 @@
                     <flux:radio value="" label="All" />
                     <flux:radio value="assigned" label="Assigned" />
                     <flux:radio value="unassigned" label="Not Assigned" />
+                </flux:radio.group>
+            </flux:field>
+
+            <flux:separator />
+
+            <!-- Logo Status Filter -->
+            <flux:field>
+                <flux:label>Logo Status</flux:label>
+                <flux:radio.group wire:model.live="filterLogoStatus">
+                    <flux:radio value="" label="All Submissions" />
+                    <flux:radio value="with_logo" label="Has Logo" />
+                    <flux:radio value="without_logo" label="Missing Logo" />
+                    <flux:radio value="no_submission" label="No Submission" />
                 </flux:radio.group>
             </flux:field>
 

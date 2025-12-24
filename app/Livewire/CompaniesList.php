@@ -41,6 +41,9 @@ class CompaniesList extends Component
     #[Url]
     public ?string $filterCategory = null;
 
+    #[Url]
+    public ?string $filterLogoStatus = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -58,7 +61,7 @@ class CompaniesList extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'filterStatus', 'filterLockStatus', 'filterStallAssignment', 'filterCategory']);
+        $this->reset(['search', 'filterStatus', 'filterLockStatus', 'filterStallAssignment', 'filterCategory', 'filterLogoStatus']);
         $this->sortBy = 'company_name';
         $this->sortDirection = 'asc';
         $this->resetPage();
@@ -81,6 +84,7 @@ class CompaniesList extends Component
             || $this->filterLockStatus !== null
             || $this->filterStallAssignment !== null
             || $this->filterCategory !== null
+            || $this->filterLogoStatus !== null
             || ! empty($this->search);
     }
 
@@ -276,6 +280,22 @@ class CompaniesList extends Component
                     $query->where('category', 'Builders');
                 } elseif ($this->filterCategory === 'allied') {
                     $query->where('category', 'Allied');
+                }
+            })
+            ->when($this->filterLogoStatus !== null, function ($query) {
+                if ($this->filterLogoStatus === 'with_logo') {
+                    $query->whereHas('exhibitor', function ($q) {
+                        $q->whereNotNull('logo_path');
+                    });
+                } elseif ($this->filterLogoStatus === 'without_logo') {
+                    $query->where(function ($q) {
+                        $q->whereDoesntHave('exhibitor')
+                            ->orWhereHas('exhibitor', function ($subQ) {
+                                $subQ->whereNull('logo_path');
+                            });
+                    });
+                } elseif ($this->filterLogoStatus === 'no_submission') {
+                    $query->where('has_submitted', false);
                 }
             })
             ->orderBy($this->sortBy, $this->sortDirection);

@@ -91,6 +91,9 @@ class ClientRegistrationForm extends Component
 
     public ?int $selectedProjectIndex = null;
 
+    // Track which steps have errors
+    public array $stepsWithErrors = [];
+
     /**
      * Component initialization
      */
@@ -376,6 +379,41 @@ class ClientRegistrationForm extends Component
     }
 
     /**
+     * Check for errors in all steps to highlight them
+     */
+    protected function checkAllStepsForErrors(): void
+    {
+        $this->stepsWithErrors = [];
+
+        // Check Step 1
+        $step1Errors = 0;
+        foreach (['office_address', 'city', 'logo', 'brochure'] as $field) {
+            if ($this->getErrorBag()->has($field)) {
+                $step1Errors++;
+            }
+        }
+        if ($step1Errors > 0) {
+            $this->stepsWithErrors[] = 1;
+        }
+
+        // Check Step 2
+        $step2Errors = 0;
+        foreach (['facia_name'] as $field) {
+            if ($this->getErrorBag()->has($field)) {
+                $step2Errors++;
+            }
+        }
+        if ($step2Errors > 0) {
+            $this->stepsWithErrors[] = 2;
+        }
+
+        // Check Step 3 (Projects)
+        if ($this->getErrorBag()->has('projects.*')) {
+            $this->stepsWithErrors[] = 3;
+        }
+    }
+
+    /**
      * Validate the current step
      */
     protected function validateCurrentStep(): void
@@ -649,6 +687,7 @@ class ClientRegistrationForm extends Component
 
         if ($this->getErrorBag()->any()) {
             $this->currentStep = 3;
+            $this->checkAllStepsForErrors();
 
             return;
         }
@@ -675,6 +714,18 @@ class ClientRegistrationForm extends Component
             'logo.required' => 'Company logo is required.',
             'brochure.required' => 'Company brochure is required.',
         ]);
+
+        // Check if there are any validation errors and highlight affected steps
+        if ($this->getErrorBag()->any()) {
+            $this->checkAllStepsForErrors();
+
+            // Navigate to first step with errors
+            if (! empty($this->stepsWithErrors)) {
+                $this->currentStep = min($this->stepsWithErrors);
+            }
+
+            return;
+        }
 
         // Handle file uploads with original filenames
         $logoPath = $this->logo ? $this->logo->storeAs(
