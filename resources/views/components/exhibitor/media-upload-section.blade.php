@@ -30,7 +30,7 @@
             }
         }">
             <div class="space-y-2">
-                <flux:label>Upload Logo</flux:label>
+                <flux:label>Upload Logo <span class="text-red-500">*</span></flux:label>
 
                 <div class="relative">
                     <input type="file" @change="handleFile($event)"
@@ -144,7 +144,7 @@
             }
         }">
             <div class="space-y-2">
-                <flux:label>Company Brochure</flux:label>
+                <flux:label>Company Brochure <span class="text-red-500">*</span></flux:label>
 
                 <div class="relative">
                     <input type="file" @change="handleFile($event)" accept="application/pdf" class="hidden"

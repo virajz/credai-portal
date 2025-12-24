@@ -16,16 +16,6 @@
                 @endif
             </flux:subheading>
         </div>
-        <div
-            class="shrink-0 rounded-lg border border-yellow-300 bg-yellow-50 p-3 dark:border-yellow-700 dark:bg-yellow-900/20">
-            <div class="flex items-start gap-2">
-                <flux:icon.calendar class="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-yellow-500" />
-                <div class="text-sm text-yellow-800 dark:text-yellow-200">
-                    <strong>Important:</strong> Final submission deadline is 20th December, 2025. Please ensure all
-                    information is accurate and complete.
-                </div>
-            </div>
-        </div>
     </div>
 
     @if (session('success'))
@@ -90,7 +80,9 @@
                             $currentStep === $i ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white' : '',
                             in_array($i, $completedSteps) && $currentStep !== $i ? 'text-green-600 dark:text-green-500' : '',
                             !in_array($i, $completedSteps) && $currentStep !== $i ? 'text-zinc-400 dark:text-zinc-600' : '',
-                            in_array($i, $stepsWithErrors) ? 'ring-2 ring-red-500 ring-offset-2 dark:ring-red-600 dark:ring-offset-zinc-950' : '',
+                            in_array($i, $stepsWithErrors)
+                                ? 'ring-2 ring-red-500 ring-offset-2 dark:ring-red-600 dark:ring-offset-zinc-950'
+                                : '',
                         ]),
                     ) }}">
                     <span
@@ -165,7 +157,8 @@
                     @endif
                 </div>
                 <div>
-                    <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Step {{ $currentStep }} of {{ $company->category === 'Allied' ? 2 : 3 }}
+                    <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Step {{ $currentStep }} of
+                        {{ $company->category === 'Allied' ? 2 : 3 }}
                     </div>
                     <div class="text-base font-semibold text-zinc-900 dark:text-white">
                         @if ($currentStep === 1)
@@ -188,17 +181,25 @@
                 <div class="space-y-6">
                     <flux:heading size="lg">Company Details</flux:heading>
 
-                    <flux:textarea wire:model="office_address" label="Office Address"
-                        placeholder="123 Main Street, Building Name, Area" rows="3" required />
+                    <flux:field>
+                        <flux:label>Office Address <span class="text-red-500">*</span></flux:label>
+                        <flux:textarea wire:model="office_address" placeholder="123 Main Street, Building Name, Area"
+                            rows="3" required />
+                        <flux:error name="office_address" />
+                    </flux:field>
 
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <flux:select wire:model="city" label="City" placeholder="Select city" variant="listbox"
-                            searchable required>
-                            @foreach ($cities as $cityOption)
-                                <flux:select.option value="{{ $cityOption }}">{{ $cityOption }}
-                                </flux:select.option>
-                            @endforeach
-                        </flux:select>
+                        <flux:field>
+                            <flux:label>City <span class="text-red-500">*</span></flux:label>
+                            <flux:select wire:model="city" placeholder="Select city" variant="listbox" searchable
+                                required>
+                                @foreach ($cities as $cityOption)
+                                    <flux:select.option value="{{ $cityOption }}">{{ $cityOption }}
+                                    </flux:select.option>
+                                @endforeach
+                            </flux:select>
+                            <flux:error name="city" />
+                        </flux:field>
 
                         <flux:input wire:model="gst_number" label="GST Number" placeholder="22AAAAA0000A1Z5"
                             badge="Optional" />
@@ -939,7 +940,9 @@
             <!-- Developer Contact Info -->
             <div class="mt-3 border-t border-zinc-200 pt-3 text-center dark:border-zinc-700">
                 <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                    Developed by <span class="font-medium text-zinc-700 dark:text-zinc-300">Viraj Zaveri</span> &bull; For any queries, contact: <a href="tel:+917874949091" class="font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100">7874949091</a>
+                    Developed by <span class="font-medium text-zinc-700 dark:text-zinc-300">Viraj Zaveri</span> &bull;
+                    For any queries, contact: <a href="tel:+917874949091"
+                        class="font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100">7874949091</a>
                 </flux:text>
             </div>
         </div>
@@ -969,24 +972,6 @@
                 <flux:heading size="xl" class="mb-2">Thank You!</flux:heading>
                 <flux:subheading>Your exhibitor information has been saved successfully.</flux:subheading>
             </div>
-
-            <!-- Important Notice -->
-            <flux:card class="border-2 border-yellow-300 bg-yellow-50 dark:border-yellow-700 dark:bg-yellow-900/20">
-                <div class="space-y-3">
-                    <div class="flex items-start gap-3">
-                        <flux:icon.calendar class="mt-0.5 size-5 shrink-0 text-yellow-600 dark:text-yellow-500" />
-                        <div>
-                            <flux:heading size="base" class="mb-1 text-yellow-900 dark:text-yellow-100">
-                                Important Reminder
-                            </flux:heading>
-                            <flux:text class="text-sm text-yellow-800 dark:text-yellow-200">
-                                Final submission deadline is <strong>20th December, 2025</strong>. You can update your
-                                information anytime before this date using the same registration link.
-                            </flux:text>
-                        </div>
-                    </div>
-                </div>
-            </flux:card>
 
             <!-- Additional Info -->
             <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-800">
