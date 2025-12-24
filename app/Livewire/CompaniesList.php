@@ -38,6 +38,9 @@ class CompaniesList extends Component
     #[Url]
     public ?string $filterStallAssignment = null;
 
+    #[Url]
+    public ?string $filterCategory = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -55,7 +58,7 @@ class CompaniesList extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'filterStatus', 'filterLockStatus', 'filterStallAssignment']);
+        $this->reset(['search', 'filterStatus', 'filterLockStatus', 'filterStallAssignment', 'filterCategory']);
         $this->sortBy = 'company_name';
         $this->sortDirection = 'asc';
         $this->resetPage();
@@ -77,6 +80,7 @@ class CompaniesList extends Component
         return $this->filterStatus !== null
             || $this->filterLockStatus !== null
             || $this->filterStallAssignment !== null
+            || $this->filterCategory !== null
             || ! empty($this->search);
     }
 
@@ -265,6 +269,13 @@ class CompaniesList extends Component
                     $query->whereNotNull('stall_number');
                 } elseif ($this->filterStallAssignment === 'unassigned') {
                     $query->whereNull('stall_number');
+                }
+            })
+            ->when($this->filterCategory !== null, function ($query) {
+                if ($this->filterCategory === 'builders') {
+                    $query->where('category', 'Builders');
+                } elseif ($this->filterCategory === 'allied') {
+                    $query->where('category', 'Allied');
                 }
             })
             ->orderBy($this->sortBy, $this->sortDirection);

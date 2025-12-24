@@ -126,12 +126,18 @@
                     <div class="space-y-6">
                         @if ($company->exhibitor->logo_path)
                             <div>
-                                <div class="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Company Logo
+                                <div class="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Company Logo (Client Uploaded)
                                 </div>
                                 <div class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
                                     <flux:icon.photo class="size-10 text-zinc-400 dark:text-zinc-500" />
                                     <div class="flex-1 min-w-0">
-                                        <div class="truncate text-sm font-medium">{{ basename($company->exhibitor->logo_path) }}</div>
+                                        @php
+                                            $originalLogoName = basename($company->exhibitor->logo_path);
+                                            if (preg_match('/^\d+_(.+)$/', $originalLogoName, $matches)) {
+                                                $originalLogoName = $matches[1];
+                                            }
+                                        @endphp
+                                        <div class="truncate text-sm font-medium">{{ $originalLogoName }}</div>
                                         @php
                                             try {
                                                 $fileSize = Storage::disk('public')->size($company->exhibitor->logo_path);
@@ -146,13 +152,108 @@
                                         @endif
                                     </div>
                                     <a href="{{ Storage::url($company->exhibitor->logo_path) }}"
-                                        download="{{ basename($company->exhibitor->logo_path) }}">
+                                        download="{{ $originalLogoName }}">
                                         <flux:button variant="primary" size="sm" icon="arrow-down-tray">
                                             Download
                                         </flux:button>
                                     </a>
                                 </div>
                             </div>
+                        @endif
+
+                        @if ($company->exhibitor->logo_path)
+                            @php
+                                $logoExtension = strtolower(pathinfo($company->exhibitor->logo_path, PATHINFO_EXTENSION));
+                                $isImageLogo = in_array($logoExtension, ['jpg', 'jpeg', 'png']);
+                            @endphp
+
+                            @if ($isImageLogo && $company->exhibitor->preview_logo)
+                                <div>
+                                    <div class="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Preview Logo (PNG/JPG) - Same as client uploaded</div>
+                                    <div class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                                        <flux:icon.photo class="size-10 text-zinc-400 dark:text-zinc-500" />
+                                        <div class="flex-1 min-w-0">
+                                            @php
+                                                $previewLogoName = basename($company->exhibitor->preview_logo);
+                                                if (preg_match('/^\d+_(.+)$/', $previewLogoName, $matches)) {
+                                                    $previewLogoName = $matches[1];
+                                                }
+                                            @endphp
+                                            <div class="truncate text-sm font-medium">{{ $previewLogoName }}</div>
+                                            @php
+                                                try {
+                                                    $previewFileSize = Storage::disk('public')->size($company->exhibitor->preview_logo);
+                                                } catch (\Exception $e) {
+                                                    $previewFileSize = null;
+                                                }
+                                            @endphp
+                                            @if ($previewFileSize)
+                                                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                    {{ number_format($previewFileSize / 1024, 2) }} KB
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <a href="{{ Storage::url($company->exhibitor->preview_logo) }}"
+                                            download="{{ $previewLogoName }}">
+                                            <flux:button variant="primary" size="sm" icon="arrow-down-tray">
+                                                Download
+                                            </flux:button>
+                                        </a>
+                                    </div>
+                                </div>
+                            @elseif (!$isImageLogo)
+                                <div>
+                                    <div class="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Upload Preview Logo (PNG/JPG)</div>
+                                    <div class="space-y-3">
+                                        @if ($company->exhibitor->preview_logo)
+                                            <div class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                                                <flux:icon.photo class="size-10 text-zinc-400 dark:text-zinc-500" />
+                                                <div class="flex-1 min-w-0">
+                                                    @php
+                                                        $adminPreviewLogoName = basename($company->exhibitor->preview_logo);
+                                                        if (preg_match('/^\d+_(.+)$/', $adminPreviewLogoName, $matches)) {
+                                                            $adminPreviewLogoName = $matches[1];
+                                                        }
+                                                    @endphp
+                                                    <div class="truncate text-sm font-medium">{{ $adminPreviewLogoName }}</div>
+                                                    <div class="text-xs text-zinc-400 dark:text-zinc-500">Admin uploaded</div>
+                                                    @php
+                                                        try {
+                                                            $previewFileSize = Storage::disk('public')->size($company->exhibitor->preview_logo);
+                                                        } catch (\Exception $e) {
+                                                            $previewFileSize = null;
+                                                        }
+                                                    @endphp
+                                                    @if ($previewFileSize)
+                                                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                            {{ number_format($previewFileSize / 1024, 2) }} KB
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <a href="{{ Storage::url($company->exhibitor->preview_logo) }}"
+                                                    download="{{ $adminPreviewLogoName }}">
+                                                    <flux:button variant="primary" size="sm" icon="arrow-down-tray">
+                                                        Download
+                                                    </flux:button>
+                                                </a>
+                                            </div>
+                                        @endif
+                                        <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                                            <flux:input type="file" wire:model="previewLogo" accept="image/png,image/jpeg,image/jpg" />
+                                            @error('previewLogo')
+                                                <div class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</div>
+                                            @enderror
+                                            @if ($previewLogo)
+                                                <div class="mt-3">
+                                                    <flux:button wire:click="uploadPreviewLogo" variant="primary" size="sm" icon="arrow-up-tray">
+                                                        Upload Preview Logo
+                                                    </flux:button>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         @endif
 
                         @if ($company->exhibitor->brochure_path)

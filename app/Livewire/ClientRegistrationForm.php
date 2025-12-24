@@ -388,8 +388,8 @@ class ClientRegistrationForm extends Component
                 'pan_number' => ['nullable', 'string', 'max:255'],
                 'email' => ['nullable', 'email', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
-                'logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
-                'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+                'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
+                'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:10240'],
                 'video_url' => ['nullable', 'url', 'max:255'],
                 'social_media_links' => ['nullable', 'array'],
                 'social_media_links.facebook' => ['nullable', 'url', 'max:255'],
@@ -403,8 +403,10 @@ class ClientRegistrationForm extends Component
                 'city.in' => 'Please select a valid city from the dropdown.',
                 'email.email' => 'Please provide a valid email address.',
                 'website.url' => 'Please provide a valid website URL.',
+                'logo.required' => 'Company logo is required.',
                 'logo.mimes' => 'Logo must be a PNG, JPG, PDF, or CDR file.',
                 'logo.max' => 'Logo file size should not exceed 5MB.',
+                'brochure.required' => 'Company brochure is required.',
                 'brochure.mimes' => 'Brochure must be a PDF file.',
                 'brochure.max' => 'Brochure file size should not exceed 10MB.',
                 'video_url.url' => 'Please provide a valid video URL (YouTube or Vimeo).',
@@ -661,14 +663,17 @@ class ClientRegistrationForm extends Component
             'website' => ['nullable', 'url', 'max:255'],
 
             // Branding & Media
-            'logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
-            'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
+            'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:10240'],
             'video_url' => ['nullable', 'url', 'max:255'],
             'social_media_links' => ['nullable', 'array'],
 
             // Exhibition Display
             'facia_name' => ['required', 'string', 'max:255'],
             'additional_details' => ['nullable', 'string', 'max:1000'],
+        ], [
+            'logo.required' => 'Company logo is required.',
+            'brochure.required' => 'Company brochure is required.',
         ]);
 
         // Handle file uploads with original filenames

@@ -27,7 +27,7 @@
                 Filters
                 @if ($this->hasActiveFilters())
                     <flux:badge size="sm" color="blue">
-                        {{ collect([$filterStatus, $filterLockStatus, $filterStallAssignment])->filter()->count() }}
+                        {{ collect([$filterStatus, $filterLockStatus, $filterStallAssignment, $filterCategory])->filter()->count() }}
                     </flux:badge>
                 @endif
             </flux:button>
@@ -202,6 +202,18 @@
                 <flux:heading size="lg">Filter Companies</flux:heading>
                 <flux:subheading>Refine your company list with advanced filters</flux:subheading>
             </div>
+
+            <flux:separator />
+
+            <!-- Category Filter -->
+            <flux:field>
+                <flux:label>Category</flux:label>
+                <flux:radio.group wire:model.live="filterCategory">
+                    <flux:radio value="" label="All Categories" />
+                    <flux:radio value="builders" label="Builders" />
+                    <flux:radio value="allied" label="Allied" />
+                </flux:radio.group>
+            </flux:field>
 
             <flux:separator />
 

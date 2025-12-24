@@ -28,6 +28,7 @@ class Exhibitor extends Model
         'email',
         'website',
         'logo_path',
+        'preview_logo',
         'brochure_path',
         'photos',
         'video_url',

@@ -3,18 +3,24 @@
 namespace App\Livewire;
 
 use App\Models\Company;
+use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class CompanySubmission extends Component
 {
+    use WithFileUploads;
+
     public Company $company;
 
     #[Url]
     public string $tab = 'overview';
 
     public ?int $selectedProjectIndex = null;
+
+    public $previewLogo;
 
     public function mount(Company $company): void
     {
@@ -29,6 +35,29 @@ class CompanySubmission extends Component
     public function selectProject(int $index): void
     {
         $this->selectedProjectIndex = $index;
+    }
+
+    public function uploadPreviewLogo(): void
+    {
+        $this->validate([
+            'previewLogo' => 'required|image|mimes:jpeg,jpg,png|max:10240',
+        ]);
+
+        if ($this->company->exhibitor) {
+            $path = $this->previewLogo->store('exhibitors/preview-logos', 'public');
+
+            $this->company->exhibitor->update([
+                'preview_logo' => $path,
+            ]);
+
+            $this->reset('previewLogo');
+
+            Flux::toast(
+                heading: 'Preview logo uploaded',
+                text: 'The preview logo has been uploaded successfully.',
+                variant: 'success'
+            );
+        }
     }
 
     #[Title('Company Submission')]
