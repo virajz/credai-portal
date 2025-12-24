@@ -407,9 +407,13 @@ class ClientRegistrationForm extends Component
             $this->stepsWithErrors[] = 2;
         }
 
-        // Check Step 3 (Projects)
-        if ($this->getErrorBag()->has('projects.*')) {
-            $this->stepsWithErrors[] = 3;
+        // Check Step 3 (Projects) - check for any error that starts with 'projects.'
+        $errorBag = $this->getErrorBag();
+        foreach ($errorBag->keys() as $errorKey) {
+            if (str_starts_with($errorKey, 'projects.')) {
+                $this->stepsWithErrors[] = 3;
+                break;
+            }
         }
     }
 
@@ -656,6 +660,11 @@ class ClientRegistrationForm extends Component
      */
     protected function validateProjectUnits(): void
     {
+        // Projects are optional, so if empty, no validation needed
+        if (empty($this->projects)) {
+            return;
+        }
+
         foreach ($this->projects as $index => $project) {
             if (! isset($project['category'])) {
                 continue;
@@ -682,41 +691,35 @@ class ClientRegistrationForm extends Component
      */
     public function submit(): void
     {
-        // Validate project units
+        // Validate project units first (adds errors to error bag without stopping)
         $this->validateProjectUnits();
 
-        if ($this->getErrorBag()->any()) {
-            $this->currentStep = 3;
-            $this->checkAllStepsForErrors();
+        // Run main validation - this throws ValidationException if it fails
+        try {
+            $validated = $this->validate([
+                // Company Details
+                'office_address' => ['required', 'string', 'max:1000'],
+                'city' => ['required', 'string', 'in:Surat,Navsari,Ahmedabad,Baroda,Others'],
+                'gst_number' => ['nullable', 'string', 'max:255'],
+                'pan_number' => ['nullable', 'string', 'max:255'],
+                'email' => ['nullable', 'email', 'max:255'],
+                'website' => ['nullable', 'url', 'max:255'],
 
-            return;
-        }
+                // Branding & Media
+                'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
+                'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:10240'],
+                'video_url' => ['nullable', 'url', 'max:255'],
+                'social_media_links' => ['nullable', 'array'],
 
-        $validated = $this->validate([
-            // Company Details
-            'office_address' => ['required', 'string', 'max:1000'],
-            'city' => ['required', 'string', 'in:Surat,Navsari,Ahmedabad,Baroda,Others'],
-            'gst_number' => ['nullable', 'string', 'max:255'],
-            'pan_number' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'website' => ['nullable', 'url', 'max:255'],
-
-            // Branding & Media
-            'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
-            'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:10240'],
-            'video_url' => ['nullable', 'url', 'max:255'],
-            'social_media_links' => ['nullable', 'array'],
-
-            // Exhibition Display
-            'facia_name' => ['required', 'string', 'max:255'],
-            'additional_details' => ['nullable', 'string', 'max:1000'],
-        ], [
-            'logo.required' => 'Company logo is required.',
-            'brochure.required' => 'Company brochure is required.',
-        ]);
-
-        // Check if there are any validation errors and highlight affected steps
-        if ($this->getErrorBag()->any()) {
+                // Exhibition Display
+                'facia_name' => ['required', 'string', 'max:255'],
+                'additional_details' => ['nullable', 'string', 'max:1000'],
+            ], [
+                'logo.required' => 'Company logo is required.',
+                'brochure.required' => 'Company brochure is required.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Validation failed - check all steps for errors and highlight them
             $this->checkAllStepsForErrors();
 
             // Navigate to first step with errors
@@ -724,7 +727,7 @@ class ClientRegistrationForm extends Component
                 $this->currentStep = min($this->stepsWithErrors);
             }
 
-            return;
+            throw $e;
         }
 
         // Handle file uploads with original filenames
