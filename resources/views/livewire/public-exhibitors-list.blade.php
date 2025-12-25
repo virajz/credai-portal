@@ -1,19 +1,19 @@
 <div>
     <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-zinc-800 to-zinc-900 pt-8 pb-16">
+    <section class="bg-zinc-50 border-b border-zinc-200 pt-8 pb-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Page Header -->
             <div class="text-center mb-8">
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-light text-white mb-3">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-light text-zinc-900 mb-3">
                     Discover <span class="font-normal">Exhibitors</span>
                 </h1>
-                <p class="text-base text-white/70 max-w-2xl mx-auto font-light">
+                <p class="text-base text-zinc-600 max-w-2xl mx-auto font-light">
                     Browse our collection of trusted developers and find your perfect property
                 </p>
             </div>
 
             <!-- Filters Section -->
-            <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+            <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Search -->
                     <div>
@@ -52,51 +52,51 @@
 
                 <!-- Active Filters & Clear Button -->
                 @if ($search || ! empty($propertyType) || ! empty($location) || ! empty($priceRange))
-                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
+                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-zinc-200">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-xs font-light text-white/60">Active filters:</span>
+                            <span class="text-xs font-light text-zinc-500">Active filters:</span>
                             @if ($search)
                                 <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-white/10 text-white rounded-full">
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-zinc-900 text-white rounded-full">
                                     Search: {{ $search }}
-                                    <button wire:click="$set('search', '')" class="hover:text-white/80">
+                                    <button wire:click="$set('search', '')" class="hover:text-zinc-300">
                                         <x-heroicon-o-x-mark class="w-3 h-3" />
                                     </button>
                                 </span>
                             @endif
                             @foreach ($propertyType as $type)
                                 <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-white/10 text-white rounded-full">
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-zinc-900 text-white rounded-full">
                                     {{ $type }}
                                     <button wire:click="$set('propertyType', {{ json_encode(array_values(array_diff($propertyType, [$type]))) }})"
-                                        class="hover:text-white/80">
+                                        class="hover:text-zinc-300">
                                         <x-heroicon-o-x-mark class="w-3 h-3" />
                                     </button>
                                 </span>
                             @endforeach
                             @foreach ($location as $loc)
                                 <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-white/10 text-white rounded-full">
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-zinc-900 text-white rounded-full">
                                     {{ $loc }}
                                     <button wire:click="$set('location', {{ json_encode(array_values(array_diff($location, [$loc]))) }})"
-                                        class="hover:text-white/80">
+                                        class="hover:text-zinc-300">
                                         <x-heroicon-o-x-mark class="w-3 h-3" />
                                     </button>
                                 </span>
                             @endforeach
                             @foreach ($priceRange as $price)
                                 <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-white/10 text-white rounded-full">
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-zinc-900 text-white rounded-full">
                                     {{ $price }}
                                     <button wire:click="$set('priceRange', {{ json_encode(array_values(array_diff($priceRange, [$price]))) }})"
-                                        class="hover:text-white/80">
+                                        class="hover:text-zinc-300">
                                         <x-heroicon-o-x-mark class="w-3 h-3" />
                                     </button>
                                 </span>
                             @endforeach
                         </div>
                         <flux:button wire:click="clearFilters" size="sm" variant="ghost"
-                            class="text-white/60 hover:text-white">
+                            class="text-zinc-600 hover:text-zinc-900">
                             Clear All
                         </flux:button>
                     </div>

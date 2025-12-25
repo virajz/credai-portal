@@ -292,25 +292,25 @@
     </section>
 
     <!-- Registration CTA Section -->
-    <section id="register" class="py-20 bg-zinc-900">
+    <section id="register" class="py-20 bg-zinc-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
             <div class="text-center mb-10">
-                <span class="text-xs font-light tracking-widest text-zinc-500 uppercase">Free Registration</span>
-                <h2 class="mt-3 text-2xl sm:text-3xl font-light text-white">
+                <span class="text-xs font-light tracking-widest text-zinc-400 uppercase">Free Registration</span>
+                <h2 class="mt-3 text-2xl sm:text-3xl font-light text-zinc-900">
                     Get Your Free Pass
                 </h2>
-                <p class="mt-3 text-sm text-zinc-400 max-w-xl mx-auto font-light">
+                <p class="mt-3 text-sm text-zinc-600 max-w-xl mx-auto font-light">
                     Register to receive your visitor pass and access all exhibitors
                 </p>
             </div>
 
             <!-- Registration CTA -->
             <div class="max-w-lg mx-auto text-center">
-                <div class="bg-zinc-800/50 border border-zinc-700/50 rounded-2xl p-8 backdrop-blur-sm">
+                <div class="bg-white border border-zinc-200 rounded-2xl p-8">
                     <div class="mb-6">
-                        <h3 class="text-xl font-light text-white mb-2">Quick & Easy Registration</h3>
-                        <p class="text-sm text-zinc-400 font-light">
+                        <h3 class="text-xl font-light text-zinc-900 mb-2">Quick & Easy Registration</h3>
+                        <p class="text-sm text-zinc-600 font-light">
                             Complete your visitor registration in just 2 simple steps
                         </p>
                     </div>
@@ -318,29 +318,29 @@
                     <div class="grid grid-cols-3 gap-4 mb-6">
                         <div class="text-center">
                             <div
-                                class="w-8 h-8 bg-emerald-600/20 border border-emerald-600/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                <span class="text-xs font-medium text-emerald-400">1</span>
+                                class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium text-white">1</span>
                             </div>
-                            <p class="text-xs text-zinc-400">Personal Info</p>
+                            <p class="text-xs text-zinc-600">Personal Info</p>
                         </div>
                         <div class="text-center">
                             <div
-                                class="w-8 h-8 bg-emerald-600/20 border border-emerald-600/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                <span class="text-xs font-medium text-emerald-400">2</span>
+                                class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium text-white">2</span>
                             </div>
-                            <p class="text-xs text-zinc-400">Preferences</p>
+                            <p class="text-xs text-zinc-600">Preferences</p>
                         </div>
                         <div class="text-center">
                             <div
-                                class="w-8 h-8 bg-emerald-600/20 border border-emerald-600/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                <span class="text-xs font-medium text-emerald-400">✓</span>
+                                class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium text-white">✓</span>
                             </div>
-                            <p class="text-xs text-zinc-400">Get Pass</p>
+                            <p class="text-xs text-zinc-600">Get Pass</p>
                         </div>
                     </div>
 
                     <a href="{{ route('visitor.register') }}"
-                        class="inline-block w-full px-6 py-3 bg-white text-zinc-900 text-sm font-normal rounded-lg hover:bg-zinc-100 transition-colors">
+                        class="inline-block w-full px-6 py-3 bg-zinc-900 text-white text-sm font-normal rounded-lg hover:bg-zinc-800 transition-colors">
                         Start Registration →
                     </a>
                 </div>

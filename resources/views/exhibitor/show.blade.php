@@ -2,19 +2,7 @@
 
     <!-- Hero Section with Banner -->
     <section>
-        <div class="relative h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden">
-            <!-- Background Pattern -->
-            <div class="absolute inset-0 opacity-10">
-                <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <defs>
-                        <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" />
-                        </pattern>
-                    </defs>
-                    <rect width="100" height="100" fill="url(#grid)" />
-                </svg>
-            </div>
-
+        <div class="relative h-64 sm:h-80 lg:h-96 bg-zinc-50 overflow-hidden border-b border-zinc-200">
             <!-- Hero Content -->
             <div class="absolute inset-0 flex items-end">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-8">
@@ -23,15 +11,15 @@
                         <ol class="flex items-center gap-2 text-xs font-light">
                             <li>
                                 <a href="{{ route('home') }}"
-                                    class="text-zinc-400 hover:text-white transition-colors">Home</a>
+                                    class="text-zinc-500 hover:text-zinc-900 transition-colors">Home</a>
                             </li>
-                            <li class="text-zinc-600">/</li>
+                            <li class="text-zinc-400">/</li>
                             <li>
                                 <a href="{{ route('public.exhibitors') }}"
-                                    class="text-zinc-400 hover:text-white transition-colors">Exhibitors</a>
+                                    class="text-zinc-500 hover:text-zinc-900 transition-colors">Exhibitors</a>
                             </li>
-                            <li class="text-zinc-600">/</li>
-                            <li class="text-white">{{ $exhibitor->brand_name }}</li>
+                            <li class="text-zinc-400">/</li>
+                            <li class="text-zinc-900">{{ $exhibitor->brand_name }}</li>
                         </ol>
                     </nav>
 
@@ -50,15 +38,15 @@
                         <div class="flex-1 min-w-0 pb-1">
                             @if ($exhibitor->company?->stall_number)
                                 <span
-                                    class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal bg-white/20 text-white rounded-full mb-2">
+                                    class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal bg-zinc-900 text-white rounded-full mb-2">
                                     Stall {{ $exhibitor->company->stall_number }}
                                 </span>
                             @endif
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light text-white truncate">
+                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light text-zinc-900 truncate">
                                 {{ $exhibitor->brand_name }}
                             </h1>
                             @if ($exhibitor->city)
-                                <p class="flex items-center gap-1.5 text-sm font-light text-zinc-300 mt-1">
+                                <p class="flex items-center gap-1.5 text-sm font-light text-zinc-600 mt-1">
                                     <x-heroicon-o-map-pin class="w-3.5 h-3.5" />
                                     {{ $exhibitor->city }}
                                 </p>

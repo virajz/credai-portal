@@ -44,9 +44,9 @@
                     {!! preg_replace('/<svg/', '<svg class="w-full h-full"', $qrCodeSvg) !!}
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3" x-data="{
+            <div x-data="{
                 visitorName: '{{ \Illuminate\Support\Str::slug($visitor->name) }}',
-                downloadPng() {
+                downloadQr() {
                     const svg = document.querySelector('#qr-code-svg');
                     if (svg) {
                         const svgElement = svg.querySelector('svg');
@@ -69,32 +69,10 @@
                             img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
                         }
                     }
-                },
-                downloadSvg() {
-                    const svg = document.querySelector('#qr-code-svg');
-                    if (svg) {
-                        const svgElement = svg.querySelector('svg');
-                        if (svgElement) {
-                            const svgData = new XMLSerializer().serializeToString(svgElement);
-                            const blob = new Blob([svgData], { type: 'image/svg+xml' });
-                            const url = URL.createObjectURL(blob);
-                            const link = document.createElement('a');
-                            link.download = this.visitorName + '-visitor-qr-code.svg';
-                            link.href = url;
-                            link.click();
-                            URL.revokeObjectURL(url);
-                        }
-                    }
-                },
-                print() {
-                    window.print();
                 }
             }">
-                <flux:button variant="outline" @click="downloadPng" icon="arrow-down-tray" icon:variant="outline">
-                    PNG
-                </flux:button>
-                <flux:button variant="outline" @click="downloadSvg" icon="arrow-down-tray" icon:variant="outline">
-                    SVG
+                <flux:button variant="primary" @click="downloadQr" icon="arrow-down-tray" icon:variant="outline" class="w-full">
+                    Download QR Code
                 </flux:button>
             </div>
         </div>
