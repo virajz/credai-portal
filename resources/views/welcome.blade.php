@@ -7,7 +7,10 @@
         </div>
     </section>
 
-    <!-- Exhibitors Section -->
+    <!-- Main Sponsors Section -->
+    <x-main-sponsors :sponsors="$mainSponsors" />
+
+    <!-- Other Exhibitors Section -->
     <section id="exhibitors" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
