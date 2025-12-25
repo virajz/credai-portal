@@ -1,101 +1,9 @@
 <x-layouts.front>
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <!-- Background Image with Overlay -->
-        <div class="absolute inset-0">
-            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                alt="Modern Architecture Background" class="w-full h-full object-cover object-center" />
-            <div class="absolute inset-0 bg-gradient-to-br from-zinc-900/85 via-zinc-800/75 to-zinc-900/85"></div>
-        </div>
-
-        <!-- Background Pattern -->
-        <div
-            class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] opacity-30">
-        </div>
-
-        <!-- Content -->
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 lg:pt-32 pb-16">
-            <div class="text-center">
-                <!-- Event Badge -->
-                <div
-                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-8">
-                    <div class="w-1.5 h-1.5 bg-white rounded-full mr-2"></div>
-                    <span class="text-xs font-light tracking-wide text-white/90">Property Exhibition</span>
-                </div>
-
-                <!-- Logo -->
-                <div class="mb-8">
-                    <img src="/logo.png" alt="{{ config('app.name') }}" class="h-16 lg:h-20 w-auto mx-auto" />
-                </div>
-
-                <!-- Main Headline -->
-                <div class="space-y-4 mb-10">
-                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight text-white">
-                        Discover Your
-                        <span class="font-normal">Dream Property</span>
-                    </h1>
-
-                    <p class="text-base lg:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed font-light">
-                        Explore premium properties from trusted developers,
-                        connect with industry experts, and find your perfect investment.
-                    </p>
-                </div>
-
-                <!-- Location & Venue -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-                    <div class="flex items-center gap-2 text-white/60">
-                        <x-heroicon-o-map-pin class="w-4 h-4" />
-                        <span class="text-sm font-light">Vanita Vishram Ground, Surat</span>
-                    </div>
-
-                    <span class="hidden sm:block text-white/30">•</span>
-
-                    <div class="flex items-center gap-2 text-white/60">
-                        <x-heroicon-o-calendar class="w-4 h-4" />
-                        <span class="text-sm font-light">January 9-11, 2026</span>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-3 justify-center max-w-md sm:max-w-none mx-auto">
-                    <a href="{{ route('visitor.register') }}"
-                        class="inline-flex items-center justify-center px-6 py-3 text-sm font-normal text-zinc-900 bg-white hover:bg-zinc-100 rounded-full transition-colors">
-                        Get Your Free Pass
-                    </a>
-
-                    <a href="{{ route('public.exhibitors') }}"
-                        class="inline-flex items-center justify-center px-6 py-3 text-sm font-light text-white border border-white/30 hover:bg-white/10 rounded-full transition-colors">
-                        View Exhibitors
-                    </a>
-                </div>
-
-                <!-- Trust Indicators -->
-                <div class="mt-14 flex flex-wrap justify-center gap-8 lg:gap-12">
-                    <div class="text-center">
-                        <div class="text-xl font-normal text-white">50+</div>
-                        <div class="text-xs font-light text-white/50">Developers</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-xl font-normal text-white">200+</div>
-                        <div class="text-xs font-light text-white/50">Properties</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-xl font-normal text-white">₹100Cr+</div>
-                        <div class="text-xs font-light text-white/50">Portfolio</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-xl font-normal text-white">Free</div>
-                        <div class="text-xs font-light text-white/50">Entry</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <div class="animate-bounce">
-                <x-heroicon-o-arrow-down class="w-6 h-6 text-white/60" />
-            </div>
+    <!-- Hero Banner Section -->
+    <section class="w-full overflow-hidden border-b">
+        <div class="w-full">
+            <img src="/banner.jpg" alt="{{ config('app.name') }} - Property Exhibition"
+                class="w-full h-auto object-contain" />
         </div>
     </section>
 
@@ -123,8 +31,7 @@
                             <div class="w-14 h-14 flex items-center justify-center flex-shrink-0">
                                 @if ($exhibitor->preview_logo ?? $exhibitor->logo_path)
                                     <img src="{{ Storage::url($exhibitor->preview_logo ?? $exhibitor->logo_path) }}"
-                                        alt="{{ $exhibitor->brand_name }}"
-                                        class="w-full h-full object-contain" />
+                                        alt="{{ $exhibitor->brand_name }}" class="w-full h-full object-contain" />
                                 @else
                                     <x-heroicon-o-building-office class="w-6 h-6 text-zinc-400" />
                                 @endif
@@ -206,7 +113,7 @@
                 <div class="text-center">
                     <a href="{{ route('public.exhibitors') }}"
                         class="inline-flex items-center px-6 py-2.5 text-sm font-normal text-white bg-zinc-900 hover:bg-zinc-800 rounded-full transition-colors">
-                        View All {{ $exhibitors->count() }} Exhibitors
+                        View All Exhibitors
                     </a>
                 </div>
             @endif
