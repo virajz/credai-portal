@@ -42,8 +42,7 @@
 
                     <div class="flex items-end gap-6">
                         <!-- Project Logo/Icon -->
-                        <div
-                            class="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg p-2">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center flex-shrink-0">
                             @if ($project->logo_path)
                                 <img src="{{ Storage::url($project->logo_path) }}" alt="{{ $project->name }}"
                                     class="w-full h-full object-contain" />
@@ -238,8 +237,7 @@
 
                             <a href="{{ route('exhibitor.show', $project->exhibitor) }}"
                                 class="flex items-center gap-4 mb-6 group">
-                                <div
-                                    class="w-14 h-14 bg-zinc-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-zinc-200 transition-colors p-1">
+                                <div class="w-14 h-14 flex items-center justify-center flex-shrink-0">
                                     @if ($project->exhibitor->preview_logo ?? $project->exhibitor->logo_path)
                                         <img src="{{ Storage::url($project->exhibitor->preview_logo ?? $project->exhibitor->logo_path) }}"
                                             alt="{{ $project->exhibitor->brand_name }}"

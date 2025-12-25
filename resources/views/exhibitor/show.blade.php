@@ -37,8 +37,7 @@
 
                     <div class="flex items-end gap-6">
                         <!-- Logo Box -->
-                        <div
-                            class="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg p-2">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center flex-shrink-0">
                             @if ($exhibitor->preview_logo ?? $exhibitor->logo_path)
                                 <img src="{{ Storage::url($exhibitor->preview_logo ?? $exhibitor->logo_path) }}"
                                     alt="{{ $exhibitor->brand_name }}" class="w-full h-full object-contain" />

@@ -130,12 +130,11 @@
                             class="group block h-full bg-white rounded-xl p-6 hover:shadow-lg transition-all duration-300">
                             <!-- Header with Logo and Name -->
                             <div class="flex items-start gap-4 mb-4">
-                                <div
-                                    class="w-14 h-14 bg-zinc-50 rounded-xl flex items-center justify-center flex-shrink-0 border border-zinc-100 group-hover:border-zinc-200 transition-colors p-2">
+                                <div class="w-14 h-14 flex items-center justify-center flex-shrink-0">
                                     @if ($exhibitor->preview_logo ?? $exhibitor->logo_path)
                                         <img src="{{ Storage::url($exhibitor->preview_logo ?? $exhibitor->logo_path) }}"
                                             alt="{{ $exhibitor->brand_name }}"
-                                            class="w-full h-full object-contain rounded" />
+                                            class="w-full h-full object-contain" />
                                     @else
                                         <x-heroicon-o-building-office class="w-6 h-6 text-zinc-400" />
                                     @endif

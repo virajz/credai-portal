@@ -17,7 +17,14 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    $exhibitors = Exhibitor::with(['company', 'projects'])->get();
+    // I want to sort by company name, but since Exhibitor has a relation to Company,
+    // I need to use whereHas to filter and then load the relation.
+    $exhibitors = Exhibitor::with(['company', 'projects'])
+        ->whereHas('company', function ($query) {
+            $query->where('category', 'Builders');
+            $query->orderBy('company_name', 'asc');
+        })
+        ->get();
 
     return view('welcome', [
         'exhibitors' => $exhibitors,
