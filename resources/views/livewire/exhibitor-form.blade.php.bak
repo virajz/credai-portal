@@ -246,7 +246,7 @@
                 <!-- Floating Button -->
                 <div class="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
                     <flux:button @click="showModal = true" type="button" variant="primary" icon="bookmark"
-                        color="emerald" class="shadow-lg">
+                        color="teal" class="shadow-lg">
                         Save Progress
                     </flux:button>
                 </div>
@@ -282,23 +282,23 @@
             <!-- Desktop: Accordion in sidebar -->
             <div class="hidden md:block">
                 <div class="fixed bottom-6 right-6 z-40 w-80">
-                    <div class="overflow-hidden rounded-lg border border-emerald-200 bg-white shadow-lg dark:border-emerald-800 dark:bg-zinc-900"
+                    <div class="overflow-hidden rounded-lg border border-teal-200 bg-white shadow-lg dark:border-teal-800 dark:bg-zinc-900"
                         :class="{ 'h-auto': expanded, 'h-14': !expanded }">
                         <!-- Header / Toggle -->
                         <button type="button" @click="expanded = !expanded"
-                            class="flex w-full items-center justify-between p-4 transition hover:bg-emerald-50 dark:hover:bg-emerald-950/30">
+                            class="flex w-full items-center justify-between p-4 transition hover:bg-teal-50 dark:hover:bg-teal-950/30">
                             <div class="flex items-center gap-3">
-                                <flux:icon.bookmark class="size-5 text-emerald-600 dark:text-emerald-400" />
-                                <flux:heading size="base" class="text-emerald-900 dark:text-emerald-100">
+                                <flux:icon.bookmark class="size-5 text-teal-600 dark:text-teal-400" />
+                                <flux:heading size="base" class="text-teal-900 dark:text-teal-100">
                                     Progress Saved
                                 </flux:heading>
                             </div>
-                            <flux:icon.chevron-down class="size-5 text-emerald-600 transition-transform dark:text-emerald-400"
+                            <flux:icon.chevron-down class="size-5 text-teal-600 transition-transform dark:text-teal-400"
                                 ::class="{ 'rotate-180': expanded }" />
                         </button>
 
                         <!-- Content -->
-                        <div x-show="expanded" x-collapse class="border-t border-emerald-100 p-4 dark:border-emerald-900">
+                        <div x-show="expanded" x-collapse class="border-t border-teal-100 p-4 dark:border-teal-900">
                             <flux:subheading class="mb-4">
                                 Your progress is automatically saved. Use this link to continue later.
                             </flux:subheading>
@@ -320,7 +320,7 @@
             <!-- Toast for link copied -->
             <div x-data="{ show: false }" @link-copied.window="show = true; setTimeout(() => show = false, 2000)"
                 x-show="show" x-cloak x-transition
-                class="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg dark:bg-emerald-500 md:bottom-auto md:left-auto md:right-6 md:top-6 md:translate-x-0">
+                class="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-lg dark:bg-teal-500 md:bottom-auto md:left-auto md:right-6 md:top-6 md:translate-x-0">
                 <div class="flex items-center gap-2">
                     <flux:icon.check class="size-4" />
                     <span>Link copied to clipboard!</span>
@@ -748,7 +748,7 @@
                 <!-- Floating Button -->
                 <div class="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
                     <flux:button @click="showModal = true" type="button" variant="primary" icon="bookmark"
-                        color="emerald" class="shadow-lg">
+                        color="teal" class="shadow-lg">
                         Save Progress
                     </flux:button>
                 </div>
@@ -802,7 +802,7 @@
             <div class="hidden md:block">
                 <!-- Collapsed state: Just a small button -->
                 <div x-show="!expanded" class="fixed bottom-6 right-6 z-40 transition-all duration-200">
-                    <flux:button @click="expanded = true" type="button" variant="primary" color="emerald"
+                    <flux:button @click="expanded = true" type="button" variant="primary" color="teal"
                         icon="bookmark" class="shadow-lg">
                         Save Progress
                     </flux:button>

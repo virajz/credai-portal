@@ -51,7 +51,7 @@
                 </div>
 
                 <!-- Active Filters & Clear Button -->
-                @if ($search || ! empty($propertyType) || ! empty($location) || ! empty($priceRange))
+                @if ($search || !empty($propertyType) || !empty($location) || !empty($priceRange))
                     <div class="flex items-center justify-between mt-4 pt-4 border-t border-zinc-200">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-xs font-light text-zinc-500">Active filters:</span>
@@ -68,7 +68,8 @@
                                 <span
                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-zinc-900 text-white rounded-full">
                                     {{ $type }}
-                                    <button wire:click="$set('propertyType', {{ json_encode(array_values(array_diff($propertyType, [$type]))) }})"
+                                    <button
+                                        wire:click="$set('propertyType', {{ json_encode(array_values(array_diff($propertyType, [$type]))) }})"
                                         class="hover:text-zinc-300">
                                         <x-heroicon-o-x-mark class="w-3 h-3" />
                                     </button>
@@ -78,7 +79,8 @@
                                 <span
                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-zinc-900 text-white rounded-full">
                                     {{ $loc }}
-                                    <button wire:click="$set('location', {{ json_encode(array_values(array_diff($location, [$loc]))) }})"
+                                    <button
+                                        wire:click="$set('location', {{ json_encode(array_values(array_diff($location, [$loc]))) }})"
                                         class="hover:text-zinc-300">
                                         <x-heroicon-o-x-mark class="w-3 h-3" />
                                     </button>
@@ -88,7 +90,8 @@
                                 <span
                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-zinc-900 text-white rounded-full">
                                     {{ $price }}
-                                    <button wire:click="$set('priceRange', {{ json_encode(array_values(array_diff($priceRange, [$price]))) }})"
+                                    <button
+                                        wire:click="$set('priceRange', {{ json_encode(array_values(array_diff($priceRange, [$price]))) }})"
                                         class="hover:text-zinc-300">
                                         <x-heroicon-o-x-mark class="w-3 h-3" />
                                     </button>
@@ -133,8 +136,7 @@
                                 <div class="w-14 h-14 flex items-center justify-center flex-shrink-0">
                                     @if ($exhibitor->preview_logo ?? $exhibitor->logo_path)
                                         <img src="{{ Storage::url($exhibitor->preview_logo ?? $exhibitor->logo_path) }}"
-                                            alt="{{ $exhibitor->brand_name }}"
-                                            class="w-full h-full object-contain" />
+                                            alt="{{ $exhibitor->brand_name }}" class="w-full h-full object-contain" />
                                     @else
                                         <x-heroicon-o-building-office class="w-6 h-6 text-zinc-400" />
                                     @endif
@@ -225,10 +227,9 @@
             <p class="text-sm text-zinc-500 font-light mb-8 max-w-xl mx-auto">
                 Register now to get your free visitor pass and explore all exhibitors
             </p>
-            <a href="{{ route('visitor.register') }}"
-                class="inline-flex items-center px-6 py-3 text-sm font-normal text-white bg-zinc-900 hover:bg-zinc-800 rounded-full transition-colors">
+            <flux:button href="{{ route('visitor.register') }}" variant="primary">
                 Get Your Free Pass
-            </a>
+            </flux:button>
         </div>
     </section>
 </div>

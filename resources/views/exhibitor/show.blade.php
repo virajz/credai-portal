@@ -105,7 +105,7 @@
                                                     @if ($project->status)
                                                         <span
                                                             class="inline-flex items-center px-2 py-0.5 text-[10px] font-normal rounded-full
-                                                            {{ $project->status === 'completed' ? 'bg-emerald-100 text-emerald-700' : '' }}
+                                                            {{ $project->status === 'completed' ? 'bg-teal-100 text-teal-700' : '' }}
                                                             {{ $project->status === 'ongoing' ? 'bg-blue-100 text-blue-700' : '' }}
                                                             {{ $project->status === 'upcoming' ? 'bg-amber-100 text-amber-700' : '' }}
                                                             {{ !in_array($project->status, ['completed', 'ongoing', 'upcoming']) ? 'bg-zinc-200 text-zinc-600' : '' }}">
@@ -154,12 +154,10 @@
 
                                             <div class="flex items-center gap-2 flex-shrink-0">
                                                 @if ($project->pdf_path)
-                                                    <span
+                                                    <flux:button
                                                         onclick="event.preventDefault(); event.stopPropagation(); window.open('{{ route('track.project.brochure', $project) }}', '_blank');"
-                                                        class="inline-flex items-center justify-center w-9 h-9 bg-zinc-200 hover:bg-zinc-300 text-zinc-600 rounded-lg transition-colors"
-                                                        title="Download PDF">
-                                                        <x-heroicon-o-document-arrow-down class="w-4 h-4" />
-                                                    </span>
+                                                        variant="ghost" size="sm" square icon="document-arrow-down"
+                                                        title="Download PDF" />
                                                 @endif
                                                 <span
                                                     class="inline-flex items-center justify-center w-9 h-9 text-zinc-400 group-hover:text-zinc-600 transition-colors">
@@ -190,11 +188,10 @@
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($exhibitor->social_media_links as $platform => $url)
                                     @if ($url)
-                                        <a href="{{ $url }}" target="_blank" rel="noopener"
-                                            class="inline-flex items-center px-4 py-2 text-xs font-light text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-full transition-colors">
+                                        <flux:button href="{{ $url }}" target="_blank" rel="noopener"
+                                            variant="ghost" size="sm" icon-trailing="arrow-top-right-on-square">
                                             {{ ucfirst($platform) }}
-                                            <x-heroicon-o-arrow-top-right-on-square class="w-3 h-3 ml-2" />
-                                        </a>
+                                        </flux:button>
                                     @endif
                                 @endforeach
                             </div>
@@ -228,8 +225,8 @@
                                 @if ($exhibitor->phone_number)
                                     <div class="flex items-start gap-3">
                                         <div
-                                            class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <x-heroicon-o-phone class="w-4 h-4 text-emerald-600" />
+                                            class="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <x-heroicon-o-phone class="w-4 h-4 text-teal-600" />
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <span
@@ -293,20 +290,18 @@
                             <!-- Action Buttons -->
                             <div class="mt-6 pt-6 border-t border-zinc-100 space-y-3">
                                 @if ($exhibitor->phone_number)
-                                    <a href="{{ route('track.exhibitor.call', $exhibitor) }}"
-                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-normal text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
-                                        <x-heroicon-o-phone class="w-4 h-4" />
+                                    <flux:button href="{{ route('track.exhibitor.call', $exhibitor) }}"
+                                        variant="primary" class="w-full" icon="phone">
                                         Call Now
-                                    </a>
+                                    </flux:button>
                                 @endif
 
                                 @if ($exhibitor->website)
-                                    <a href="{{ route('track.exhibitor.website', $exhibitor) }}" target="_blank"
-                                        rel="noopener"
-                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-normal text-zinc-700 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors">
-                                        <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
+                                    <flux:button href="{{ route('track.exhibitor.website', $exhibitor) }}"
+                                        target="_blank" rel="noopener" variant="ghost" class="w-full"
+                                        icon-trailing="arrow-top-right-on-square">
                                         Visit Website
-                                    </a>
+                                    </flux:button>
                                 @endif
                             </div>
                         </div>
@@ -321,10 +316,10 @@
                                 <h3 class="text-sm font-normal text-white mb-1">Company Brochure</h3>
                                 <p class="text-xs font-light text-zinc-400 mb-4">Download our detailed company profile
                                 </p>
-                                <a href="{{ route('track.exhibitor.brochure', $exhibitor) }}" target="_blank"
-                                    class="inline-flex items-center px-5 py-2.5 text-sm font-normal text-zinc-900 bg-white hover:bg-zinc-100 rounded-lg transition-colors">
+                                <flux:button href="{{ route('track.exhibitor.brochure', $exhibitor) }}"
+                                    target="_blank" variant="primary">
                                     Download PDF
-                                </a>
+                                </flux:button>
                             </div>
                         @endif
                     </div>

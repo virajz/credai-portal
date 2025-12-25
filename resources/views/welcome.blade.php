@@ -111,10 +111,9 @@
             @if ($exhibitors->count() > 6)
                 <!-- View All Button -->
                 <div class="text-center">
-                    <a href="{{ route('public.exhibitors') }}"
-                        class="inline-flex items-center px-6 py-2.5 text-sm font-normal text-white bg-zinc-900 hover:bg-zinc-800 rounded-full transition-colors">
+                    <flux:button href="{{ route('public.exhibitors') }}" variant="primary">
                         View All Exhibitors
-                    </a>
+                    </flux:button>
                 </div>
             @endif
         </div>
@@ -318,31 +317,33 @@
                     <div class="grid grid-cols-3 gap-4 mb-6">
                         <div class="text-center">
                             <div
-                                class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                                <span class="text-xs font-medium text-white">1</span>
+                                class="w-8 h-8 bg-zinc-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium">1</span>
                             </div>
                             <p class="text-xs text-zinc-600">Personal Info</p>
                         </div>
                         <div class="text-center">
                             <div
-                                class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                                <span class="text-xs font-medium text-white">2</span>
+                                class="w-8 h-8 bg-zinc-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium">2</span>
                             </div>
                             <p class="text-xs text-zinc-600">Preferences</p>
                         </div>
                         <div class="text-center">
                             <div
-                                class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                                <span class="text-xs font-medium text-white">✓</span>
+                                class="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <span class="text-xs font-medium text-white">
+                                    <flux:icon name="check" class="w-4 h-4" />
+                                </span>
                             </div>
                             <p class="text-xs text-zinc-600">Get Pass</p>
                         </div>
                     </div>
 
-                    <a href="{{ route('visitor.register') }}"
-                        class="inline-block w-full px-6 py-3 bg-zinc-900 text-white text-sm font-normal rounded-lg hover:bg-zinc-800 transition-colors">
-                        Start Registration →
-                    </a>
+                    <flux:button variant="primary" color="zinc" href="{{ route('visitor.register') }}"
+                        icon="arrow-right" class="w-full">
+                        Start Registration
+                    </flux:button>
                 </div>
 
                 <!-- Additional Info -->

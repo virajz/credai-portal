@@ -1,17 +1,8 @@
 <div class="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
     <div class="mb-12 text-center">
-        <!-- Breadcrumb -->
-        <div
-            class="mb-8 inline-flex items-center rounded-full border border-emerald-200/50 bg-emerald-100/80 px-4 py-2 backdrop-blur-sm dark:border-emerald-800/30 dark:bg-emerald-900/20">
-            <a href="/"
-                class="text-sm font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-300 dark:hover:text-emerald-200">Home</a>
-            <flux:icon.chevron-right class="mx-2 size-4 text-emerald-600 dark:text-emerald-400" />
-            <span class="text-sm font-semibold text-emerald-800 dark:text-emerald-300">Visitor Registration</span>
-        </div>
-
         <flux:heading size="2xl" class="mb-6">
             <span
-                class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 bg-clip-text text-transparent dark:from-emerald-400 dark:via-emerald-300 dark:to-teal-300">
+                class="bg-gradient-to-r from-teal-700 via-teal-600 to-teal-600 bg-clip-text text-transparent dark:from-teal-400 dark:via-teal-300 dark:to-teal-300">
                 Visitor Registration
             </span>
         </flux:heading>
@@ -28,7 +19,7 @@
                 <!-- Step 1 -->
                 <div class="flex items-center">
                     <div
-                        class="flex size-10 items-center justify-center rounded-full {{ $currentStep >= 1 ? 'bg-emerald-600 text-white' : 'bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400' }}">
+                        class="flex size-10 items-center justify-center rounded-full {{ $currentStep >= 1 ? 'bg-teal-600 text-white' : 'bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400' }}">
                         @if ($currentStep > 1)
                             <flux:icon.check class="size-5" />
                         @else
@@ -36,24 +27,24 @@
                         @endif
                     </div>
                     <span
-                        class="ml-2 text-xs md:text-sm font-medium {{ $currentStep >= 1 ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400' }}"><span
+                        class="ml-2 text-xs md:text-sm font-medium {{ $currentStep >= 1 ? 'text-teal-600 dark:text-teal-400' : 'text-zinc-500 dark:text-zinc-400' }}"><span
                             class="hidden sm:inline">Personal Information</span><span
                             class="sm:hidden">Info</span></span>
                 </div>
 
                 <!-- Divider -->
                 <div
-                    class="h-0.5 w-8 md:flex-1 {{ $currentStep > 1 ? 'bg-emerald-600' : 'bg-zinc-200 dark:bg-zinc-700' }}">
+                    class="h-0.5 w-8 md:flex-1 {{ $currentStep > 1 ? 'bg-teal-600' : 'bg-zinc-200 dark:bg-zinc-700' }}">
                 </div>
 
                 <!-- Step 2 -->
                 <div class="flex items-center">
                     <div
-                        class="flex size-10 items-center justify-center rounded-full {{ $currentStep >= 2 ? 'bg-emerald-600 text-white' : 'bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400' }}">
+                        class="flex size-10 items-center justify-center rounded-full {{ $currentStep >= 2 ? 'bg-teal-600 text-white' : 'bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400' }}">
                         <span class="text-sm font-semibold">2</span>
                     </div>
                     <span
-                        class="ml-2 text-xs md:text-sm font-medium {{ $currentStep >= 2 ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400' }}"><span
+                        class="ml-2 text-xs md:text-sm font-medium {{ $currentStep >= 2 ? 'text-teal-600 dark:text-teal-400' : 'text-zinc-500 dark:text-zinc-400' }}"><span
                             class="hidden sm:inline">Interests & Preferences</span><span
                             class="sm:hidden">Interests</span></span>
                 </div>
@@ -143,7 +134,7 @@
 
                     <!-- Sub-options for Residential -->
                     @if (in_array('Residential', $interests))
-                        <div class="space-y-4 rounded-lg bg-emerald-50 p-4 dark:bg-emerald-950/20">
+                        <div class="space-y-4 rounded-lg bg-teal-50 p-4 dark:bg-teal-950/20">
                             <flux:label class="text-sm font-semibold">Residential preferences: <span
                                     class="text-red-500">*</span></flux:label>
                             <flux:checkbox.group wire:model="residential_types">

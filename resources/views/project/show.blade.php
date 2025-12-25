@@ -45,7 +45,7 @@
                                 @if ($project->status)
                                     <span
                                         class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal rounded-full
-                                        {{ $project->status === 'completed' ? 'bg-emerald-600 text-white' : '' }}
+                                        {{ $project->status === 'completed' ? 'bg-teal-600 text-white' : '' }}
                                         {{ $project->status === 'ongoing' ? 'bg-blue-600 text-white' : '' }}
                                         {{ $project->status === 'upcoming' ? 'bg-amber-600 text-white' : '' }}
                                         {{ !in_array($project->status, ['completed', 'ongoing', 'upcoming']) ? 'bg-zinc-900 text-white' : '' }}">
@@ -114,8 +114,8 @@
                             @if ($project->area)
                                 <div class="bg-zinc-50 rounded-lg p-4">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
-                                            <x-heroicon-o-map-pin class="w-4 h-4 text-emerald-600" />
+                                        <div class="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center">
+                                            <x-heroicon-o-map-pin class="w-4 h-4 text-teal-600" />
                                         </div>
                                     </div>
                                     <span
@@ -263,8 +263,8 @@
                                 @if ($project->exhibitor->phone_number)
                                     <div class="flex items-start gap-3">
                                         <div
-                                            class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <x-heroicon-o-phone class="w-4 h-4 text-emerald-600" />
+                                            class="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <x-heroicon-o-phone class="w-4 h-4 text-teal-600" />
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <span
@@ -294,18 +294,16 @@
                             <!-- Action Buttons -->
                             <div class="mt-6 pt-6 border-t border-zinc-100 space-y-3">
                                 @if ($project->exhibitor->phone_number)
-                                    <a href="{{ route('track.project.call', $project) }}"
-                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-normal text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
-                                        <x-heroicon-o-phone class="w-4 h-4" />
+                                    <flux:button href="{{ route('track.project.call', $project) }}" variant="primary"
+                                        class="w-full" icon="phone">
                                         Call Now
-                                    </a>
+                                    </flux:button>
                                 @endif
 
-                                <a href="{{ route('exhibitor.show', $project->exhibitor) }}"
-                                    class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-normal text-zinc-700 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors">
-                                    <x-heroicon-o-building-office class="w-4 h-4" />
+                                <flux:button href="{{ route('exhibitor.show', $project->exhibitor) }}"
+                                    variant="ghost" class="w-full" icon="building-office">
                                     View Developer
-                                </a>
+                                </flux:button>
                             </div>
                         </div>
 
@@ -319,10 +317,10 @@
                                 <h3 class="text-sm font-normal text-white mb-1">Project Brochure</h3>
                                 <p class="text-xs font-light text-zinc-400 mb-4">Download detailed project information
                                 </p>
-                                <a href="{{ route('track.project.brochure', $project) }}" target="_blank"
-                                    class="inline-flex items-center px-5 py-2.5 text-sm font-normal text-zinc-900 bg-white hover:bg-zinc-100 rounded-lg transition-colors">
+                                <flux:button href="{{ route('track.project.brochure', $project) }}" target="_blank"
+                                    variant="filled">
                                     Download PDF
-                                </a>
+                                </flux:button>
                             </div>
                         @endif
                     </div>

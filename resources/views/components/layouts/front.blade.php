@@ -59,10 +59,9 @@
 
                         <!-- CTA Button -->
                         <div class="ml-6">
-                            <a href="{{ route('visitor.register') }}"
-                                class="inline-flex items-center px-5 py-2 bg-zinc-900 text-white text-sm font-normal rounded-full hover:bg-zinc-800 transition-colors">
+                            <flux:button href="{{ route('visitor.register') }}" variant="primary">
                                 Get Free Pass
-                            </a>
+                            </flux:button>
                         </div>
                     </div>
 
@@ -143,7 +142,9 @@
     @fluxScripts
 
     <!-- Google Maps Places API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key') }}&libraries=places"></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key') }}&libraries=places">
+    </script>
 
     @stack('scripts')
 </body>

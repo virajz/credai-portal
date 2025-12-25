@@ -69,7 +69,7 @@
             <!-- Brochure Downloads -->
             <flux:card>
                 <div class="text-center">
-                    <div class="mb-2 text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+                    <div class="mb-2 text-3xl font-bold text-teal-600 dark:text-teal-400">
                         {{ number_format($summary['brochure_downloads'] + $summary['project_brochure_downloads']) }}
                     </div>
                     <div class="text-xs text-zinc-500 dark:text-zinc-400">Downloads</div>
@@ -117,13 +117,13 @@
                                     <flux:table.cell>
                                         <flux:badge
                                             :color="match ($event->event_type) {
-                                                'exhibitor_profile_view' => 'blue',
-                                                'project_view' => 'purple',
-                                                'company_brochure_download', 'project_brochure_download' => 'emerald',
-                                                'call_clicked' => 'amber',
-                                                'website_visit_clicked' => 'rose',
-                                                default => 'zinc',
-                                            }">
+                                                                                            'exhibitor_profile_view' => 'blue',
+                                                                                            'project_view' => 'purple',
+                                                                                            'company_brochure_download', 'project_brochure_download' => 'teal',
+                                                                                            'call_clicked' => 'amber',
+                                                                                            'website_visit_clicked' => 'rose',
+                                                                                            default => 'zinc',
+                                                                                        }">
                                             {{ str_replace('_', ' ', ucfirst($event->event_type)) }}
                                         </flux:badge>
                                     </flux:table.cell>
