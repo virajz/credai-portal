@@ -36,7 +36,7 @@ class StoreExhibitorRequest extends FormRequest
             'website' => ['nullable', 'url', 'max:255'],
 
             // Branding & Media
-            'logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
+            'logo' => ['nullable', 'file', 'extensions:png,jpg,jpeg,pdf,cdr', 'max:5120'],
             'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'photos' => ['nullable', 'array', 'min:3', 'max:5'],
             'photos.*' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],

@@ -430,7 +430,7 @@ class ClientRegistrationForm extends Component
                 'pan_number' => ['nullable', 'string', 'max:255'],
                 'email' => ['nullable', 'email', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
-                'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
+                'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'extensions:png,jpg,jpeg,pdf,cdr', 'max:5120'],
                 'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:10240'],
                 'video_url' => ['nullable', 'url', 'max:255'],
                 'social_media_links' => ['nullable', 'array'],
@@ -706,7 +706,7 @@ class ClientRegistrationForm extends Component
                 'website' => ['nullable', 'url', 'max:255'],
 
                 // Branding & Media
-                'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'mimes:png,jpg,jpeg,pdf,cdr', 'max:5120'],
+                'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'extensions:png,jpg,jpeg,pdf,cdr', 'max:5120'],
                 'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:10240'],
                 'video_url' => ['nullable', 'url', 'max:255'],
                 'social_media_links' => ['nullable', 'array'],

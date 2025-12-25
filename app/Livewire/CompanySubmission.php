@@ -44,7 +44,11 @@ class CompanySubmission extends Component
         ]);
 
         if ($this->company->exhibitor) {
-            $path = $this->previewLogo->store('exhibitors/preview-logos', 'public');
+            $path = $this->previewLogo->storeAs(
+                'exhibitors/preview-logos',
+                time().'_'.$this->previewLogo->getClientOriginalName(),
+                'public'
+            );
 
             $this->company->exhibitor->update([
                 'preview_logo' => $path,

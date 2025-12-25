@@ -38,10 +38,10 @@
                     <div class="flex items-end gap-6">
                         <!-- Logo Box -->
                         <div
-                            class="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                            @if ($exhibitor->logo_path)
-                                <img src="{{ Storage::url($exhibitor->logo_path) }}" alt="{{ $exhibitor->brand_name }}"
-                                    class="w-14 h-14 sm:w-16 sm:h-16 object-contain" />
+                            class="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg p-2">
+                            @if ($exhibitor->preview_logo ?? $exhibitor->logo_path)
+                                <img src="{{ Storage::url($exhibitor->preview_logo ?? $exhibitor->logo_path) }}"
+                                    alt="{{ $exhibitor->brand_name }}" class="w-full h-full object-contain" />
                             @else
                                 <x-heroicon-o-building-office class="w-10 h-10 text-zinc-400" />
                             @endif
@@ -277,7 +277,8 @@
                                         <div class="flex-1 min-w-0">
                                             <span
                                                 class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Website</span>
-                                            <a href="{{ route('track.exhibitor.website', $exhibitor) }}" target="_blank" rel="noopener"
+                                            <a href="{{ route('track.exhibitor.website', $exhibitor) }}"
+                                                target="_blank" rel="noopener"
                                                 class="block text-sm text-zinc-700 font-light mt-0.5 hover:text-zinc-900 truncate">
                                                 {{ parse_url($exhibitor->website, PHP_URL_HOST) ?? $exhibitor->website }}
                                             </a>
@@ -313,7 +314,8 @@
                                 @endif
 
                                 @if ($exhibitor->website)
-                                    <a href="{{ route('track.exhibitor.website', $exhibitor) }}" target="_blank" rel="noopener"
+                                    <a href="{{ route('track.exhibitor.website', $exhibitor) }}" target="_blank"
+                                        rel="noopener"
                                         class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-normal text-zinc-700 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors">
                                         <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
                                         Visit Website

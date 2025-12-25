@@ -2,7 +2,7 @@
 
     <!-- Hero Section -->
     <section>
-        <div class="relative h-64 sm:h-80 lg:h-[400px] bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden">
+        <div class="relative h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden">
             <!-- Background Pattern -->
             <div class="absolute inset-0 opacity-10">
                 <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -43,10 +43,10 @@
                     <div class="flex items-end gap-6">
                         <!-- Project Logo/Icon -->
                         <div
-                            class="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            class="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg p-2">
                             @if ($project->logo_path)
                                 <img src="{{ Storage::url($project->logo_path) }}" alt="{{ $project->name }}"
-                                    class="w-14 h-14 sm:w-16 sm:h-16 object-contain" />
+                                    class="w-full h-full object-contain" />
                             @else
                                 <x-heroicon-o-building-office-2 class="w-10 h-10 text-zinc-400" />
                             @endif
@@ -74,10 +74,10 @@
                             </div>
                             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light text-white truncate">
                                 {{ $project->name }}
+                                <span class="text-sm font-light text-zinc-300 mt-1">
+                                    by {{ $project->exhibitor->brand_name }}
+                                </span>
                             </h1>
-                            <p class="text-sm font-light text-zinc-300 mt-1">
-                                by {{ $project->exhibitor->brand_name }}
-                            </p>
                             @if ($project->area)
                                 <p class="flex items-center gap-1.5 text-sm font-light text-zinc-300 mt-2">
                                     <x-heroicon-o-map-pin class="w-3.5 h-3.5" />
@@ -239,11 +239,11 @@
                             <a href="{{ route('exhibitor.show', $project->exhibitor) }}"
                                 class="flex items-center gap-4 mb-6 group">
                                 <div
-                                    class="w-14 h-14 bg-zinc-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-zinc-200 transition-colors">
-                                    @if ($project->exhibitor->logo_path)
-                                        <img src="{{ Storage::url($project->exhibitor->logo_path) }}"
+                                    class="w-14 h-14 bg-zinc-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-zinc-200 transition-colors p-1">
+                                    @if ($project->exhibitor->preview_logo ?? $project->exhibitor->logo_path)
+                                        <img src="{{ Storage::url($project->exhibitor->preview_logo ?? $project->exhibitor->logo_path) }}"
                                             alt="{{ $project->exhibitor->brand_name }}"
-                                            class="w-10 h-10 object-contain" />
+                                            class="w-full h-full object-contain" />
                                     @else
                                         <x-heroicon-o-building-office class="w-6 h-6 text-zinc-400" />
                                     @endif

@@ -237,20 +237,21 @@
                                                     </flux:button>
                                                 </a>
                                             </div>
+                                        @else
+                                            <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                                                <flux:input type="file" wire:model="previewLogo" accept="image/png,image/jpeg,image/jpg" />
+                                                @error('previewLogo')
+                                                    <div class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</div>
+                                                @enderror
+                                                @if ($previewLogo)
+                                                    <div class="mt-3">
+                                                        <flux:button wire:click="uploadPreviewLogo" variant="primary" size="sm" icon="arrow-up-tray">
+                                                            Upload Preview Logo
+                                                        </flux:button>
+                                                    </div>
+                                                @endif
+                                            </div>
                                         @endif
-                                        <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
-                                            <flux:input type="file" wire:model="previewLogo" accept="image/png,image/jpeg,image/jpg" />
-                                            @error('previewLogo')
-                                                <div class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</div>
-                                            @enderror
-                                            @if ($previewLogo)
-                                                <div class="mt-3">
-                                                    <flux:button wire:click="uploadPreviewLogo" variant="primary" size="sm" icon="arrow-up-tray">
-                                                        Upload Preview Logo
-                                                    </flux:button>
-                                                </div>
-                                            @endif
-                                        </div>
                                     </div>
                                 </div>
                             @endif
