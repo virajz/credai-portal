@@ -79,16 +79,19 @@ class PublicExhibitorsList extends Component
     public function render()
     {
         $query = Exhibitor::query()
-            ->with(['company', 'projects']);
+            ->with(['company', 'projects'])
+            ->whereHas('company', function ($q) {
+                $q->where('category', 'Builders');
+            });
 
         // Search filter
         if ($this->search) {
             $query->where(function ($q) {
                 $q->whereHas('company', function ($companyQuery) {
-                    $companyQuery->where('company_name', 'ilike', '%' . $this->search . '%');
+                    $companyQuery->where('company_name', 'ilike', '%'.$this->search.'%');
                 })
-                    ->orWhere('city', 'ilike', '%' . $this->search . '%')
-                    ->orWhere('office_address', 'ilike', '%' . $this->search . '%');
+                    ->orWhere('city', 'ilike', '%'.$this->search.'%')
+                    ->orWhere('office_address', 'ilike', '%'.$this->search.'%');
             });
         }
 
