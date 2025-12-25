@@ -116,6 +116,11 @@ class PublicExhibitorsList extends Component
             });
         }
 
+        // Sort by company name alphabetically
+        $query->join('companies', 'exhibitors.company_id', '=', 'companies.id')
+            ->orderBy('companies.company_name', 'asc')
+            ->select('exhibitors.*');
+
         $exhibitors = $query->paginate(12);
 
         return view('livewire.public-exhibitors-list', [
