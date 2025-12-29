@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Company extends Model
+class Company extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\CompanyFactory> */
     use HasFactory;
@@ -109,5 +109,17 @@ class Company extends Model
     public function draftExhibitors()
     {
         return $this->hasMany(DraftExhibitor::class);
+    }
+
+    public function leads()
+    {
+        return $this->hasMany(ExhibitorLead::class);
+    }
+
+    public function leadVisitors()
+    {
+        return $this->belongsToMany(Visitor::class, 'exhibitor_leads')
+            ->withPivot('notes')
+            ->withTimestamps();
     }
 }

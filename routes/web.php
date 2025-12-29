@@ -54,6 +54,29 @@ Route::get('/', function () {
 // Public exhibitors listing page
 Route::get('/explore-exhibitors', PublicExhibitorsList::class)->name('public.exhibitors');
 
+// Exhibitor Portal Routes (must be before /exhibitor/{exhibitor} wildcard route)
+Route::prefix('exhibitor')->name('exhibitor.')->group(function () {
+    Route::middleware(['guest:exhibitor'])->group(function () {
+        Route::get('login', \App\Livewire\Exhibitor\Login::class)->name('login');
+    });
+
+    Route::middleware(['exhibitor.auth'])->group(function () {
+        Route::get('dashboard', \App\Livewire\Exhibitor\Dashboard::class)->name('dashboard');
+        Route::get('scan', \App\Livewire\Exhibitor\ScanVisitor::class)->name('scan');
+        Route::get('leads', \App\Livewire\Exhibitor\Leads::class)->name('leads');
+
+        Route::post('logout', function () {
+            auth('exhibitor')->logout();
+
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+
+            // Use a full page redirect instead of Livewire navigate
+            return redirect(route('exhibitor.login'));
+        })->name('logout');
+    });
+});
+
 Route::get('/exhibitor/{exhibitor}', function (Exhibitor $exhibitor) {
     \App\Services\Analytics::trackExhibitorView($exhibitor);
 
