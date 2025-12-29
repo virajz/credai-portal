@@ -221,12 +221,12 @@
                 @endif
 
                 @if ($currentStep == 1)
-                    <flux:button type="submit" variant="primary" icon:trailing="chevron-right">
+                    <flux:button type="submit" variant="primary" icon:trailing="chevron-right" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="nextStep">Continue</span>
                         <span wire:loading wire:target="nextStep">Processing...</span>
                     </flux:button>
                 @else
-                    <flux:button type="submit" variant="primary" icon="ticket">
+                    <flux:button type="submit" variant="primary" icon="ticket" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="submit">Get Your Free Pass</span>
                         <span wire:loading wire:target="submit">Registering...</span>
                     </flux:button>

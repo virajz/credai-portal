@@ -9,35 +9,108 @@
 
     <div class="grid gap-8 md:grid-cols-2">
         <!-- Visitor Information -->
-        <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
-            <flux:heading size="lg" class="mb-4">Your Information</flux:heading>
-            <div class="space-y-3">
-                <div>
-                    <div class="text-sm text-zinc-500 dark:text-zinc-400">Name</div>
-                    <div class="font-medium">{{ $visitor->name }}</div>
-                </div>
-                <div>
-                    <div class="text-sm text-zinc-500 dark:text-zinc-400">Phone</div>
-                    <div class="font-medium">{{ $visitor->phone }}</div>
-                </div>
-                @if ($visitor->company_name)
+        <div class="space-y-6">
+            <!-- Personal Details -->
+            <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg" class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">Personal Details</flux:heading>
+                <div class="space-y-3">
                     <div>
-                        <div class="text-sm text-zinc-500 dark:text-zinc-400">Company</div>
-                        <div class="font-medium">{{ $visitor->company_name }}</div>
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400">Name</div>
+                        <div class="font-medium">{{ $visitor->name }}</div>
                     </div>
-                @endif
-                <div>
-                    <div class="text-sm text-zinc-500 dark:text-zinc-400">Registration Date</div>
-                    <div class="font-medium">{{ $visitor->created_at->format('M d, Y') }}</div>
+                    <div>
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400">Phone</div>
+                        <div class="font-medium">{{ $visitor->phone }}</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400">Age Group</div>
+                        <div class="font-medium">{{ $visitor->age_group }}</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400">Current Residential Area</div>
+                        <div class="font-medium">{{ $visitor->current_residential_area }}</div>
+                    </div>
+                    @if ($visitor->company_name)
+                        <div>
+                            <div class="text-sm text-zinc-500 dark:text-zinc-400">Company</div>
+                            <div class="font-medium">{{ $visitor->company_name }}</div>
+                        </div>
+                    @endif
+                    <div>
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400">Registration Date</div>
+                        <div class="font-medium">{{ $visitor->created_at->format('M d, Y h:i A') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Interests -->
+            <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg" class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">Property Interests</flux:heading>
+                <div class="space-y-4">
+                    <div>
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400 mb-2">Property Types</div>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach ($visitor->interests as $interest)
+                                <flux:badge color="teal">{{ $interest }}</flux:badge>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    @if (!empty($visitor->residential_types))
+                        <div>
+                            <div class="text-sm text-zinc-500 dark:text-zinc-400 mb-2">Residential Types</div>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach ($visitor->residential_types as $type)
+                                    <flux:badge color="blue">{{ $type }}</flux:badge>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (!empty($visitor->commercial_types))
+                        <div>
+                            <div class="text-sm text-zinc-500 dark:text-zinc-400 mb-2">Commercial Types</div>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach ($visitor->commercial_types as $type)
+                                    <flux:badge color="purple">{{ $type }}</flux:badge>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (!empty($visitor->plotting_types))
+                        <div>
+                            <div class="text-sm text-zinc-500 dark:text-zinc-400 mb-2">Plotting Types</div>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach ($visitor->plotting_types as $type)
+                                    <flux:badge color="orange">{{ $type }}</flux:badge>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <div>
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400 mb-2">Planning to Buy</div>
+                        <flux:badge color="green" size="lg">{{ $visitor->planning_to_buy }}</flux:badge>
+                    </div>
+
+                    <div>
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400 mb-2">Preferred Areas</div>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach ($visitor->areas as $area)
+                                <flux:badge color="zinc">{{ $area }}</flux:badge>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- QR Code -->
         <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
-            <flux:heading size="lg" class="mb-4">Your QR Code</flux:heading>
+            <flux:heading size="lg" class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">Your QR Code</flux:heading>
             <flux:text class="mb-4 text-sm">
-                Save this QR code for quick access to your visitor profile
+                Save this QR code for quick access to your visitor profile. You can retrieve this anytime using your phone number.
             </flux:text>
             <div class="mb-4 aspect-square w-full overflow-hidden rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700">
                 <div id="qr-code-svg" class="h-full w-full">

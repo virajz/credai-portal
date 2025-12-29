@@ -39,6 +39,10 @@ class VisitorsList extends Component
 
     public string $visitorQrCodeSvg = '';
 
+    public bool $showVisitorDetailsModal = false;
+
+    public ?Visitor $visitorDetails = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -137,6 +141,20 @@ class VisitorsList extends Component
         $this->selectedVisitor = null;
         $this->visitorQrCodeSvg = '';
         $this->modal('visitor-qr-code')->close();
+    }
+
+    public function showVisitorDetails(int $visitorId): void
+    {
+        $this->visitorDetails = Visitor::findOrFail($visitorId);
+        $this->showVisitorDetailsModal = true;
+        $this->modal('visitor-details')->show();
+    }
+
+    public function closeVisitorDetailsModal(): void
+    {
+        $this->showVisitorDetailsModal = false;
+        $this->visitorDetails = null;
+        $this->modal('visitor-details')->close();
     }
 
     public function exportVisitors()

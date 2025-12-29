@@ -16,6 +16,9 @@ class VisitorRegistration extends Component
     // Tracking medium
     public string $tracking_medium = '';
 
+    // Submission tracking
+    public bool $isSubmitting = false;
+
     // Step 1: Personal Information
     public string $name = '';
 
@@ -113,27 +116,47 @@ class VisitorRegistration extends Component
 
     public function submit(): void
     {
-        $this->validate();
+        // Prevent double submission
+        if ($this->isSubmitting) {
+            return;
+        }
 
-        // Create visitor record
-        $visitor = Visitor::create([
-            'name' => $this->name,
-            'phone' => $this->phone,
-            'age_group' => $this->age_group,
-            'current_residential_area' => $this->current_residential_area,
-            'company_name' => $this->company_name,
-            'interests' => $this->interests,
-            'residential_types' => $this->residential_types,
-            'commercial_types' => $this->commercial_types,
-            'plotting_types' => $this->plotting_types,
-            'weekend_home_types' => $this->weekend_home_types,
-            'planning_to_buy' => $this->planning_to_buy,
-            'areas' => $this->areas,
-            'tracking_medium' => $this->tracking_medium,
-        ]);
+        $this->isSubmitting = true;
 
-        // Redirect to success page with QR code
-        $this->redirect(route('visitor.success', $visitor), navigate: true);
+        try {
+            $this->validate();
+
+            // Double-check phone uniqueness to prevent race conditions
+            if (Visitor::where('phone', $this->phone)->exists()) {
+                $this->addError('phone', 'This number is already used for registration.');
+                $this->isSubmitting = false;
+
+                return;
+            }
+
+            // Create visitor record
+            $visitor = Visitor::create([
+                'name' => $this->name,
+                'phone' => $this->phone,
+                'age_group' => $this->age_group,
+                'current_residential_area' => $this->current_residential_area,
+                'company_name' => $this->company_name,
+                'interests' => $this->interests,
+                'residential_types' => $this->residential_types,
+                'commercial_types' => $this->commercial_types,
+                'plotting_types' => $this->plotting_types,
+                'weekend_home_types' => $this->weekend_home_types,
+                'planning_to_buy' => $this->planning_to_buy,
+                'areas' => $this->areas,
+                'tracking_medium' => $this->tracking_medium,
+            ]);
+
+            // Redirect to success page with QR code
+            $this->redirect(route('visitor.success', $visitor), navigate: true);
+        } catch (\Exception $e) {
+            $this->isSubmitting = false;
+            throw $e;
+        }
     }
 
     #[Title('Visitor Registration - CREDAI Glam Property Show 2026')]
