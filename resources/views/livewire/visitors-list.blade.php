@@ -334,7 +334,7 @@
     </flux:modal>
 
     <!-- Visitor QR Code Modal -->
-    <flux:modal name="visitor-qr-code" class="max-w-2xl" @close="closeVisitorQrModal" wire:model="showVisitorQrModal">
+    <flux:modal name="visitor-qr-code" class="max-w-2xl" @close="$wire.closeVisitorQrModal()" wire:model="showVisitorQrModal">
         <div class="space-y-6">
             @if ($selectedVisitor)
                 <div class="text-center">
@@ -418,14 +418,14 @@
 
                 <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
                     <flux:spacer />
-                    <flux:button variant="ghost" wire:click="closeVisitorQrModal">Close</flux:button>
+                    <flux:button variant="ghost" @click="$flux.modal('visitor-qr-code').close()">Close</flux:button>
                 </div>
             @endif
         </div>
     </flux:modal>
 
     <!-- Visitor Details Modal -->
-    <flux:modal name="visitor-details" class="max-w-4xl" @close="closeVisitorDetailsModal" wire:model="showVisitorDetailsModal">
+    <flux:modal name="visitor-details" class="max-w-4xl" @close="$wire.closeVisitorDetailsModal()" wire:model="showVisitorDetailsModal">
         @if ($visitorDetails)
             <div class="space-y-6">
                 <div class="text-center">
@@ -538,8 +538,8 @@
 
                 <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
                     <flux:spacer />
-                    <flux:button variant="ghost" wire:click="closeVisitorDetailsModal">Close</flux:button>
-                    <flux:button variant="primary" wire:click="showVisitorQrCode({{ $visitorDetails->id }}); closeVisitorDetailsModal()" icon="qr-code">
+                    <flux:button variant="ghost" @click="$flux.modal('visitor-details').close()">Close</flux:button>
+                    <flux:button variant="primary" wire:click="showVisitorQrCode({{ $visitorDetails->id }}); $flux.modal('visitor-details').close()" icon="qr-code">
                         View QR Code
                     </flux:button>
                 </div>
