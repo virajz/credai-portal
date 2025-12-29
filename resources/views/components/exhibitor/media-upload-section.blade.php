@@ -169,7 +169,7 @@
                             Uploading...
                         </span>
                         <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                            PDF only, max 10MB
+                            PDF only, max 50MB
                         </span>
                     </label>
                 </div>

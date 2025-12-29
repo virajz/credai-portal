@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\ActivityLog;
 use App\Models\Company;
+use App\Services\QrCodeService;
 use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -43,6 +44,12 @@ class CompaniesList extends Component
 
     #[Url]
     public ?string $filterLogoStatus = null;
+
+    public bool $showCompanyQrModal = false;
+
+    public ?Company $selectedCompany = null;
+
+    public string $companyQrCodeSvg = '';
 
     public function updatingSearch(): void
     {
@@ -183,6 +190,93 @@ class CompaniesList extends Component
                 variant: 'warning'
             );
         }
+    }
+
+    public function showCompanyQrCode(int $companyId): void
+    {
+        $this->selectedCompany = Company::findOrFail($companyId);
+
+        // Ensure the company has a UUID
+        if (! $this->selectedCompany->uuid) {
+            $this->selectedCompany->update([
+                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            ]);
+            $this->selectedCompany->refresh();
+        }
+
+        $url = $this->selectedCompany->qr_validation_url;
+
+        $qrCodeService = new QrCodeService;
+        $this->companyQrCodeSvg = $qrCodeService->generate($url);
+
+        $this->showCompanyQrModal = true;
+        $this->modal('company-qr-code')->show();
+
+        ActivityLog::log(
+            'company_qr_generated',
+            "Generated QR code for: {$this->selectedCompany->company_name}",
+            ['company_id' => $this->selectedCompany->id, 'company_name' => $this->selectedCompany->company_name]
+        );
+    }
+
+    public function closeCompanyQrModal(): void
+    {
+        $this->showCompanyQrModal = false;
+        $this->selectedCompany = null;
+        $this->companyQrCodeSvg = '';
+        $this->modal('company-qr-code')->close();
+    }
+
+    public function downloadAllQrCodes(): StreamedResponse
+    {
+        $companies = Company::whereNotNull('uuid')->get();
+
+        $headers = [
+            'Content-Type' => 'application/zip',
+            'Content-Disposition' => 'attachment; filename="company-qr-codes-'.now()->format('Y-m-d').'.zip"',
+        ];
+
+        $callback = function () use ($companies) {
+            $zip = new \ZipArchive;
+            $zipFileName = tempnam(sys_get_temp_dir(), 'qr_codes_');
+
+            if ($zip->open($zipFileName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+                return;
+            }
+
+            $qrCodeService = new QrCodeService;
+
+            foreach ($companies as $company) {
+                // Ensure company has UUID
+                if (! $company->uuid) {
+                    $company->update(['uuid' => \Illuminate\Support\Str::uuid()->toString()]);
+                    $company->refresh();
+                }
+
+                $url = $company->qr_validation_url;
+                $svg = $qrCodeService->generate($url);
+
+                // Create filename: {stallNumber}-{companyName}.svg
+                $stallNumber = $company->stall_number ?: 'no-stall';
+                $companyName = \Illuminate\Support\Str::slug($company->company_name);
+                $filename = "{$stallNumber}-{$companyName}.svg";
+
+                $zip->addFromString($filename, $svg);
+            }
+
+            $zip->close();
+
+            readfile($zipFileName);
+            unlink($zipFileName);
+        };
+
+        ActivityLog::log(
+            'bulk_qr_download',
+            'Downloaded all company QR codes',
+            ['company_count' => $companies->count()]
+        );
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function exportCompanies(): StreamedResponse

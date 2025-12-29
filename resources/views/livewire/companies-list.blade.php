@@ -5,8 +5,11 @@
             <flux:subheading>Manage companies and their stall allocations</flux:subheading>
         </div>
         <div class="flex gap-2">
+            <flux:button variant="ghost" icon="qr-code" wire:click="downloadAllQrCodes">
+                Download All QR Codes
+            </flux:button>
             <flux:button variant="ghost" icon="arrow-down-tray" wire:click="exportCompanies">
-                Export
+                Export CSV
             </flux:button>
             <flux:button variant="primary" :href="route('companies.create')" icon="plus" wire:navigate>
                 Add Company
@@ -141,6 +144,11 @@
                             <div x-tooltip="copied ? 'Copied!' : 'Copy registration link'">
                                 <flux:button wire:click="generateAndCopyLink({{ $company->id }})" variant="ghost"
                                     size="sm" icon="clipboard" icon:variant="outline" />
+                            </div>
+
+                            <div x-tooltip="'Generate QR Code'">
+                                <flux:button wire:click="showCompanyQrCode({{ $company->id }})" variant="ghost"
+                                    size="sm" icon="qr-code" icon:variant="outline" />
                             </div>
 
                             <div x-tooltip="'{{ $company->is_locked ? 'Unlock registration link' : 'Lock registration link' }}'">
@@ -289,6 +297,98 @@
                 <flux:button variant="ghost" wire:click="cancelDelete">Cancel</flux:button>
                 <flux:button variant="danger" wire:click="deleteCompany">Delete company</flux:button>
             </div>
+        </div>
+    </flux:modal>
+
+    <!-- Company QR Code Modal -->
+    <flux:modal name="company-qr-code" class="max-w-2xl" @close="$wire.closeCompanyQrModal()" wire:model="showCompanyQrModal">
+        <div class="space-y-6">
+            @if ($selectedCompany)
+                <div class="text-center">
+                    <flux:heading size="lg">Company QR Code</flux:heading>
+                    <flux:text class="mt-2">{{ $selectedCompany->company_name }}</flux:text>
+                    <flux:text class="mt-1 text-sm text-zinc-500">Scans will open WhatsApp to inquire about this company</flux:text>
+                </div>
+
+                <div class="flex flex-col items-center justify-center space-y-4">
+                    <div
+                        class="relative aspect-square w-full max-w-sm overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+                        @if ($companyQrCodeSvg)
+                            <div class="flex h-full items-center justify-center bg-white p-6">
+                                <div id="company-qr-code-svg" class="max-h-full max-w-full">
+                                    {!! preg_replace('/<svg/', '<svg class="w-full h-full"', $companyQrCodeSvg) !!}
+                                </div>
+                            </div>
+                        @else
+                            <div
+                                class="flex h-full flex-col items-center justify-center bg-zinc-50 p-6 text-center dark:bg-zinc-800">
+                                <flux:icon.qr-code class="mb-3 h-16 w-16 text-zinc-300 dark:text-zinc-600" />
+                                <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    Loading QR code...
+                                </flux:text>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="grid w-full max-w-sm grid-cols-2 gap-3" x-data="{
+                        companyName: '{{ $selectedCompany ? \Illuminate\Support\Str::slug($selectedCompany->company_name) : '' }}',
+                        downloadPng() {
+                            const svg = document.querySelector('#company-qr-code-svg');
+                            if (svg) {
+                                const svgElement = svg.querySelector('svg');
+                                if (svgElement) {
+                                    const svgData = new XMLSerializer().serializeToString(svgElement);
+                                    const canvas = document.createElement('canvas');
+                                    const ctx = canvas.getContext('2d');
+                                    const img = new Image();
+                                    img.onload = () => {
+                                        canvas.width = 1200;
+                                        canvas.height = 1200;
+                                        ctx.fillStyle = 'white';
+                                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                        ctx.drawImage(img, 0, 0, 1200, 1200);
+                                        const link = document.createElement('a');
+                                        link.download = this.companyName + '-exhibitor-qr-code.png';
+                                        link.href = canvas.toDataURL('image/png');
+                                        link.click();
+                                    };
+                                    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                                }
+                            }
+                        },
+                        downloadSvg() {
+                            const svg = document.querySelector('#company-qr-code-svg');
+                            if (svg) {
+                                const svgElement = svg.querySelector('svg');
+                                if (svgElement) {
+                                    const svgData = new XMLSerializer().serializeToString(svgElement);
+                                    const blob = new Blob([svgData], { type: 'image/svg+xml' });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement('a');
+                                    link.download = this.companyName + '-exhibitor-qr-code.svg';
+                                    link.href = url;
+                                    link.click();
+                                    URL.revokeObjectURL(url);
+                                }
+                            }
+                        }
+                    }">
+                        <flux:button variant="outline" @click="downloadPng" icon="arrow-down-tray"
+                            icon:variant="outline">
+                            Download PNG
+                        </flux:button>
+                        <flux:button variant="outline" @click="downloadSvg" icon="arrow-down-tray"
+                            icon:variant="outline">
+                            Download SVG
+                        </flux:button>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+                    <flux:spacer />
+                    <flux:button variant="ghost" @click="$flux.modal('company-qr-code').close()">Close</flux:button>
+                </div>
+            @endif
         </div>
     </flux:modal>
 </div>

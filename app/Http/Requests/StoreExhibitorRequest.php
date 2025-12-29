@@ -37,7 +37,7 @@ class StoreExhibitorRequest extends FormRequest
 
             // Branding & Media
             'logo' => ['nullable', 'file', 'extensions:png,jpg,jpeg,pdf,cdr', 'max:5120'],
-            'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
             'photos' => ['nullable', 'array', 'min:3', 'max:5'],
             'photos.*' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
             'photo_labels' => ['nullable', 'array'],
@@ -93,7 +93,7 @@ class StoreExhibitorRequest extends FormRequest
 
             'brochure.file' => 'Brochure must be a file.',
             'brochure.mimes' => 'Brochure must be a PDF file.',
-            'brochure.max' => 'Brochure file size should not exceed 10MB.',
+            'brochure.max' => 'Brochure file size should not exceed 50MB.',
 
             'photos.min' => 'Please upload at least 3 photos.',
             'photos.max' => 'You can upload a maximum of 5 photos.',

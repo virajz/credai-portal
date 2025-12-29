@@ -11,6 +11,7 @@ class Company extends Authenticatable
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'company_name',
         'category',
         'registered_number',
@@ -121,5 +122,46 @@ class Company extends Authenticatable
         return $this->belongsToMany(Visitor::class, 'exhibitor_leads')
             ->withPivot('notes')
             ->withTimestamps();
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (Company $company) {
+            if (empty($company->uuid)) {
+                $company->uuid = \Illuminate\Support\Str::uuid()->toString();
+            }
+        });
+    }
+
+    /**
+     * Get the last 6 digits of the UUID
+     */
+    public function getUuidLast6Attribute(): string
+    {
+        return substr(str_replace('-', '', $this->uuid), -6);
+    }
+
+    /**
+     * Get the WhatsApp inquiry URL for this company
+     */
+    public function getWhatsappInquiryUrlAttribute(): string
+    {
+        $phoneNumber = '919998077280';
+        $message = urlencode("Hi, I want to know more about {$this->company_name} - {$this->uuid_last_6}");
+
+        return "https://wa.me/{$phoneNumber}?text={$message}";
+    }
+
+    /**
+     * Get the QR validation URL for this company
+     */
+    public function getQrValidationUrlAttribute(): string
+    {
+        return route('exhibitor.validate', ['uuid' => $this->uuid]);
     }
 }

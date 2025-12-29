@@ -431,7 +431,7 @@ class ClientRegistrationForm extends Component
                 'email' => ['nullable', 'email', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
                 'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'extensions:png,jpg,jpeg,pdf,cdr', 'max:5120'],
-                'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:10240'],
+                'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:51200'],
                 'video_url' => ['nullable', 'url', 'max:255'],
                 'social_media_links' => ['nullable', 'array'],
                 'social_media_links.facebook' => ['nullable', 'url', 'max:255'],
@@ -450,7 +450,7 @@ class ClientRegistrationForm extends Component
                 'logo.max' => 'Logo file size should not exceed 5MB.',
                 'brochure.required' => 'Company brochure is required.',
                 'brochure.mimes' => 'Brochure must be a PDF file.',
-                'brochure.max' => 'Brochure file size should not exceed 10MB.',
+                'brochure.max' => 'Brochure file size should not exceed 50MB.',
                 'video_url.url' => 'Please provide a valid video URL (YouTube or Vimeo).',
                 'additional_details.max' => 'Additional details should not exceed 1000 characters.',
             ]),
@@ -707,7 +707,7 @@ class ClientRegistrationForm extends Component
 
                 // Branding & Media
                 'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'extensions:png,jpg,jpeg,pdf,cdr', 'max:5120'],
-                'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:10240'],
+                'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:51200'],
                 'video_url' => ['nullable', 'url', 'max:255'],
                 'social_media_links' => ['nullable', 'array'],
 

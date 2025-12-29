@@ -114,6 +114,9 @@ Route::get('visitor-register', VisitorRegistration::class)->name('visitor.regist
 Route::get('visitor-success/{visitor}', \App\Livewire\VisitorSuccess::class)->name('visitor.success');
 Route::get('visitors/{visitor}', \App\Livewire\VisitorShow::class)->name('visitor.show');
 
+// Exhibitor QR validation route
+Route::get('exhibitor/validate/{uuid}', [\App\Http\Controllers\ExhibitorValidationController::class, 'validate'])->name('exhibitor.validate');
+
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
