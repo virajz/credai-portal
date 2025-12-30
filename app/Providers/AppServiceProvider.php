@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Visitor;
+use App\Observers\VisitorObserver;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Visitor::observe(VisitorObserver::class);
+
         Gate::define('admin-access', function ($user) {
             return $user->email === 'viraj@glam2026.com';
         });

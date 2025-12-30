@@ -136,9 +136,11 @@
                     <flux:table.cell>
                         <div class="flex items-center gap-2">
                             @if(auth()->user()->isAdmin())
-                                <flux:button variant="ghost" size="sm" icon="bi-whatsapp"
-                                    wire:click="sendWhatsApp({{ $visitor->id }})"
-                                    class="text-green-600 hover:text-green-700 dark:text-green-500 dark:hover:text-green-400" />
+                                <flux:tooltip content="Send WhatsApp Message" position="top">
+                                    <flux:button variant="ghost" size="sm" icon="bi-whatsapp"
+                                        wire:click="confirmSendWhatsApp({{ $visitor->id }})"
+                                        class="text-green-600 hover:text-green-700 dark:text-green-500 dark:hover:text-green-400" />
+                                </flux:tooltip>
                             @endif
                             <flux:dropdown position="bottom" align="end">
                                 <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" />
@@ -556,6 +558,46 @@
                     <flux:button variant="ghost" @click="$flux.modal('visitor-details').close()">Close</flux:button>
                     <flux:button variant="primary" wire:click="showVisitorQrCode({{ $visitorDetails->id }}); $flux.modal('visitor-details').close()" icon="qr-code">
                         View QR Code
+                    </flux:button>
+                </div>
+            </div>
+        @endif
+    </flux:modal>
+
+    {{-- Send WhatsApp Confirmation Modal --}}
+    <flux:modal name="send-whatsapp-confirmation" class="min-w-[400px]">
+        @if ($visitorToSendWhatsApp)
+            @php
+                $visitor = \App\Models\Visitor::find($visitorToSendWhatsApp);
+            @endphp
+            <div>
+                <flux:heading size="lg" class="mb-1">Send WhatsApp Message</flux:heading>
+                <flux:subheading class="mb-6">Are you sure you want to send a WhatsApp message to this visitor?</flux:subheading>
+
+                <div class="mb-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <flux:icon.user class="text-zinc-500" />
+                            <div>
+                                <div class="text-sm font-medium">{{ $visitor->name }}</div>
+                                <div class="text-sm text-zinc-600 dark:text-zinc-400">{{ $visitor->phone }}</div>
+                            </div>
+                        </div>
+                        @if ($visitor->company_name)
+                            <div class="flex items-center gap-3">
+                                <flux:icon.building-office class="text-zinc-500" />
+                                <div class="text-sm text-zinc-600 dark:text-zinc-400">{{ $visitor->company_name }}</div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <flux:spacer />
+                    <flux:button variant="ghost" @click="$flux.modal('send-whatsapp-confirmation').close()">Cancel</flux:button>
+                    <flux:button variant="primary" wire:click="sendWhatsApp" icon="bi-whatsapp"
+                        class="bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700">
+                        Send Message
                     </flux:button>
                 </div>
             </div>
