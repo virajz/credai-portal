@@ -135,6 +135,11 @@
                     </flux:table.cell>
                     <flux:table.cell>
                         <div class="flex items-center gap-2">
+                            @if(auth()->user()->isAdmin())
+                                <flux:button variant="ghost" size="sm" icon="bi-whatsapp"
+                                    wire:click="sendWhatsApp({{ $visitor->id }})"
+                                    class="text-green-600 hover:text-green-700 dark:text-green-500 dark:hover:text-green-400" />
+                            @endif
                             <flux:dropdown position="bottom" align="end">
                                 <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" />
                                 <flux:menu class="w-48">

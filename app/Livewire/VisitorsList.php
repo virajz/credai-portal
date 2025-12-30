@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Jobs\SendWhatsAppMessage;
 use App\Models\Visitor;
 use App\Services\QrCodeService;
 use Flux\Flux;
@@ -163,6 +164,37 @@ class VisitorsList extends Component
         $this->showVisitorDetailsModal = false;
         $this->visitorDetails = null;
         $this->modal('visitor-details')->close();
+    }
+
+    public function sendWhatsApp(int $visitorId): void
+    {
+        $visitor = Visitor::findOrFail($visitorId);
+
+        $qrCodeService = new QrCodeService;
+        $url = route('visitor.show', $visitor);
+        $filename = 'visitor-'.$visitor->uuid;
+        $imageUrl = $qrCodeService->withSize(512, 2)->saveWhatsAppQrImage($url, $filename);
+
+        SendWhatsAppMessage::dispatch(
+            name: $visitor->name,
+            phoneNumber: $visitor->phone,
+            templateName: 'user_registration_1_copy',
+            data: [
+                $visitor->name,
+                'GLAM SURAT – Property Show 2026',
+                '9, 10, 11 January 2026',
+                'Vanita Vishram Ground, Surat',
+            ],
+            imageUrl: $imageUrl,
+            buttonValue: 'https://property-show.credai-surat.com/',
+            visitorId: $visitor->id
+        );
+
+        Flux::toast(
+            heading: 'WhatsApp message queued',
+            text: "Message will be sent to {$visitor->name} ({$visitor->phone})",
+            variant: 'success'
+        );
     }
 
     public function exportVisitors()

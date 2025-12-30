@@ -1,0 +1,1 @@
+<x-bi-whatsapp {{ $attributes }} />
