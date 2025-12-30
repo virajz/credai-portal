@@ -18,6 +18,9 @@ class VisitorsList extends Component
     public string $search = '';
 
     #[Url]
+    public array $selectedCampaigns = [];
+
+    #[Url]
     public string $sortBy = 'created_at';
 
     #[Url]
@@ -48,6 +51,11 @@ class VisitorsList extends Component
         $this->resetPage();
     }
 
+    public function updatingSelectedCampaigns(): void
+    {
+        $this->resetPage();
+    }
+
     public function sortByColumn(string $column): void
     {
         if ($this->sortBy === $column) {
@@ -60,7 +68,7 @@ class VisitorsList extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search']);
+        $this->reset(['search', 'selectedCampaigns']);
         $this->sortBy = 'created_at';
         $this->sortDirection = 'desc';
         $this->resetPage();
@@ -168,8 +176,11 @@ class VisitorsList extends Component
                         ->orWhere('current_residential_area', 'ilike', "%{$this->search}%");
                 });
             })
+            ->when(! empty($this->selectedCampaigns), function ($query) {
+                $query->whereIn('tracking_medium', $this->selectedCampaigns);
+            })
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->get();
+            ->cursor();
 
         $filename = 'visitors_'.now()->format('Y-m-d_His').'.csv';
 
@@ -231,6 +242,7 @@ class VisitorsList extends Component
     public function render()
     {
         $visitors = Visitor::query()
+            ->select(['id', 'name', 'phone', 'age_group', 'company_name', 'tracking_medium', 'interests', 'planning_to_buy', 'created_at'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'ilike', "%{$this->search}%")
@@ -239,11 +251,25 @@ class VisitorsList extends Component
                         ->orWhere('current_residential_area', 'ilike', "%{$this->search}%");
                 });
             })
+            ->when(! empty($this->selectedCampaigns), function ($query) {
+                $query->whereIn('tracking_medium', $this->selectedCampaigns);
+            })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(15);
 
+        $availableCampaigns = cache()->remember('available_campaigns', 300, function () {
+            return Visitor::select('tracking_medium')
+                ->distinct()
+                ->whereNotNull('tracking_medium')
+                ->where('tracking_medium', '!=', '')
+                ->orderBy('tracking_medium')
+                ->pluck('tracking_medium')
+                ->toArray();
+        });
+
         return view('livewire.visitors-list', [
             'visitors' => $visitors,
+            'availableCampaigns' => $availableCampaigns,
         ]);
     }
 }

@@ -23,5 +23,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('admin-access', function ($user) {
             return $user->email === 'viraj@glam2026.com';
         });
+
+        Gate::define('view-dashboard', function ($user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('manage-companies', function ($user) {
+            return $user->isAdmin();
+        });
     }
 }

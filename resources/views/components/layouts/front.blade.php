@@ -3,6 +3,7 @@
     'backLink' => null,
     'backText' => 'Back',
     'bodyClass' => 'bg-white',
+    'showHeader' => true,
 ])
 
 <!DOCTYPE html>
@@ -26,79 +27,74 @@
 </head>
 
 <body class="flex min-h-screen flex-col {{ $bodyClass }} antialiased" style="font-family: 'Poppins', sans-serif;">
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full backdrop-blur-md bg-white/90 border-b border-zinc-200/50 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 lg:h-20">
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('home') }}" aria-label="Go to homepage">
-                        <img src="/logo.png" alt="{{ config('app.name') }}"
-                            class="h-10 lg:h-14 w-auto drop-shadow-sm" />
-                    </a>
-                </div>
-
-                @if ($backLink)
-                    <!-- Back Link (for detail pages) -->
-                    <a href="{{ $backLink }}"
-                        class="inline-flex items-center text-sm font-light text-zinc-600 hover:text-zinc-900 transition-colors">
-                        <x-heroicon-o-chevron-left class="w-4 h-4 mr-2" />
-                        {{ $backText }}
-                    </a>
-                @else
-                    <!-- Desktop Navigation (for homepage) -->
-                    <div class="hidden lg:flex items-center space-x-1">
-                        <a href="{{ route('public.exhibitors') }}"
-                            class="px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900 transition-colors">
-                            Exhibitors
+    @if ($showHeader)
+        <!-- Navigation -->
+        <nav class="fixed top-0 w-full backdrop-blur-md bg-white/90 border-b border-zinc-200/50 z-50 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16 lg:h-20">
+                    <!-- Logo -->
+                    <div class="flex items-center gap-3">
+                        <a href="{{ route('home') }}" aria-label="Go to homepage">
+                            <img src="/logo.png" alt="{{ config('app.name') }}"
+                                class="h-10 lg:h-14 w-auto drop-shadow-sm" />
                         </a>
-                        <a href="{{ route('home') }}#features"
-                            class="px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900 transition-colors">
-                            Why Visit
-                        </a>
-
-                        <!-- CTA Button -->
-                        <div class="ml-6">
-                            <flux:button href="{{ route('visitor.register') }}" variant="primary">
-                                Get Free Pass
-                            </flux:button>
-                        </div>
                     </div>
 
-                    <!-- Mobile menu button -->
-                    <div class="lg:hidden" x-data="{ open: false }">
-                        <button @click="open = !open"
-                            class="inline-flex items-center justify-center p-2 text-zinc-600 hover:text-zinc-900 transition-colors">
-                            <x-heroicon-o-bars-3 class="h-5 w-5" />
-                        </button>
+                    @if ($backLink)
+                        <!-- Back Link (for detail pages) -->
+                        <a href="{{ $backLink }}"
+                            class="inline-flex items-center text-sm font-light text-zinc-600 hover:text-zinc-900 transition-colors">
+                            <x-heroicon-o-chevron-left class="w-4 h-4 mr-2" />
+                            {{ $backText }}
+                        </a>
+                    @else
+                        <!-- Desktop Navigation (for homepage) -->
+                        <div class="hidden lg:flex items-center space-x-1">
+                            <a href="{{ route('public.exhibitors') }}"
+                                class="px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900 transition-colors">
+                                Exhibitors
+                            </a>
 
-                        <!-- Mobile Navigation Menu -->
-                        <div x-show="open" x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                            @click.away="open = false"
-                            class="absolute right-4 top-full mt-2 w-48 bg-white border border-zinc-100 rounded-lg shadow-lg">
-                            <div class="py-2">
-                                <a href="{{ route('public.exhibitors') }}"
-                                    class="block px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900">Exhibitors</a>
-                                <a href="{{ route('home') }}#features"
-                                    class="block px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900">Why
-                                    Visit</a>
-                                <div class="border-t border-zinc-100 my-2"></div>
-                                <a href="{{ route('visitor.register') }}"
-                                    class="block px-4 py-2 text-sm font-normal text-zinc-900">Get Free
-                                    Pass</a>
+                            <!-- CTA Button -->
+                            <div class="ml-6">
+                                <flux:button href="{{ route('visitor.register') }}" variant="primary">
+                                    Get Free Pass
+                                </flux:button>
                             </div>
                         </div>
-                    </div>
-                @endif
+
+                        <!-- Mobile menu button -->
+                        <div class="lg:hidden" x-data="{ open: false }">
+                            <button @click="open = !open"
+                                class="inline-flex items-center justify-center p-2 text-zinc-600 hover:text-zinc-900 transition-colors">
+                                <x-heroicon-o-bars-3 class="h-5 w-5" />
+                            </button>
+
+                            <!-- Mobile Navigation Menu -->
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                @click.away="open = false"
+                                class="absolute right-4 top-full mt-2 w-48 bg-white border border-zinc-100 rounded-lg shadow-lg">
+                                <div class="py-2">
+                                    <a href="{{ route('public.exhibitors') }}"
+                                        class="block px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900">Exhibitors</a>
+                                    <div class="border-t border-zinc-100 my-2"></div>
+                                    <a href="{{ route('visitor.register') }}"
+                                        class="block px-4 py-2 text-sm font-normal text-zinc-900">Get Free
+                                        Pass</a>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    @endif
 
     <!-- Main Content -->
-    <main class="flex-1 pt-16 lg:pt-20">
+    <main class="flex-1 {{ $showHeader ? 'pt-16 lg:pt-20' : '' }}">
         {{ $slot }}
     </main>
 

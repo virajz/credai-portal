@@ -117,7 +117,13 @@ Route::get('visitors/{visitor}', \App\Livewire\VisitorShow::class)->name('visito
 // Exhibitor QR validation route
 Route::get('exhibitor/validate/{uuid}', [\App\Http\Controllers\ExhibitorValidationController::class, 'validate'])->name('exhibitor.validate');
 
-Route::view('dashboard', 'dashboard')
+Route::get('dashboard', function () {
+    if (auth()->user()->isVisitorViewer()) {
+        return redirect()->route('visitors.index');
+    }
+
+    return view('dashboard');
+})
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -139,19 +145,24 @@ Route::middleware(['auth'])->group(function () {
         )
         ->name('two-factor.show');
 
-    // Company Management Routes
-    Route::get('companies', CompaniesList::class)->name('companies.index');
-    Route::get('companies/create', CreateCompany::class)->name('companies.create');
-    Route::get('companies/{company}/edit', EditCompany::class)->name('companies.edit');
-    Route::get('companies/{company}/submission', \App\Livewire\CompanySubmission::class)->name('companies.submission');
-    Route::get('companies/{company}/analytics', \App\Livewire\CompanyAnalytics::class)->name('companies.analytics');
+    // Visitor Management Routes (accessible by both admin and visitor_viewer)
+    Route::middleware(['role:admin,visitor_viewer'])->group(function () {
+        Route::get('visitors', VisitorsList::class)->name('visitors.index');
+    });
 
-    // Visitor Management Routes
-    Route::get('visitors', VisitorsList::class)->name('visitors.index');
+    // Admin-only Routes
+    Route::middleware(['role:admin'])->group(function () {
+        // Company Management Routes
+        Route::get('companies', CompaniesList::class)->name('companies.index');
+        Route::get('companies/create', CreateCompany::class)->name('companies.create');
+        Route::get('companies/{company}/edit', EditCompany::class)->name('companies.edit');
+        Route::get('companies/{company}/submission', \App\Livewire\CompanySubmission::class)->name('companies.submission');
+        Route::get('companies/{company}/analytics', \App\Livewire\CompanyAnalytics::class)->name('companies.analytics');
 
-    // Admin Routes (restricted to viraj@glam2026.com)
-    Route::middleware('can:admin-access')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('users', \App\Livewire\Admin\Users::class)->name('users');
-        Route::get('activity-logs', \App\Livewire\Admin\ActivityLogs::class)->name('activity-logs');
+        // Admin Routes (restricted to viraj@glam2026.com)
+        Route::middleware('can:admin-access')->prefix('admin')->name('admin.')->group(function () {
+            Route::get('users', \App\Livewire\Admin\Users::class)->name('users');
+            Route::get('activity-logs', \App\Livewire\Admin\ActivityLogs::class)->name('activity-logs');
+        });
     });
 });

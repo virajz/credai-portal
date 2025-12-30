@@ -14,14 +14,24 @@
         </div>
     </div>
 
-    <!-- Search -->
+    <!-- Search and Filters -->
     <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end">
         <div class="flex-1">
             <flux:input wire:model.live.debounce.300ms="search"
                 placeholder="Search by name, phone, company name, or area..." icon="magnifying-glass" />
         </div>
 
-        @if ($search)
+        @if (! empty($availableCampaigns))
+            <div class="w-full lg:w-64">
+                <flux:select wire:model.live="selectedCampaigns" variant="listbox" multiple searchable placeholder="Filter by campaign...">
+                    @foreach ($availableCampaigns as $campaign)
+                        <flux:select.option value="{{ $campaign }}">{{ $campaign }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+            </div>
+        @endif
+
+        @if ($search || ! empty($selectedCampaigns))
             <flux:button variant="ghost" icon="x-mark" wire:click="clearFilters">
                 Clear Filters
             </flux:button>

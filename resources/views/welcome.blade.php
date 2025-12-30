@@ -1,9 +1,12 @@
-<x-layouts.front>
+<x-layouts.front :showHeader="false">
     <!-- Hero Banner Section -->
     <section class="w-full overflow-hidden border-b">
         <div class="w-full">
-            <img src="/banner.jpg" alt="{{ config('app.name') }} - Property Exhibition"
-                class="w-full h-auto object-contain" />
+
+            <a href="{{ route('visitor.register') }}">
+                <img src="/banner-web.jpg" alt="{{ config('app.name') }} - Property Exhibition"
+                    class="w-full h-auto object-contain" />
+            </a>
         </div>
     </section>
 
@@ -119,103 +122,6 @@
                     </flux:button>
                 </div>
             @endif
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="py-20 bg-zinc-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Section Header -->
-            <div class="text-center mb-12">
-                <span class="text-xs font-light tracking-widest text-zinc-400 uppercase">Why Visit</span>
-                <h2 class="mt-3 text-2xl sm:text-3xl font-light text-zinc-900">
-                    Find Your Dream Property
-                </h2>
-                <p class="mt-3 text-sm text-zinc-500 max-w-xl mx-auto font-light">
-                    Discover exclusive properties and secure the best deals
-                </p>
-            </div>
-
-            <!-- Features Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Feature 1 -->
-                <div class="p-6 bg-white rounded-lg">
-                    <div class="mb-4">
-                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-100">
-                            <x-heroicon-o-building-office class="w-5 h-5 text-zinc-600" />
-                        </div>
-                    </div>
-                    <h3 class="text-sm font-normal text-zinc-900 mb-2">200+ Properties</h3>
-                    <p class="text-xs text-zinc-500 font-light leading-relaxed">
-                        Residential, commercial, and luxury properties from trusted developers.
-                    </p>
-                </div>
-
-                <!-- Feature 2 -->
-                <div class="p-6 bg-white rounded-lg">
-                    <div class="mb-4">
-                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-100">
-                            <x-heroicon-o-currency-rupee class="w-5 h-5 text-zinc-600" />
-                        </div>
-                    </div>
-                    <h3 class="text-sm font-normal text-zinc-900 mb-2">Exclusive Offers</h3>
-                    <p class="text-xs text-zinc-500 font-light leading-relaxed">
-                        Special pricing and limited-time offers available only to exhibition visitors.
-                    </p>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="p-6 bg-white rounded-lg">
-                    <div class="mb-4">
-                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-100">
-                            <x-heroicon-o-user-group class="w-5 h-5 text-zinc-600" />
-                        </div>
-                    </div>
-                    <h3 class="text-sm font-normal text-zinc-900 mb-2">Expert Consultations</h3>
-                    <p class="text-xs text-zinc-500 font-light leading-relaxed">
-                        Free advice from real estate experts, legal advisors, and financial consultants.
-                    </p>
-                </div>
-
-                <!-- Feature 4 -->
-                <div class="p-6 bg-white rounded-lg">
-                    <div class="mb-4">
-                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-100">
-                            <x-heroicon-o-users class="w-5 h-5 text-zinc-600" />
-                        </div>
-                    </div>
-                    <h3 class="text-sm font-normal text-zinc-900 mb-2">Industry Network</h3>
-                    <p class="text-xs text-zinc-500 font-light leading-relaxed">
-                        Connect with developers, investors, and fellow property buyers.
-                    </p>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="p-6 bg-white rounded-lg">
-                    <div class="mb-4">
-                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-100">
-                            <x-heroicon-o-check-circle class="w-5 h-5 text-zinc-600" />
-                        </div>
-                    </div>
-                    <h3 class="text-sm font-normal text-zinc-900 mb-2">Digital Experience</h3>
-                    <p class="text-xs text-zinc-500 font-light leading-relaxed">
-                        Digital registration, instant property brochures, and convenient online tools.
-                    </p>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="p-6 bg-white rounded-lg">
-                    <div class="mb-4">
-                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-100">
-                            <x-heroicon-o-chart-bar class="w-5 h-5 text-zinc-600" />
-                        </div>
-                    </div>
-                    <h3 class="text-sm font-normal text-zinc-900 mb-2">Market Insights</h3>
-                    <p class="text-xs text-zinc-500 font-light leading-relaxed">
-                        Latest market research, price trends, and investment opportunities.
-                    </p>
-                </div>
-            </div>
         </div>
     </section>
 
