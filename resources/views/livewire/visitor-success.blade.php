@@ -112,36 +112,16 @@
             <flux:text class="mb-4 text-sm">
                 Save this QR code for quick access to your visitor profile. You can retrieve this anytime using your phone number.
             </flux:text>
-            <div class="mb-4 aspect-square w-full overflow-hidden rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700">
-                <div id="qr-code-svg" class="h-full w-full">
-                    {!! preg_replace('/<svg/', '<svg class="w-full h-full"', $qrCodeSvg) !!}
-                </div>
+            <div class="mb-4 w-full overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700">
+                <img id="whatsapp-qr-image" src="{{ $whatsappQrImage }}" alt="Visitor QR Code" class="w-full h-auto">
             </div>
             <div x-data="{
                 visitorName: '{{ \Illuminate\Support\Str::slug($visitor->name) }}',
                 downloadQr() {
-                    const svg = document.querySelector('#qr-code-svg');
-                    if (svg) {
-                        const svgElement = svg.querySelector('svg');
-                        if (svgElement) {
-                            const svgData = new XMLSerializer().serializeToString(svgElement);
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            const img = new Image();
-                            img.onload = () => {
-                                canvas.width = 1200;
-                                canvas.height = 1200;
-                                ctx.fillStyle = 'white';
-                                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                                ctx.drawImage(img, 0, 0, 1200, 1200);
-                                const link = document.createElement('a');
-                                link.download = this.visitorName + '-visitor-qr-code.png';
-                                link.href = canvas.toDataURL('image/png');
-                                link.click();
-                            };
-                            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-                        }
-                    }
+                    const link = document.createElement('a');
+                    link.download = this.visitorName + '-visitor-qr-code.png';
+                    link.href = '{{ $whatsappQrImage }}';
+                    link.click();
                 }
             }">
                 <flux:button variant="primary" @click="downloadQr" icon="arrow-down-tray" icon:variant="outline" class="w-full">
