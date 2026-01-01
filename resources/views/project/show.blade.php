@@ -100,7 +100,8 @@
                             <h2 class="text-sm font-medium text-zinc-900 mb-5">Available Units</h2>
                             <div class="space-y-3">
                                 @foreach ($project->units as $unit)
-                                    <div class="flex items-center gap-4 p-4 bg-zinc-50 rounded-lg border border-zinc-100">
+                                    <div
+                                        class="flex items-center gap-4 p-4 bg-zinc-50 rounded-lg border border-zinc-100">
                                         @if (isset($unit['type']) && str_starts_with($unit['type'], 'commercial'))
                                             {{-- Commercial Unit --}}
                                             <div
@@ -117,7 +118,8 @@
                                                 </p>
                                                 @if (isset($unit['area']))
                                                     <p class="text-xs font-light text-zinc-600 mt-1">
-                                                        <span class="font-medium">{{ number_format($unit['area']) }}</span>
+                                                        <span
+                                                            class="font-medium">{{ number_format($unit['area']) }}</span>
                                                         sq.ft carpet area
                                                     </p>
                                                 @endif
@@ -130,11 +132,13 @@
                                             </div>
                                             <div class="flex-1">
                                                 @if (isset($unit['bedrooms']))
-                                                    <p class="text-base font-medium text-zinc-900">{{ $unit['bedrooms'] }}</p>
+                                                    <p class="text-base font-medium text-zinc-900">
+                                                        {{ $unit['bedrooms'] }}</p>
                                                 @endif
                                                 @if (isset($unit['area']))
                                                     <p class="text-xs font-light text-zinc-600 mt-1">
-                                                        <span class="font-medium">{{ number_format($unit['area']) }}</span>
+                                                        <span
+                                                            class="font-medium">{{ number_format($unit['area']) }}</span>
                                                         sq.ft carpet area
                                                     </p>
                                                 @endif
@@ -176,7 +180,8 @@
                                     <x-heroicon-o-square-3-stack-3d class="w-4 h-4 text-zinc-400 mt-0.5" />
                                     <div>
                                         <p class="text-xs font-light text-zinc-500">Total Area</p>
-                                        <p class="text-sm font-normal text-zinc-900 mt-0.5">{{ $project->sq_ft }} sq.ft</p>
+                                        <p class="text-sm font-normal text-zinc-900 mt-0.5">{{ $project->sq_ft }} sq.ft
+                                        </p>
                                     </div>
                                 </div>
                             @endif
@@ -186,7 +191,8 @@
                                     <x-heroicon-o-calendar class="w-4 h-4 text-zinc-400 mt-0.5" />
                                     <div>
                                         <p class="text-xs font-light text-zinc-500">Possession</p>
-                                        <p class="text-sm font-normal text-zinc-900 mt-0.5">{{ $project->handover_date }}
+                                        <p class="text-sm font-normal text-zinc-900 mt-0.5">
+                                            {{ $project->handover_date }}
                                         </p>
                                     </div>
                                 </div>
@@ -283,14 +289,16 @@
                                     @if ($project->contact_person)
                                         <div class="flex items-center gap-2 text-sm">
                                             <x-heroicon-o-user class="w-4 h-4 text-zinc-400" />
-                                            <span class="text-zinc-600 font-light">{{ $project->contact_person }}</span>
+                                            <span
+                                                class="text-zinc-600 font-light">{{ $project->contact_person }}</span>
                                         </div>
                                     @endif
 
                                     @if ($project->exhibitor->phone_number)
                                         <div class="flex items-center gap-2 text-sm">
                                             <x-heroicon-o-phone class="w-4 h-4 text-zinc-400" />
-                                            <span class="text-zinc-600 font-light">{{ $project->exhibitor->phone_number }}</span>
+                                            <span
+                                                class="text-zinc-600 font-light">{{ $project->exhibitor->phone_number }}</span>
                                         </div>
                                     @endif
                                 </div>
