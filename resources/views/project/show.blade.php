@@ -101,21 +101,45 @@
                             <div class="space-y-3">
                                 @foreach ($project->units as $unit)
                                     <div class="flex items-center gap-4 p-4 bg-zinc-50 rounded-lg border border-zinc-100">
-                                        <div
-                                            class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100">
-                                            <x-heroicon-o-home class="w-6 h-6 text-blue-600" />
-                                        </div>
-                                        <div class="flex-1">
-                                            @if (isset($unit['bedrooms']))
-                                                <p class="text-base font-medium text-zinc-900">{{ $unit['bedrooms'] }}</p>
-                                            @endif
-                                            @if (isset($unit['area']))
-                                                <p class="text-xs font-light text-zinc-600 mt-1">
-                                                    <span class="font-medium">{{ number_format($unit['area']) }}</span>
-                                                    sq.ft carpet area
+                                        @if (isset($unit['type']) && str_starts_with($unit['type'], 'commercial'))
+                                            {{-- Commercial Unit --}}
+                                            <div
+                                                class="w-12 h-12 {{ $unit['type'] === 'commercial-office' ? 'bg-teal-50 border-teal-100' : 'bg-purple-50 border-purple-100' }} rounded-xl flex items-center justify-center border">
+                                                @if ($unit['type'] === 'commercial-office')
+                                                    <x-heroicon-o-building-office class="w-6 h-6 text-teal-600" />
+                                                @else
+                                                    <x-heroicon-o-building-storefront class="w-6 h-6 text-purple-600" />
+                                                @endif
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="text-base font-medium text-zinc-900">
+                                                    {{ $unit['type'] === 'commercial-office' ? 'Office' : 'Shop / Showroom' }}
                                                 </p>
-                                            @endif
-                                        </div>
+                                                @if (isset($unit['area']))
+                                                    <p class="text-xs font-light text-zinc-600 mt-1">
+                                                        <span class="font-medium">{{ number_format($unit['area']) }}</span>
+                                                        sq.ft carpet area
+                                                    </p>
+                                                @endif
+                                            </div>
+                                        @else
+                                            {{-- Residential Unit --}}
+                                            <div
+                                                class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100">
+                                                <x-heroicon-o-home class="w-6 h-6 text-blue-600" />
+                                            </div>
+                                            <div class="flex-1">
+                                                @if (isset($unit['bedrooms']))
+                                                    <p class="text-base font-medium text-zinc-900">{{ $unit['bedrooms'] }}</p>
+                                                @endif
+                                                @if (isset($unit['area']))
+                                                    <p class="text-xs font-light text-zinc-600 mt-1">
+                                                        <span class="font-medium">{{ number_format($unit['area']) }}</span>
+                                                        sq.ft carpet area
+                                                    </p>
+                                                @endif
+                                            </div>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>
