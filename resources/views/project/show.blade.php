@@ -94,88 +94,77 @@
                         </div>
                     @endif
 
-                    <!-- Key Details Grid -->
+                    <!-- Available Units -->
+                    @if ($project->units && is_array($project->units) && count($project->units) > 0)
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h2 class="text-sm font-medium text-zinc-900 mb-5">Available Units</h2>
+                            <div class="space-y-3">
+                                @foreach ($project->units as $unit)
+                                    <div class="flex items-center gap-4 p-4 bg-zinc-50 rounded-lg border border-zinc-100">
+                                        <div
+                                            class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100">
+                                            <x-heroicon-o-home class="w-6 h-6 text-blue-600" />
+                                        </div>
+                                        <div class="flex-1">
+                                            @if (isset($unit['bedrooms']))
+                                                <p class="text-base font-medium text-zinc-900">{{ $unit['bedrooms'] }}</p>
+                                            @endif
+                                            @if (isset($unit['area']))
+                                                <p class="text-xs font-light text-zinc-600 mt-1">
+                                                    <span class="font-medium">{{ number_format($unit['area']) }}</span>
+                                                    sq.ft carpet area
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Project Information -->
                     <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <h2 class="text-sm font-medium text-zinc-900 mb-6">Project Details</h2>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                            @if ($project->category)
-                                <div class="bg-zinc-50 rounded-lg p-4">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                                            <x-heroicon-o-building-office class="w-4 h-4 text-blue-600" />
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Type</span>
-                                    <p class="text-sm text-zinc-900 font-normal mt-0.5">{{ $project->category }}</p>
-                                </div>
-                            @endif
-
+                        <h2 class="text-sm font-medium text-zinc-900 mb-5">Project Information</h2>
+                        <div class="grid grid-cols-2 gap-4">
                             @if ($project->area)
-                                <div class="bg-zinc-50 rounded-lg p-4">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center">
-                                            <x-heroicon-o-map-pin class="w-4 h-4 text-teal-600" />
-                                        </div>
+                                <div class="flex items-start gap-3">
+                                    <x-heroicon-o-map-pin class="w-4 h-4 text-zinc-400 mt-0.5" />
+                                    <div>
+                                        <p class="text-xs font-light text-zinc-500">Location</p>
+                                        <p class="text-sm font-normal text-zinc-900 mt-0.5">{{ $project->area }}</p>
                                     </div>
-                                    <span
-                                        class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Location</span>
-                                    <p class="text-sm text-zinc-900 font-normal mt-0.5">{{ $project->area }}</p>
-                                </div>
-                            @endif
-
-                            @if ($project->sq_ft)
-                                <div class="bg-zinc-50 rounded-lg p-4">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
-                                            <x-heroicon-o-square-3-stack-3d class="w-4 h-4 text-purple-600" />
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Area</span>
-                                    <p class="text-sm text-zinc-900 font-normal mt-0.5">{{ $project->sq_ft }} sq.ft</p>
-                                </div>
-                            @endif
-
-                            @if ($project->budget_range)
-                                <div class="bg-zinc-50 rounded-lg p-4">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
-                                            <x-heroicon-o-currency-rupee class="w-4 h-4 text-amber-600" />
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Budget</span>
-                                    <p class="text-sm text-zinc-900 font-normal mt-0.5">{{ $project->budget_range }}
-                                    </p>
-                                </div>
-                            @endif
-
-                            @if ($project->handover_date)
-                                <div class="bg-zinc-50 rounded-lg p-4">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center">
-                                            <x-heroicon-o-calendar class="w-4 h-4 text-rose-600" />
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Handover</span>
-                                    <p class="text-sm text-zinc-900 font-normal mt-0.5">{{ $project->handover_date }}
-                                    </p>
                                 </div>
                             @endif
 
                             @if ($project->status)
-                                <div class="bg-zinc-50 rounded-lg p-4">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center">
-                                            <x-heroicon-o-clock class="w-4 h-4 text-zinc-600" />
-                                        </div>
+                                <div class="flex items-start gap-3">
+                                    <x-heroicon-o-clock class="w-4 h-4 text-zinc-400 mt-0.5" />
+                                    <div>
+                                        <p class="text-xs font-light text-zinc-500">Status</p>
+                                        <p class="text-sm font-normal text-zinc-900 mt-0.5">
+                                            {{ ucfirst($project->status) }}</p>
                                     </div>
-                                    <span
-                                        class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Status</span>
-                                    <p class="text-sm text-zinc-900 font-normal mt-0.5">
-                                        {{ ucfirst($project->status) }}</p>
+                                </div>
+                            @endif
+
+                            @if ($project->sq_ft)
+                                <div class="flex items-start gap-3">
+                                    <x-heroicon-o-square-3-stack-3d class="w-4 h-4 text-zinc-400 mt-0.5" />
+                                    <div>
+                                        <p class="text-xs font-light text-zinc-500">Total Area</p>
+                                        <p class="text-sm font-normal text-zinc-900 mt-0.5">{{ $project->sq_ft }} sq.ft</p>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if ($project->handover_date)
+                                <div class="flex items-start gap-3">
+                                    <x-heroicon-o-calendar class="w-4 h-4 text-zinc-400 mt-0.5" />
+                                    <div>
+                                        <p class="text-xs font-light text-zinc-500">Possession</p>
+                                        <p class="text-sm font-normal text-zinc-900 mt-0.5">{{ $project->handover_date }}
+                                        </p>
+                                    </div>
                                 </div>
                             @endif
                         </div>
@@ -219,13 +208,34 @@
                 <!-- Right Column - Contact Sidebar -->
                 <div class="lg:col-span-1">
                     <div class="lg:sticky lg:top-28 space-y-6">
+                        <!-- Contact Card -->
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h3 class="text-sm font-medium text-zinc-900 mb-4">Get in Touch</h3>
+                            <div class="space-y-3">
+                                @if ($project->exhibitor->phone_number)
+                                    <flux:button href="{{ route('track.project.call', $project) }}" variant="primary"
+                                        class="w-full" icon="phone">
+                                        Call Developer
+                                    </flux:button>
+                                @endif
+
+                                @if ($project->exhibitor->company)
+                                    <flux:button href="{{ $project->exhibitor->company->whatsapp_inquiry_url }}"
+                                        target="_blank" variant="outline" class="w-full" icon="bi-whatsapp"
+                                        icon-trailing="arrow-top-right-on-square">
+                                        WhatsApp
+                                    </flux:button>
+                                @endif
+                            </div>
+                        </div>
+
                         <!-- Developer Card -->
                         <div class="bg-white rounded-xl p-6 shadow-sm">
-                            <h2 class="text-sm font-medium text-zinc-900 mb-5">Developer</h2>
+                            <h2 class="text-sm font-medium text-zinc-900 mb-4">Developer</h2>
 
                             <a href="{{ route('exhibitor.show', $project->exhibitor) }}"
-                                class="flex items-center gap-4 mb-6 group">
-                                <div class="w-14 h-14 flex items-center justify-center flex-shrink-0">
+                                class="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-zinc-50 transition-colors group">
+                                <div class="w-12 h-12 flex items-center justify-center flex-shrink-0">
                                     @if ($project->exhibitor->preview_logo ?? $project->exhibitor->logo_path)
                                         <img src="{{ Storage::url($project->exhibitor->preview_logo ?? $project->exhibitor->logo_path) }}"
                                             alt="{{ $project->exhibitor->brand_name }}"
@@ -235,7 +245,7 @@
                                     @endif
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-normal text-zinc-900 group-hover:text-zinc-700 truncate">
+                                    <p class="text-sm font-medium text-zinc-900 group-hover:text-blue-600 truncate">
                                         {{ $project->exhibitor->brand_name }}
                                     </p>
                                     <p class="text-xs font-light text-zinc-500">View all projects</p>
@@ -244,67 +254,23 @@
                                     class="w-4 h-4 text-zinc-400 group-hover:text-zinc-600 transition-colors" />
                             </a>
 
-                            <div class="space-y-4">
-                                @if ($project->contact_person)
-                                    <div class="flex items-start gap-3">
-                                        <div
-                                            class="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <x-heroicon-o-user class="w-4 h-4 text-zinc-600" />
+                            @if ($project->contact_person || $project->exhibitor->phone_number)
+                                <div class="mt-4 pt-4 border-t border-zinc-100 space-y-3">
+                                    @if ($project->contact_person)
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <x-heroicon-o-user class="w-4 h-4 text-zinc-400" />
+                                            <span class="text-zinc-600 font-light">{{ $project->contact_person }}</span>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <span
-                                                class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Contact</span>
-                                            <p class="text-sm text-zinc-700 font-light mt-0.5">
-                                                {{ $project->contact_person }}</p>
-                                        </div>
-                                    </div>
-                                @endif
+                                    @endif
 
-                                @if ($project->exhibitor->phone_number)
-                                    <div class="flex items-start gap-3">
-                                        <div
-                                            class="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <x-heroicon-o-phone class="w-4 h-4 text-teal-600" />
+                                    @if ($project->exhibitor->phone_number)
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <x-heroicon-o-phone class="w-4 h-4 text-zinc-400" />
+                                            <span class="text-zinc-600 font-light">{{ $project->exhibitor->phone_number }}</span>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <span
-                                                class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Phone</span>
-                                            <p class="text-sm text-zinc-700 font-light mt-0.5">
-                                                {{ $project->exhibitor->phone_number }}</p>
-                                        </div>
-                                    </div>
-                                @endif
-
-                                @if ($project->exhibitor->email)
-                                    <div class="flex items-start gap-3">
-                                        <div
-                                            class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <x-heroicon-o-envelope class="w-4 h-4 text-purple-600" />
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <span
-                                                class="text-[10px] font-light text-zinc-400 uppercase tracking-wide">Email</span>
-                                            <p class="text-sm text-zinc-700 font-light mt-0.5 break-all">
-                                                {{ $project->exhibitor->email }}</p>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="mt-6 pt-6 border-t border-zinc-100 space-y-3">
-                                @if ($project->exhibitor->phone_number)
-                                    <flux:button href="{{ route('track.project.call', $project) }}" variant="primary"
-                                        class="w-full" icon="phone">
-                                        Call Now
-                                    </flux:button>
-                                @endif
-
-                                <flux:button href="{{ route('exhibitor.show', $project->exhibitor) }}"
-                                    variant="ghost" class="w-full" icon="building-office">
-                                    View Developer
-                                </flux:button>
-                            </div>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Brochure Download -->
