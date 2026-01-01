@@ -11,7 +11,7 @@
                     </li>
                     <li class="text-zinc-400">/</li>
                     <li>
-                        <a href="{{ route('home') }}#exhibitors"
+                        <a href="{{ route('public.exhibitors') }}"
                             class="text-zinc-500 hover:text-zinc-900 transition-colors">Exhibitors</a>
                     </li>
                     <li class="text-zinc-400">/</li>

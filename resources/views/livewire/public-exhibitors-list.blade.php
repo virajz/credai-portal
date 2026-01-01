@@ -14,7 +14,7 @@
 
             <!-- Filters Section -->
             <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-4 sm:p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <!-- Search -->
                     <div>
                         <flux:input wire:model.live.debounce.300ms="search" placeholder="Search exhibitors..."
@@ -26,9 +26,22 @@
                         <flux:select variant="listbox" wire:model.live="propertyType" placeholder="Property Type"
                             multiple>
                             <flux:select.option value="Residential">Residential</flux:select.option>
-                            <flux:select.option value="Commercial Office">Commercial Office</flux:select.option>
-                            <flux:select.option value="Commercial Shop / Showroom">Commercial Shop / Showroom</flux:select.option>
+                            <flux:select.option value="Commercial">Commercial</flux:select.option>
                             <flux:select.option value="Plotting">Plotting</flux:select.option>
+                            <flux:select.option value="Weekend Home & Others">Weekend Home & Others</flux:select.option>
+                        </flux:select>
+                    </div>
+
+                    <!-- Sub-Type (Residential/Commercial) -->
+                    <div>
+                        <flux:select variant="listbox" wire:model.live="subType" placeholder="Sub-Type" multiple>
+                            <flux:select.option value="1 BHK">1 BHK</flux:select.option>
+                            <flux:select.option value="2 BHK">2 BHK</flux:select.option>
+                            <flux:select.option value="3 BHK">3 BHK</flux:select.option>
+                            <flux:select.option value="4 BHK">4 BHK</flux:select.option>
+                            <flux:select.option value="5+ BHK">5+ BHK</flux:select.option>
+                            <flux:select.option value="commercial-office">Office</flux:select.option>
+                            <flux:select.option value="commercial-shop">Shop / Showroom</flux:select.option>
                         </flux:select>
                     </div>
 
@@ -52,7 +65,7 @@
                 </div>
 
                 <!-- Active Filters & Clear Button -->
-                @if ($search || !empty($propertyType) || !empty($location) || !empty($priceRange))
+                @if ($search || !empty($propertyType) || !empty($subType) || !empty($location) || !empty($priceRange))
                     <div class="flex items-center justify-between mt-4 pt-4 border-t border-zinc-200">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-xs font-light text-zinc-500">Active filters:</span>
@@ -72,6 +85,24 @@
                                     <button
                                         wire:click="$set('propertyType', {{ json_encode(array_values(array_diff($propertyType, [$type]))) }})"
                                         class="hover:text-zinc-300">
+                                        <x-heroicon-o-x-mark class="w-3 h-3" />
+                                    </button>
+                                </span>
+                            @endforeach
+                            @foreach ($subType as $sub)
+                                @php
+                                    $label = match ($sub) {
+                                        'commercial-office' => 'Office',
+                                        'commercial-shop' => 'Shop / Showroom',
+                                        default => $sub,
+                                    };
+                                @endphp
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-light bg-blue-600 text-white rounded-full">
+                                    {{ $label }}
+                                    <button
+                                        wire:click="$set('subType', {{ json_encode(array_values(array_diff($subType, [$sub]))) }})"
+                                        class="hover:text-blue-200">
                                         <x-heroicon-o-x-mark class="w-3 h-3" />
                                     </button>
                                 </span>

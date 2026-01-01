@@ -21,6 +21,9 @@ class PublicExhibitorsList extends Component
     #[Url(as: 'type')]
     public array $propertyType = [];
 
+    #[Url(as: 'subtype')]
+    public array $subType = [];
+
     #[Url(as: 'location')]
     public array $location = [];
 
@@ -37,6 +40,11 @@ class PublicExhibitorsList extends Component
         $this->resetPage();
     }
 
+    public function updatingSubType(): void
+    {
+        $this->resetPage();
+    }
+
     public function updatingLocation(): void
     {
         $this->resetPage();
@@ -49,7 +57,7 @@ class PublicExhibitorsList extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'propertyType', 'location', 'priceRange']);
+        $this->reset(['search', 'propertyType', 'subType', 'location', 'priceRange']);
         $this->resetPage();
     }
 
@@ -66,13 +74,26 @@ class PublicExhibitorsList extends Component
 
     public function getAvailablePriceRanges(): array
     {
-        return Project::query()
-            ->whereNotNull('budget_range')
-            ->distinct()
-            ->pluck('budget_range')
-            ->sort()
-            ->values()
-            ->toArray();
+        $ranges = [];
+
+        // Get all projects with units
+        $projects = Project::whereNotNull('units')->get();
+
+        foreach ($projects as $project) {
+            if (is_array($project->units)) {
+                foreach ($project->units as $unit) {
+                    if (! empty($unit['budget'])) {
+                        $ranges[] = $unit['budget'];
+                    }
+                }
+            }
+        }
+
+        // Remove duplicates and sort
+        $ranges = array_unique($ranges);
+        sort($ranges);
+
+        return array_values($ranges);
     }
 
     #[Title('Exhibitors - CREDAI Glam Property Show 2026')]
@@ -102,6 +123,23 @@ class PublicExhibitorsList extends Component
             });
         }
 
+        // Sub-type filter (from project units - bedrooms or commercial type)
+        if (! empty($this->subType)) {
+            $query->whereHas('projects', function ($projectQuery) {
+                $projectQuery->where(function ($q) {
+                    foreach ($this->subType as $subType) {
+                        // Check if it's a commercial type
+                        if (in_array($subType, ['commercial-office', 'commercial-shop'])) {
+                            $q->orWhereJsonContains('units', [['type' => $subType]]);
+                        } else {
+                            // It's a residential bedroom type
+                            $q->orWhereJsonContains('units', [['bedrooms' => $subType]]);
+                        }
+                    }
+                });
+            });
+        }
+
         // Location filter (from projects)
         if (! empty($this->location)) {
             $query->whereHas('projects', function ($projectQuery) {
@@ -112,7 +150,11 @@ class PublicExhibitorsList extends Component
         // Price range filter (from projects)
         if (! empty($this->priceRange)) {
             $query->whereHas('projects', function ($projectQuery) {
-                $projectQuery->whereIn('budget_range', $this->priceRange);
+                $projectQuery->where(function ($q) {
+                    foreach ($this->priceRange as $budget) {
+                        $q->orWhereJsonContains('units', [['budget' => $budget]]);
+                    }
+                });
             });
         }
 
