@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\VisitorFiltering;
 use App\Jobs\SendWhatsAppMessage;
 use App\Models\Visitor;
 use App\Services\QrCodeService;
@@ -13,7 +14,7 @@ use Livewire\WithPagination;
 
 class VisitorsList extends Component
 {
-    use WithPagination;
+    use VisitorFiltering, WithPagination;
 
     #[Url(as: 'q')]
     public string $search = '';
@@ -72,6 +73,7 @@ class VisitorsList extends Component
     public function clearFilters(): void
     {
         $this->reset(['search', 'selectedCampaigns']);
+        $this->resetVisitorFilters();
         $this->sortBy = 'created_at';
         $this->sortDirection = 'desc';
         $this->resetPage();
@@ -212,7 +214,7 @@ class VisitorsList extends Component
 
     public function exportVisitors()
     {
-        $visitors = Visitor::query()
+        $query = Visitor::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'ilike', "%{$this->search}%")
@@ -223,7 +225,9 @@ class VisitorsList extends Component
             })
             ->when(! empty($this->selectedCampaigns), function ($query) {
                 $query->whereIn('tracking_medium', $this->selectedCampaigns);
-            })
+            });
+
+        $visitors = $this->applyVisitorFilters($query)
             ->orderBy($this->sortBy, $this->sortDirection)
             ->cursor();
 
@@ -286,7 +290,7 @@ class VisitorsList extends Component
     #[Title('Visitors')]
     public function render()
     {
-        $visitors = Visitor::query()
+        $query = Visitor::query()
             ->select(['id', 'name', 'phone', 'age_group', 'company_name', 'tracking_medium', 'interests', 'planning_to_buy', 'created_at'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
@@ -298,7 +302,9 @@ class VisitorsList extends Component
             })
             ->when(! empty($this->selectedCampaigns), function ($query) {
                 $query->whereIn('tracking_medium', $this->selectedCampaigns);
-            })
+            });
+
+        $visitors = $this->applyVisitorFilters($query)
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(15);
 
@@ -312,9 +318,12 @@ class VisitorsList extends Component
                 ->toArray();
         });
 
+        $filterOptions = $this->getFilterOptions();
+
         return view('livewire.visitors-list', [
             'visitors' => $visitors,
             'availableCampaigns' => $availableCampaigns,
+            'filterOptions' => $filterOptions,
         ]);
     }
 }

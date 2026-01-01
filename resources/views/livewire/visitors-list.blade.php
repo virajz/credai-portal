@@ -31,9 +31,18 @@
             </div>
         @endif
 
-        @if ($search || ! empty($selectedCampaigns))
+        <flux:button variant="outline" icon="funnel" wire:click="openFiltersModal">
+            Advanced Filters
+            @if ($this->hasActiveFilters())
+                <flux:badge size="sm" color="blue" class="ml-2">
+                    {{ $this->getActiveFilterCount() }}
+                </flux:badge>
+            @endif
+        </flux:button>
+
+        @if ($search || ! empty($selectedCampaigns) || $this->hasActiveFilters())
             <flux:button variant="ghost" icon="x-mark" wire:click="clearFilters">
-                Clear Filters
+                Clear All
             </flux:button>
         @endif
     </div>
@@ -603,4 +612,6 @@
             </div>
         @endif
     </flux:modal>
+
+    <x-visitors-filter-modal :filterOptions="$filterOptions" />
 </div>
