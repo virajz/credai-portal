@@ -260,10 +260,36 @@
                         @if ($company->exhibitor->brochure_path)
                             <div>
                                 <div class="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Brochure</div>
-                                <flux:button variant="primary" size="sm" icon="document-text"
-                                    href="{{ Storage::url($company->exhibitor->brochure_path) }}" target="_blank">
-                                    Download Brochure
-                                </flux:button>
+                                <div class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                                    <flux:icon.document-text class="size-10 text-zinc-400 dark:text-zinc-500" />
+                                    <div class="flex-1 min-w-0">
+                                        @php
+                                            $brochureName = basename($company->exhibitor->brochure_path);
+                                            if (preg_match('/^\d+_(.+)$/', $brochureName, $matches)) {
+                                                $brochureName = $matches[1];
+                                            }
+                                        @endphp
+                                        <div class="truncate text-sm font-medium">{{ $brochureName }}</div>
+                                        @php
+                                            try {
+                                                $brochureSize = Storage::disk('public')->size($company->exhibitor->brochure_path);
+                                            } catch (\Exception $e) {
+                                                $brochureSize = null;
+                                            }
+                                        @endphp
+                                        @if ($brochureSize)
+                                            <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                {{ number_format($brochureSize / 1024 / 1024, 2) }} MB
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <a href="{{ Storage::url($company->exhibitor->brochure_path) }}"
+                                        download="{{ $brochureName }}" target="_blank">
+                                        <flux:button variant="primary" size="sm" icon="arrow-down-tray">
+                                            Download
+                                        </flux:button>
+                                    </a>
+                                </div>
                             </div>
                         @endif
 
@@ -489,20 +515,52 @@
 
                                     <!-- Media -->
                                     @if ($project->video_url || $project->pdf_path)
-                                        <div class="flex flex-wrap gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+                                        <div class="space-y-4 border-t border-zinc-200 pt-4 dark:border-zinc-700">
                                             @if ($project->video_url)
-                                                <a href="{{ $project->video_url }}"
-                                                    class="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline dark:text-blue-400"
-                                                    target="_blank" rel="noopener">
-                                                    <flux:icon.play-circle variant="micro" />
-                                                    Watch Video
-                                                </a>
+                                                <div>
+                                                    <div class="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Project Video</div>
+                                                    <a href="{{ $project->video_url }}"
+                                                        class="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline dark:text-blue-400"
+                                                        target="_blank" rel="noopener">
+                                                        <flux:icon.play-circle variant="micro" />
+                                                        Watch Video
+                                                    </a>
+                                                </div>
                                             @endif
                                             @if ($project->pdf_path)
-                                                <flux:button variant="primary" size="sm" icon="document-text"
-                                                    href="{{ Storage::url($project->pdf_path) }}" target="_blank">
-                                                    Download PDF
-                                                </flux:button>
+                                                <div>
+                                                    <div class="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Project Brochure</div>
+                                                    <div class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                                                        <flux:icon.document-text class="size-10 text-zinc-400 dark:text-zinc-500" />
+                                                        <div class="flex-1 min-w-0">
+                                                            @php
+                                                                $projectPdfName = basename($project->pdf_path);
+                                                                if (preg_match('/^\d+_(.+)$/', $projectPdfName, $matches)) {
+                                                                    $projectPdfName = $matches[1];
+                                                                }
+                                                            @endphp
+                                                            <div class="truncate text-sm font-medium">{{ $projectPdfName }}</div>
+                                                            @php
+                                                                try {
+                                                                    $projectPdfSize = Storage::disk('public')->size($project->pdf_path);
+                                                                } catch (\Exception $e) {
+                                                                    $projectPdfSize = null;
+                                                                }
+                                                            @endphp
+                                                            @if ($projectPdfSize)
+                                                                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                                    {{ number_format($projectPdfSize / 1024 / 1024, 2) }} MB
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <a href="{{ Storage::url($project->pdf_path) }}"
+                                                            download="{{ $projectPdfName }}" target="_blank">
+                                                            <flux:button variant="primary" size="sm" icon="arrow-down-tray">
+                                                                Download
+                                                            </flux:button>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             @endif
                                         </div>
                                     @endif

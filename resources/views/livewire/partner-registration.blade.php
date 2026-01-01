@@ -98,9 +98,12 @@
 
             <!-- Submit Button -->
             <div class="flex justify-end border-t border-zinc-200 pt-6 dark:border-zinc-700">
-                <flux:button type="submit" variant="primary" icon="ticket" wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="submit">Register as Partner</span>
-                    <span wire:loading wire:target="submit">Registering...</span>
+                <flux:button type="submit" variant="primary" icon="ticket" :disabled="$isSubmitting">
+                    @if($isSubmitting)
+                        <span>Registering...</span>
+                    @else
+                        <span>Register as Partner</span>
+                    @endif
                 </flux:button>
             </div>
         </form>
