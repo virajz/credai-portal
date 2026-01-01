@@ -4,6 +4,10 @@ use App\Livewire\ClientRegistrationForm;
 use App\Livewire\CompaniesList;
 use App\Livewire\CreateCompany;
 use App\Livewire\EditCompany;
+use App\Livewire\PartnerRegistration;
+use App\Livewire\PartnerShow;
+use App\Livewire\PartnersList;
+use App\Livewire\PartnerSuccess;
 use App\Livewire\PublicExhibitorsList;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -64,6 +68,7 @@ Route::prefix('exhibitor')->name('exhibitor.')->group(function () {
         Route::get('dashboard', \App\Livewire\Exhibitor\Dashboard::class)->name('dashboard');
         Route::get('scan', \App\Livewire\Exhibitor\ScanVisitor::class)->name('scan');
         Route::get('leads', \App\Livewire\Exhibitor\Leads::class)->name('leads');
+        Route::get('partner-leads', \App\Livewire\Exhibitor\PartnerLeads::class)->name('partner-leads');
 
         Route::post('logout', function () {
             auth('exhibitor')->logout();
@@ -114,6 +119,11 @@ Route::get('visitor-register', VisitorRegistration::class)->name('visitor.regist
 Route::get('visitor-success/{visitor}', \App\Livewire\VisitorSuccess::class)->name('visitor.success');
 Route::get('visitors/{visitor}', \App\Livewire\VisitorShow::class)->name('visitor.show');
 
+// Public partner registration routes (no auth required)
+Route::get('partner-register', PartnerRegistration::class)->name('partner.register');
+Route::get('partner-success/{partner}', PartnerSuccess::class)->name('partner.success');
+Route::get('partners/{partner}', PartnerShow::class)->name('partner.show');
+
 // Exhibitor QR validation route
 Route::get('exhibitor/validate/{uuid}', [\App\Http\Controllers\ExhibitorValidationController::class, 'validate'])->name('exhibitor.validate');
 
@@ -145,9 +155,10 @@ Route::middleware(['auth'])->group(function () {
         )
         ->name('two-factor.show');
 
-    // Visitor Management Routes (accessible by both admin and visitor_viewer)
+    // Visitor & Partner Management Routes (accessible by both admin and visitor_viewer)
     Route::middleware(['role:admin,visitor_viewer'])->group(function () {
         Route::get('visitors', VisitorsList::class)->name('visitors.index');
+        Route::get('partners-list', PartnersList::class)->name('partners.index');
     });
 
     // Admin-only Routes

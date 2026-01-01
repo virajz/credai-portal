@@ -124,6 +124,18 @@ class Company extends Authenticatable
             ->withTimestamps();
     }
 
+    public function partnerLeads()
+    {
+        return $this->hasMany(PartnerLead::class);
+    }
+
+    public function leadPartners()
+    {
+        return $this->belongsToMany(Partner::class, 'partner_leads')
+            ->withPivot('notes')
+            ->withTimestamps();
+    }
+
     /**
      * Boot the model.
      */

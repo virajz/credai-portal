@@ -107,55 +107,103 @@
             </form>
         </flux:card>
 
-        @if($scannedVisitor)
+        @if($scannedVisitor || $scannedPartner)
             <flux:card>
-                <flux:heading size="lg">Visitor Details</flux:heading>
+                <flux:heading size="lg">{{ $leadType === 'visitor' ? 'Visitor' : 'Partner' }} Details</flux:heading>
 
                 <div class="mt-4 space-y-4">
-                    <div>
-                        <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Name</div>
-                        <div class="text-lg">{{ $scannedVisitor->name }}</div>
-                    </div>
-
-                    <div>
-                        <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Phone</div>
-                        <div class="text-lg">{{ $scannedVisitor->phone }}</div>
-                    </div>
-
-                    @if($scannedVisitor->company_name)
+                    @if($scannedVisitor)
                         <div>
-                            <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Company</div>
-                            <div class="text-lg">{{ $scannedVisitor->company_name }}</div>
+                            <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Name</div>
+                            <div class="text-lg">{{ $scannedVisitor->name }}</div>
                         </div>
-                    @endif
 
-                    @if($scannedVisitor->age_group)
                         <div>
-                            <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Age Group</div>
-                            <div>{{ $scannedVisitor->age_group }}</div>
+                            <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Phone</div>
+                            <div class="text-lg">{{ $scannedVisitor->phone }}</div>
                         </div>
-                    @endif
 
-                    @if($scannedVisitor->interests)
-                        <div>
-                            <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Interests</div>
-                            <div class="flex flex-wrap gap-2 mt-1">
-                                @foreach($scannedVisitor->interests as $interest)
-                                    <flux:badge>{{ $interest }}</flux:badge>
-                                @endforeach
+                        @if($scannedVisitor->company_name)
+                            <div>
+                                <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Company</div>
+                                <div class="text-lg">{{ $scannedVisitor->company_name }}</div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
 
-                    @if($scannedVisitor->areas)
-                        <div>
-                            <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Preferred Areas</div>
-                            <div class="flex flex-wrap gap-2 mt-1">
-                                @foreach($scannedVisitor->areas as $area)
-                                    <flux:badge variant="outline">{{ $area }}</flux:badge>
-                                @endforeach
+                        @if($scannedVisitor->age_group)
+                            <div>
+                                <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Age Group</div>
+                                <div>{{ $scannedVisitor->age_group }}</div>
                             </div>
+                        @endif
+
+                        @if($scannedVisitor->interests)
+                            <div>
+                                <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Interests</div>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach($scannedVisitor->interests as $interest)
+                                        <flux:badge>{{ $interest }}</flux:badge>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($scannedVisitor->areas)
+                            <div>
+                                <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Preferred Areas</div>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach($scannedVisitor->areas as $area)
+                                        <flux:badge variant="outline">{{ $area }}</flux:badge>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    @elseif($scannedPartner)
+                        <div>
+                            <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Name</div>
+                            <div class="text-lg">{{ $scannedPartner->first_name }} {{ $scannedPartner->last_name }}</div>
                         </div>
+
+                        <div>
+                            <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Phone</div>
+                            <div class="text-lg">{{ $scannedPartner->phone }}</div>
+                        </div>
+
+                        @if($scannedPartner->email)
+                            <div>
+                                <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Email</div>
+                                <div class="text-lg">{{ $scannedPartner->email }}</div>
+                            </div>
+                        @endif
+
+                        @if($scannedPartner->firm_name)
+                            <div>
+                                <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Firm Name</div>
+                                <div class="text-lg">{{ $scannedPartner->firm_name }}</div>
+                            </div>
+                        @endif
+
+                        @if($scannedPartner->property_types)
+                            <div>
+                                <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Property Types</div>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach($scannedPartner->property_types as $type)
+                                        <flux:badge color="purple">{{ $type }}</flux:badge>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($scannedPartner->areas)
+                            <div>
+                                <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Preferred Areas</div>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach($scannedPartner->areas as $area)
+                                        <flux:badge variant="outline">{{ $area }}</flux:badge>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     @endif
 
                     <flux:separator />

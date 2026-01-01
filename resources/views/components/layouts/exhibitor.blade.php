@@ -18,9 +18,11 @@
                 <flux:navlist.item icon="home" :href="route('exhibitor.dashboard')" :current="request()->routeIs('exhibitor.dashboard')"
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 <flux:navlist.item icon="qr-code" :href="route('exhibitor.scan')" :current="request()->routeIs('exhibitor.scan')"
-                    wire:navigate>{{ __('Scan Visitor') }}</flux:navlist.item>
+                    wire:navigate>{{ __('Scan QR Code') }}</flux:navlist.item>
                 <flux:navlist.item icon="user-group" :href="route('exhibitor.leads')" :current="request()->routeIs('exhibitor.leads')"
-                    wire:navigate>{{ __('My Leads') }}</flux:navlist.item>
+                    wire:navigate>{{ __('Visitor Leads') }}</flux:navlist.item>
+                <flux:navlist.item icon="users" :href="route('exhibitor.partner-leads')" :current="request()->routeIs('exhibitor.partner-leads')"
+                    wire:navigate>{{ __('Partner Leads') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 

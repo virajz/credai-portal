@@ -36,6 +36,9 @@
                 <flux:navlist.item icon="user-group" :href="route('visitors.index')"
                     :current="request()->routeIs('visitors.*')" wire:navigate>{{ __('Visitors') }}
                 </flux:navlist.item>
+                <flux:navlist.item icon="users" :href="route('partners.index')"
+                    :current="request()->routeIs('partners.*')" wire:navigate>{{ __('Partners') }}
+                </flux:navlist.item>
             </flux:navlist.group>
 
             @can('admin-access')

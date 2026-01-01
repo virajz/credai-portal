@@ -1,15 +1,15 @@
 <div class="flex h-full w-full flex-1 flex-col gap-6 p-6" x-data="{ deleteLeadId: null, deleteLeadName: '' }">
     <div class="flex items-center justify-between">
         <div>
-            <flux:heading size="xl">Visitor Leads</flux:heading>
-            <flux:subheading>Manage all your saved visitor leads</flux:subheading>
+            <flux:heading size="xl">Partner Leads</flux:heading>
+            <flux:subheading>Manage all your saved partner leads</flux:subheading>
         </div>
     </div>
 
     <div class="flex gap-4">
         <flux:input
             wire:model.live.debounce.300ms="search"
-            placeholder="Search by name, phone, or company..."
+            placeholder="Search by name, phone, or firm..."
             icon="magnifying-glass"
             class="flex-1"
         />
@@ -21,10 +21,10 @@
                 <flux:icon.user-group variant="outline" class="mx-auto size-12 text-zinc-400" />
                 <flux:heading size="lg" class="mt-4">No leads yet</flux:heading>
                 <flux:subheading class="mt-2">
-                    Start scanning visitor QR codes to build your lead list
+                    Start scanning partner QR codes to build your lead list
                 </flux:subheading>
                 <flux:button :href="route('exhibitor.scan')" wire:navigate variant="primary" class="mt-4">
-                    Scan Visitor
+                    Scan QR Code
                 </flux:button>
             </div>
         </flux:card>
@@ -33,8 +33,8 @@
             <flux:table.columns>
                 <flux:table.column>Name</flux:table.column>
                 <flux:table.column>Phone</flux:table.column>
-                <flux:table.column>Company</flux:table.column>
-                <flux:table.column>Interests</flux:table.column>
+                <flux:table.column>Firm</flux:table.column>
+                <flux:table.column>Property Types</flux:table.column>
                 <flux:table.column>Notes</flux:table.column>
                 <flux:table.column>Added On</flux:table.column>
                 <flux:table.column></flux:table.column>
@@ -43,14 +43,14 @@
             <flux:table.rows>
                 @foreach($leads as $lead)
                     <flux:table.row :key="$lead->id">
-                        <flux:table.cell>{{ $lead->visitor->name }}</flux:table.cell>
-                        <flux:table.cell>{{ $lead->visitor->phone }}</flux:table.cell>
-                        <flux:table.cell>{{ $lead->visitor->company_name ?? '-' }}</flux:table.cell>
+                        <flux:table.cell>{{ $lead->partner->first_name }} {{ $lead->partner->last_name }}</flux:table.cell>
+                        <flux:table.cell>{{ $lead->partner->phone }}</flux:table.cell>
+                        <flux:table.cell>{{ $lead->partner->firm_name ?? '-' }}</flux:table.cell>
                         <flux:table.cell>
-                            @if($lead->visitor->interests)
+                            @if($lead->partner->property_types)
                                 <div class="flex flex-wrap gap-1">
-                                    @foreach($lead->visitor->interests as $interest)
-                                        <flux:badge size="sm">{{ $interest }}</flux:badge>
+                                    @foreach($lead->partner->property_types as $type)
+                                        <flux:badge size="sm" color="purple">{{ $type }}</flux:badge>
                                     @endforeach
                                 </div>
                             @else
@@ -69,7 +69,7 @@
                         <flux:table.cell>{{ $lead->created_at->format('M d, Y') }}</flux:table.cell>
                         <flux:table.cell>
                             <flux:button
-                                @click="deleteLeadId = {{ $lead->id }}; deleteLeadName = '{{ $lead->visitor->name }}'; $flux.modal('delete-lead').show()"
+                                @click="deleteLeadId = {{ $lead->id }}; deleteLeadName = '{{ $lead->partner->first_name }} {{ $lead->partner->last_name }}'; $flux.modal('delete-lead').show()"
                                 variant="danger"
                                 size="sm"
                                 icon="trash">

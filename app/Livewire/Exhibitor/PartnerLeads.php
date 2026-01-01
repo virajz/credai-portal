@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Exhibitor;
 
-use App\Models\ExhibitorLead;
+use App\Models\PartnerLead;
 use Flux\Flux;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -10,7 +10,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.exhibitor')]
-class Leads extends Component
+class PartnerLeads extends Component
 {
     use WithPagination;
 
@@ -25,7 +25,7 @@ class Leads extends Component
     {
         $company = auth('exhibitor')->user();
 
-        $lead = ExhibitorLead::where('id', $leadId)
+        $lead = PartnerLead::where('id', $leadId)
             ->where('company_id', $company->id)
             ->first();
 
@@ -35,24 +35,25 @@ class Leads extends Component
         }
     }
 
-    #[Title('Visitor Leads - Exhibitor Portal')]
+    #[Title('Partner Leads - Exhibitor Portal')]
     public function render()
     {
         $company = auth('exhibitor')->user();
 
-        $leads = $company->leads()
-            ->with('visitor')
+        $leads = $company->partnerLeads()
+            ->with('partner')
             ->when($this->search, function ($query) {
-                $query->whereHas('visitor', function ($q) {
-                    $q->where('name', 'ilike', "%{$this->search}%")
+                $query->whereHas('partner', function ($q) {
+                    $q->where('first_name', 'ilike', "%{$this->search}%")
+                        ->orWhere('last_name', 'ilike', "%{$this->search}%")
                         ->orWhere('phone', 'like', "%{$this->search}%")
-                        ->orWhere('company_name', 'ilike', "%{$this->search}%");
+                        ->orWhere('firm_name', 'ilike', "%{$this->search}%");
                 });
             })
             ->latest()
             ->paginate(20);
 
-        return view('livewire.exhibitor.leads', [
+        return view('livewire.exhibitor.partner-leads', [
             'leads' => $leads,
         ]);
     }
