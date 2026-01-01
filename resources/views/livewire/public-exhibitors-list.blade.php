@@ -1,19 +1,19 @@
 <div>
     <!-- Hero Section -->
-    <section class="bg-zinc-50 border-b border-zinc-200 pt-8 pb-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="bg-white border-b border-zinc-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <!-- Page Header -->
-            <div class="text-center mb-8">
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-light text-zinc-900 mb-3">
+            <div class="mb-6">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light text-zinc-900 mb-2">
                     Discover <span class="font-normal">Exhibitors</span>
                 </h1>
-                <p class="text-base text-zinc-600 max-w-2xl mx-auto font-light">
+                <p class="text-sm text-zinc-600 font-light">
                     Browse our collection of trusted developers and find your perfect property
                 </p>
             </div>
 
             <!-- Filters Section -->
-            <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-6">
+            <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-4 sm:p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Search -->
                     <div>

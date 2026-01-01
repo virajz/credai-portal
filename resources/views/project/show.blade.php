@@ -1,78 +1,78 @@
 <x-layouts.front :title="$project->name . ' - ' . config('app.name')" :back-link="route('exhibitor.show', $project->exhibitor)" :back-text="'Back to ' . $project->exhibitor->brand_name" body-class="bg-zinc-50">
 
     <!-- Hero Section -->
-    <section>
-        <div class="relative h-64 sm:h-80 lg:h-96 bg-zinc-50 overflow-hidden border-b border-zinc-200">
-            <!-- Hero Content -->
-            <div class="absolute inset-0 flex items-end">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-8">
-                    <!-- Breadcrumb -->
-                    <nav class="mb-4">
-                        <ol class="flex items-center gap-2 text-xs font-light">
-                            <li>
-                                <a href="{{ route('home') }}"
-                                    class="text-zinc-500 hover:text-zinc-900 transition-colors">Home</a>
-                            </li>
-                            <li class="text-zinc-400">/</li>
-                            <li>
-                                <a href="{{ route('home') }}#exhibitors"
-                                    class="text-zinc-500 hover:text-zinc-900 transition-colors">Exhibitors</a>
-                            </li>
-                            <li class="text-zinc-400">/</li>
-                            <li>
-                                <a href="{{ route('exhibitor.show', $project->exhibitor) }}"
-                                    class="text-zinc-500 hover:text-zinc-900 transition-colors">{{ $project->exhibitor->brand_name }}</a>
-                            </li>
-                            <li class="text-zinc-400">/</li>
-                            <li class="text-zinc-900">{{ $project->name }}</li>
-                        </ol>
-                    </nav>
+    <section class="bg-white border-b border-zinc-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- Breadcrumb -->
+            <nav class="mb-4">
+                <ol class="flex items-center gap-2 text-xs font-light">
+                    <li>
+                        <a href="{{ route('home') }}" class="text-zinc-500 hover:text-zinc-900 transition-colors">Home</a>
+                    </li>
+                    <li class="text-zinc-400">/</li>
+                    <li>
+                        <a href="{{ route('home') }}#exhibitors"
+                            class="text-zinc-500 hover:text-zinc-900 transition-colors">Exhibitors</a>
+                    </li>
+                    <li class="text-zinc-400">/</li>
+                    <li>
+                        <a href="{{ route('exhibitor.show', $project->exhibitor) }}"
+                            class="text-zinc-500 hover:text-zinc-900 transition-colors">{{ $project->exhibitor->brand_name }}</a>
+                    </li>
+                    <li class="text-zinc-400">/</li>
+                    <li class="text-zinc-900">{{ $project->name }}</li>
+                </ol>
+            </nav>
 
-                    <div class="flex items-end gap-6">
-                        <!-- Project Logo/Icon -->
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center flex-shrink-0">
-                            @if ($project->logo_path)
-                                <img src="{{ Storage::url($project->logo_path) }}" alt="{{ $project->name }}"
-                                    class="w-full h-full object-contain" />
-                            @else
-                                <x-heroicon-o-building-office-2 class="w-10 h-10 text-zinc-400" />
-                            @endif
-                        </div>
+            <div class="flex items-center justify-between gap-6">
+                <div class="flex items-center gap-4 sm:gap-6 flex-1 min-w-0">
+                    <!-- Project Logo/Icon -->
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">
+                        @if ($project->logo_path)
+                            <img src="{{ Storage::url($project->logo_path) }}" alt="{{ $project->name }}"
+                                class="w-full h-full object-contain" />
+                        @else
+                            <x-heroicon-o-building-office-2 class="w-8 h-8 text-zinc-400" />
+                        @endif
+                    </div>
 
-                        <!-- Info -->
-                        <div class="flex-1 min-w-0 pb-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                @if ($project->status)
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal rounded-full
-                                        {{ $project->status === 'completed' ? 'bg-teal-600 text-white' : '' }}
-                                        {{ $project->status === 'ongoing' ? 'bg-blue-600 text-white' : '' }}
-                                        {{ $project->status === 'upcoming' ? 'bg-amber-600 text-white' : '' }}
-                                        {{ !in_array($project->status, ['completed', 'ongoing', 'upcoming']) ? 'bg-zinc-900 text-white' : '' }}">
-                                        {{ ucfirst($project->status) }}
-                                    </span>
-                                @endif
-                                @if ($project->category)
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal bg-zinc-900 text-white rounded-full">
-                                        {{ $project->category }}
-                                    </span>
-                                @endif
-                            </div>
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light text-zinc-900 truncate">
-                                {{ $project->name }}
-                                <span class="text-sm font-light text-zinc-600 mt-1">
-                                    by {{ $project->exhibitor->brand_name }}
-                                </span>
-                            </h1>
+                    <!-- Info -->
+                    <div class="flex-1 min-w-0">
+                        <h1 class="text-xl sm:text-2xl lg:text-3xl font-light text-zinc-900">
+                            {{ $project->name }}
+                            <span class="text-xs sm:text-sm font-light text-zinc-500">
+                                by {{ $project->exhibitor->brand_name }}
+                            </span>
+                        </h1>
+                        <div class="flex items-center gap-3 flex-wrap mt-1">
                             @if ($project->area)
-                                <p class="flex items-center gap-1.5 text-sm font-light text-zinc-600 mt-2">
+                                <span class="flex items-center gap-1.5 text-sm font-light text-zinc-600">
                                     <x-heroicon-o-map-pin class="w-3.5 h-3.5" />
                                     {{ $project->area }}
-                                </p>
+                                </span>
                             @endif
                         </div>
                     </div>
+                </div>
+
+                <!-- Badges on the right -->
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    @if ($project->status)
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal rounded-full
+                            {{ $project->status === 'completed' ? 'bg-teal-600 text-white' : '' }}
+                            {{ $project->status === 'ongoing' ? 'bg-blue-600 text-white' : '' }}
+                            {{ $project->status === 'upcoming' ? 'bg-amber-600 text-white' : '' }}
+                            {{ !in_array($project->status, ['completed', 'ongoing', 'upcoming']) ? 'bg-zinc-900 text-white' : '' }}">
+                            {{ ucfirst($project->status) }}
+                        </span>
+                    @endif
+                    @if ($project->category)
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal bg-zinc-900 text-white rounded-full">
+                            {{ $project->category }}
+                        </span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -317,8 +317,7 @@
                                 <h3 class="text-sm font-normal text-white mb-1">Project Brochure</h3>
                                 <p class="text-xs font-light text-zinc-400 mb-4">Download detailed project information
                                 </p>
-                                <flux:button href="{{ route('track.project.brochure', $project) }}" target="_blank"
-                                    variant="filled">
+                                <flux:button href="{{ route('track.project.brochure', $project) }}" target="_blank">
                                     Download PDF
                                 </flux:button>
                             </div>

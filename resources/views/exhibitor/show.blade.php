@@ -1,59 +1,59 @@
 <x-layouts.front :title="$exhibitor->brand_name . ' - ' . config('app.name')" :back-link="route('public.exhibitors')" back-text="Back to Exhibitors" body-class="bg-zinc-50">
 
-    <!-- Hero Section with Banner -->
-    <section>
-        <div class="relative h-64 sm:h-80 lg:h-96 bg-zinc-50 overflow-hidden border-b border-zinc-200">
-            <!-- Hero Content -->
-            <div class="absolute inset-0 flex items-end">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-8">
-                    <!-- Breadcrumb -->
-                    <nav class="mb-4">
-                        <ol class="flex items-center gap-2 text-xs font-light">
-                            <li>
-                                <a href="{{ route('home') }}"
-                                    class="text-zinc-500 hover:text-zinc-900 transition-colors">Home</a>
-                            </li>
-                            <li class="text-zinc-400">/</li>
-                            <li>
-                                <a href="{{ route('public.exhibitors') }}"
-                                    class="text-zinc-500 hover:text-zinc-900 transition-colors">Exhibitors</a>
-                            </li>
-                            <li class="text-zinc-400">/</li>
-                            <li class="text-zinc-900">{{ $exhibitor->brand_name }}</li>
-                        </ol>
-                    </nav>
+    <!-- Hero Section -->
+    <section class="bg-white border-b border-zinc-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- Breadcrumb -->
+            <nav class="mb-4">
+                <ol class="flex items-center gap-2 text-xs font-light">
+                    <li>
+                        <a href="{{ route('home') }}" class="text-zinc-500 hover:text-zinc-900 transition-colors">Home</a>
+                    </li>
+                    <li class="text-zinc-400">/</li>
+                    <li>
+                        <a href="{{ route('public.exhibitors') }}"
+                            class="text-zinc-500 hover:text-zinc-900 transition-colors">Exhibitors</a>
+                    </li>
+                    <li class="text-zinc-400">/</li>
+                    <li class="text-zinc-900">{{ $exhibitor->brand_name }}</li>
+                </ol>
+            </nav>
 
-                    <div class="flex items-end gap-6">
-                        <!-- Logo Box -->
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center flex-shrink-0">
-                            @if ($exhibitor->preview_logo ?? $exhibitor->logo_path)
-                                <img src="{{ Storage::url($exhibitor->preview_logo ?? $exhibitor->logo_path) }}"
-                                    alt="{{ $exhibitor->brand_name }}" class="w-full h-full object-contain" />
-                            @else
-                                <x-heroicon-o-building-office class="w-10 h-10 text-zinc-400" />
-                            @endif
-                        </div>
+            <div class="flex items-center justify-between gap-6">
+                <div class="flex items-center gap-4 sm:gap-6 flex-1 min-w-0">
+                    <!-- Logo Box -->
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">
+                        @if ($exhibitor->preview_logo ?? $exhibitor->logo_path)
+                            <img src="{{ Storage::url($exhibitor->preview_logo ?? $exhibitor->logo_path) }}"
+                                alt="{{ $exhibitor->brand_name }}" class="w-full h-full object-contain" />
+                        @else
+                            <x-heroicon-o-building-office class="w-8 h-8 text-zinc-400" />
+                        @endif
+                    </div>
 
-                        <!-- Info -->
-                        <div class="flex-1 min-w-0 pb-1">
-                            @if ($exhibitor->company?->stall_number)
-                                <span
-                                    class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal bg-zinc-900 text-white rounded-full mb-2">
-                                    Stall {{ $exhibitor->company->stall_number }}
-                                </span>
-                            @endif
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light text-zinc-900 truncate">
-                                {{ $exhibitor->brand_name }}
-                            </h1>
-                            @if ($exhibitor->city)
-                                <p class="flex items-center gap-1.5 text-sm font-light text-zinc-600 mt-1">
-                                    <x-heroicon-o-map-pin class="w-3.5 h-3.5" />
-                                    {{ $exhibitor->city }}
-                                </p>
-                            @endif
-                        </div>
+                    <!-- Info -->
+                    <div class="flex-1 min-w-0">
+                        <h1 class="text-xl sm:text-2xl lg:text-3xl font-light text-zinc-900">
+                            {{ $exhibitor->brand_name }}
+                        </h1>
+                        @if ($exhibitor->city)
+                            <p class="flex items-center gap-1.5 text-sm font-light text-zinc-600 mt-1">
+                                <x-heroicon-o-map-pin class="w-3.5 h-3.5" />
+                                {{ $exhibitor->city }}
+                            </p>
+                        @endif
                     </div>
                 </div>
+
+                <!-- Stall badge on the right -->
+                @if ($exhibitor->company?->stall_number)
+                    <div class="flex-shrink-0">
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-normal bg-zinc-900 text-white rounded-full">
+                            Stall {{ $exhibitor->company->stall_number }}
+                        </span>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
