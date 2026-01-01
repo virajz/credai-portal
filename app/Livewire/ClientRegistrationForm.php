@@ -674,7 +674,7 @@ class ClientRegistrationForm extends Component
                 if (! isset($project['units']) || count($project['units']) === 0) {
                     $this->addError("projects.{$index}.units", 'Please add at least one residential unit.');
                 }
-            } elseif ($project['category'] === 'Commercial') {
+            } elseif (in_array($project['category'], ['Commercial Office', 'Commercial Shop / Showroom'])) {
                 if (! isset($project['units']) || count($project['units']) === 0) {
                     $this->addError("projects.{$index}.units", 'Please add at least one commercial unit.');
                 }

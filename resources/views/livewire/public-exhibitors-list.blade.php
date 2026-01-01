@@ -26,7 +26,8 @@
                         <flux:select variant="listbox" wire:model.live="propertyType" placeholder="Property Type"
                             multiple>
                             <flux:select.option value="Residential">Residential</flux:select.option>
-                            <flux:select.option value="Commercial">Commercial</flux:select.option>
+                            <flux:select.option value="Commercial Office">Commercial Office</flux:select.option>
+                            <flux:select.option value="Commercial Shop / Showroom">Commercial Shop / Showroom</flux:select.option>
                             <flux:select.option value="Plotting">Plotting</flux:select.option>
                         </flux:select>
                     </div>

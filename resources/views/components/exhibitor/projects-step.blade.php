@@ -53,7 +53,8 @@
                         <flux:radio.group wire:model="projects.{{ $index }}.category" label="Property Types"
                             variant="cards" class="max-sm:flex-col">
                             <flux:radio value="Residential" label="Residential" />
-                            <flux:radio value="Commercial" label="Commercial" />
+                            <flux:radio value="Commercial Office" label="Commercial Office" />
+                            <flux:radio value="Commercial Shop / Showroom" label="Commercial Shop / Showroom" />
                             <flux:radio value="Plotting" label="Plotting" />
                         </flux:radio.group>
                         @error('projects.' . $index . '.category')

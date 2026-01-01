@@ -388,7 +388,8 @@
                                         <flux:radio.group wire:model.live="projects.{{ $index }}.category"
                                             label="Property Type" variant="cards" class="grid grid-cols-2 gap-3">
                                             <flux:radio value="Residential" label="Residential" />
-                                            <flux:radio value="Commercial" label="Commercial" />
+                                            <flux:radio value="Commercial Office" label="Commercial Office" />
+                                            <flux:radio value="Commercial Shop / Showroom" label="Commercial Shop / Showroom" />
                                             <flux:radio value="Plotting" label="Plotting" />
                                             <flux:radio value="Weekend Home & Others" label="Weekend Home & Others" />
                                         </flux:radio.group>
@@ -482,7 +483,7 @@
                                         @endif
 
                                         <!-- Commercial Units -->
-                                        @if (isset($projects[$index]['category']) && $projects[$index]['category'] === 'Commercial')
+                                        @if (isset($projects[$index]['category']) && in_array($projects[$index]['category'], ['Commercial Office', 'Commercial Shop / Showroom']))
                                             <flux:card class="bg-zinc-50 dark:bg-zinc-900/50">
                                                 <div class="space-y-4">
                                                     <div class="flex items-center justify-between">
@@ -555,7 +556,7 @@
                                         @endif
 
                                         <!-- Budget Range (Hidden for Residential and Commercial as they use units) -->
-                                        @if (!isset($projects[$index]['category']) || !in_array($projects[$index]['category'], ['Residential', 'Commercial']))
+                                        @if (!isset($projects[$index]['category']) || !in_array($projects[$index]['category'], ['Residential', 'Commercial Office', 'Commercial Shop / Showroom']))
                                             <flux:radio.group wire:model="projects.{{ $index }}.budget_range"
                                                 label="Budget Range" variant="cards" class="max-sm:flex-col">
                                                 <flux:radio value="Below 50L" label="Below 50L" />
