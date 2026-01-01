@@ -557,7 +557,7 @@ class ClientRegistrationForm extends Component
         }
 
         $this->projects[$projectIndex]['units'][] = [
-            'type' => 'commercial',
+            'type' => '',
             'area' => '',
             'budget' => '',
         ];
@@ -585,7 +585,7 @@ class ClientRegistrationForm extends Component
         }
 
         // Also clear the existing file path if it exists
-        $pathKey = $type.'_path';
+        $pathKey = $type . '_path';
         if (isset($this->projects[$index][$pathKey])) {
             // Delete the existing file from storage
             Storage::disk('public')->delete($this->projects[$index][$pathKey]);
@@ -674,7 +674,7 @@ class ClientRegistrationForm extends Component
                 if (! isset($project['units']) || count($project['units']) === 0) {
                     $this->addError("projects.{$index}.units", 'Please add at least one residential unit.');
                 }
-            } elseif (in_array($project['category'], ['Commercial Office', 'Commercial Shop / Showroom'])) {
+            } elseif ($project['category'] === 'Commercial') {
                 if (! isset($project['units']) || count($project['units']) === 0) {
                     $this->addError("projects.{$index}.units", 'Please add at least one commercial unit.');
                 }
@@ -733,17 +733,17 @@ class ClientRegistrationForm extends Component
         // Handle file uploads with original filenames
         $logoPath = $this->logo ? $this->logo->storeAs(
             'exhibitors/logos',
-            time().'_'.$this->logo->getClientOriginalName(),
+            time() . '_' . $this->logo->getClientOriginalName(),
             'public'
         ) : null;
         $brochurePath = $this->brochure ? $this->brochure->storeAs(
             'exhibitors/brochures',
-            time().'_'.$this->brochure->getClientOriginalName(),
+            time() . '_' . $this->brochure->getClientOriginalName(),
             'public'
         ) : null;
 
         // Filter empty social media links
-        $socialMediaLinks = array_filter($this->social_media_links, fn ($value) => ! empty($value));
+        $socialMediaLinks = array_filter($this->social_media_links, fn($value) => ! empty($value));
 
         // Check if exhibitor already exists (for updates)
         $exhibitor = Exhibitor::where('company_id', $this->company->id)->first();
@@ -794,7 +794,7 @@ class ClientRegistrationForm extends Component
                     if (isset($projectData['pdf']) && is_object($projectData['pdf'])) {
                         $projectPdfPath = $projectData['pdf']->storeAs(
                             'projects/pdfs',
-                            time().'_'.$projectData['pdf']->getClientOriginalName(),
+                            time() . '_' . $projectData['pdf']->getClientOriginalName(),
                             'public'
                         );
                     }
@@ -802,7 +802,7 @@ class ClientRegistrationForm extends Component
                     if (isset($projectData['logo']) && is_object($projectData['logo'])) {
                         $projectLogoPath = $projectData['logo']->storeAs(
                             'projects/logos',
-                            time().'_'.$projectData['logo']->getClientOriginalName(),
+                            time() . '_' . $projectData['logo']->getClientOriginalName(),
                             'public'
                         );
                     }
