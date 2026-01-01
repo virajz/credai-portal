@@ -69,6 +69,7 @@ Route::prefix('exhibitor')->name('exhibitor.')->group(function () {
         Route::get('scan', \App\Livewire\Exhibitor\ScanVisitor::class)->name('scan');
         Route::get('leads', \App\Livewire\Exhibitor\Leads::class)->name('leads');
         Route::get('partner-leads', \App\Livewire\Exhibitor\PartnerLeads::class)->name('partner-leads');
+        Route::get('visitors', \App\Livewire\Exhibitor\VisitorsList::class)->name('visitors');
 
         Route::post('logout', function () {
             auth('exhibitor')->logout();

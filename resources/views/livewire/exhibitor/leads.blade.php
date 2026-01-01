@@ -1,4 +1,4 @@
-<div class="flex h-full w-full flex-1 flex-col gap-6 p-6" x-data="{ deleteLeadId: null, deleteLeadName: '' }">
+<div class="flex h-full w-full flex-1 flex-col gap-6" x-data="{ deleteLeadId: null, deleteLeadName: '' }">
     <div class="flex items-center justify-between">
         <div>
             <flux:heading size="xl">Visitor Leads</flux:heading>

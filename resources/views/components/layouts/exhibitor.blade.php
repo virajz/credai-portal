@@ -23,6 +23,8 @@
                     wire:navigate>{{ __('Visitor Leads') }}</flux:navlist.item>
                 <flux:navlist.item icon="users" :href="route('exhibitor.partner-leads')" :current="request()->routeIs('exhibitor.partner-leads')"
                     wire:navigate>{{ __('Partner Leads') }}</flux:navlist.item>
+                <flux:navlist.item icon="list-bullet" :href="route('exhibitor.visitors')" :current="request()->routeIs('exhibitor.visitors')"
+                    wire:navigate>{{ __('All Visitors') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 

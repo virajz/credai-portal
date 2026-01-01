@@ -1,4 +1,4 @@
-<div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+<div class="flex h-full w-full flex-1 flex-col gap-6">
     <div>
         <flux:heading size="xl">Welcome, {{ auth('exhibitor')->user()->company_name }}!</flux:heading>
         <flux:subheading>Here's your analytics overview</flux:subheading>
