@@ -114,14 +114,18 @@
                         </div>
                     </flux:card>
                 @else
-                    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <div class="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
                         @foreach ($projects as $project)
                             <a href="{{ route('project.show', $project) }}"
                                 class="group overflow-hidden rounded-lg border border-zinc-200 bg-white transition-all hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
                                 <!-- Project Image/Logo -->
-                                <div class="aspect-video bg-white dark:bg-zinc-800">
+                                <div class="relative aspect-video bg-white dark:bg-zinc-800">
                                     @if ($project->logo_path)
                                         <img src="{{ Storage::url($project->logo_path) }}" alt="{{ $project->name }}"
+                                            class="h-full w-full object-contain p-4">
+                                    @elseif ($project->exhibitor?->logo_path || $project->exhibitor?->preview_logo)
+                                        <img src="{{ Storage::url($project->exhibitor->preview_logo ?? $project->exhibitor->logo_path) }}"
+                                            alt="{{ $project->exhibitor->brand_name }}"
                                             class="h-full w-full object-contain p-4">
                                     @else
                                         <div class="flex h-full items-center justify-center">
@@ -129,62 +133,76 @@
                                                 class="h-16 w-16 text-zinc-300 dark:text-zinc-600" />
                                         </div>
                                     @endif
+
+                                    @if ($project->status)
+                                        <div class="absolute top-3 right-3">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-zinc-900/70 backdrop-blur-sm px-2.5 py-1 text-[9px] font-medium text-white dark:bg-zinc-100/80 dark:text-zinc-900">
+                                                {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                                            </span>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <!-- Project Details -->
-                                <div class="p-4">
-                                    <div class="flex items-start justify-between gap-2">
-                                        <flux:heading size="base" class="group-hover:opacity-75">
-                                            {{ $project->name }}
-                                        </flux:heading>
-                                        @if ($project->status)
-                                            <flux:badge size="sm" color="zinc">
-                                                {{ ucfirst(str_replace('_', ' ', $project->status)) }}
-                                            </flux:badge>
+                                <div class="p-5">
+                                    <h3
+                                        class="text-lg font-semibold text-zinc-900 group-hover:text-zinc-700 dark:text-white dark:group-hover:text-zinc-300">
+                                        {{ $project->name }}
+                                    </h3>
+
+                                    <div class="mt-2 flex items-center gap-2">
+                                        @if ($project->exhibitor?->logo_path || $project->exhibitor?->preview_logo)
+                                            <img src="{{ Storage::url($project->exhibitor->preview_logo ?? $project->exhibitor->logo_path) }}"
+                                                alt="{{ $project->exhibitor->brand_name }}"
+                                                class="h-4 w-4 object-contain">
                                         @endif
+                                        <p class="text-xs font-medium text-zinc-500 dark:text-zinc-500">
+                                            <span class="text-normal text-zinc-400">
+                                                by
+                                            </span>
+                                            {{ $project->exhibitor?->brand_name ?? 'N/A' }}
+                                        </p>
                                     </div>
 
-                                    <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                                        {{ $project->exhibitor?->brand_name ?? 'N/A' }}
-                                    </p>
+                                    @php
+                                        $hasUnits = !empty($project->units) && is_array($project->units);
+                                        $allBedrooms = [];
 
-                                    <div class="mt-3 space-y-2">
+                                        if ($hasUnits && count($project->units) > 0) {
+                                            foreach ($project->units as $unit) {
+                                                if (!empty($unit['bedrooms'])) {
+                                                    $allBedrooms[] = $unit['bedrooms'];
+                                                }
+                                            }
+                                            $allBedrooms = array_unique($allBedrooms);
+                                            sort($allBedrooms);
+                                        }
+                                    @endphp
+
+                                    <div
+                                        class="mt-4 flex flex-wrap justify-between items-center gap-x-4 gap-y-2 text-xs text-zinc-500 dark:text-zinc-500">
                                         @if ($project->area)
-                                            <div
-                                                class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                                <x-heroicon-o-map-pin class="w-3.5 h-3.5" />
-                                                {{ $project->area }}
+                                            <div class="flex items-center gap-1.5">
+                                                <x-heroicon-o-map-pin class="w-3.5 h-3.5 flex-shrink-0" />
+                                                <span>{{ $project->area }}</span>
                                             </div>
                                         @endif
+
 
                                         @if ($project->category)
-                                            <div
-                                                class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                                <x-heroicon-o-building-office-2 class="w-3.5 h-3.5" />
-                                                {{ $project->category }}
+                                            <flux:separator vertical />
+                                            <div class="flex items-center gap-1.5">
+                                                <x-heroicon-o-building-office-2 class="w-3.5 h-3.5 flex-shrink-0" />
+                                                <span>{{ $project->category }}</span>
                                             </div>
                                         @endif
 
-                                        @php
-                                            $hasUnits = !empty($project->units) && is_array($project->units);
-                                            $allBedrooms = [];
-
-                                            if ($hasUnits && count($project->units) > 0) {
-                                                foreach ($project->units as $unit) {
-                                                    if (!empty($unit['bedrooms'])) {
-                                                        $allBedrooms[] = $unit['bedrooms'];
-                                                    }
-                                                }
-                                                $allBedrooms = array_unique($allBedrooms);
-                                                sort($allBedrooms);
-                                            }
-                                        @endphp
-
                                         @if (!empty($allBedrooms))
-                                            <div
-                                                class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                                                <x-heroicon-o-home class="w-3.5 h-3.5" />
-                                                {{ implode(', ', $allBedrooms) }}
+                                            <flux:separator vertical />
+                                            <div class="flex items-center gap-1.5">
+                                                <x-heroicon-o-home class="w-3.5 h-3.5 flex-shrink-0" />
+                                                <span>{{ implode(', ', $allBedrooms) }}</span>
                                             </div>
                                         @endif
                                     </div>
