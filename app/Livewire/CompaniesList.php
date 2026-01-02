@@ -337,6 +337,122 @@ class CompaniesList extends Component
         return response()->stream($callback, 200, $headers);
     }
 
+    public function exportCategoryWiseList(): StreamedResponse
+    {
+        // Categories based on the UI provided
+        $categories = [
+            '2 BHK',
+            '3 BHK',
+            '4 BHK',
+            '5+ BHK',
+            'Showroom',
+            'Office Space',
+            'Plotting',
+            'Weekend Home',
+        ];
+
+        $headers = [
+            'Content-Type' => 'application/zip',
+            'Content-Disposition' => 'attachment; filename="companies-by-category-' . now()->format('Y-m-d') . '.zip"',
+        ];
+
+        $callback = function () use ($categories) {
+            $zip = new \ZipArchive;
+            $zipFileName = tempnam(sys_get_temp_dir(), 'companies_by_category_');
+
+            if ($zip->open($zipFileName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+                return;
+            }
+
+            foreach ($categories as $category) {
+                // Find companies that have a project matching this subcategory label.
+                // Prefer matching `units` JSON (bedrooms/type), fall back to project fields.
+                $companies = Company::whereHas('exhibitor.projects', function ($q) use ($category) {
+                    $residentialLabels = ['2 BHK', '3 BHK', '4 BHK', '5+ BHK'];
+
+                    if (in_array($category, $residentialLabels, true)) {
+                        $q->where(function ($sub) use ($category) {
+                            $sub->whereJsonContains('units', [['bedrooms' => $category]])
+                                ->orWhere('category', 'ilike', "%{$category}%")
+                                ->orWhere('name', 'ilike', "%{$category}%")
+                                ->orWhere('area', 'ilike', "%{$category}%");
+                        });
+                    } elseif ($category === 'Showroom') {
+                        $q->where(function ($sub) use ($category) {
+                            $sub->whereJsonContains('units', [['type' => 'commercial-shop']])
+                                ->orWhere('category', 'ilike', '%commercial%')
+                                ->orWhere('name', 'ilike', "%{$category}%")
+                                ->orWhere('area', 'ilike', "%{$category}%");
+                        });
+                    } elseif ($category === 'Office Space') {
+                        $q->where(function ($sub) use ($category) {
+                            $sub->whereJsonContains('units', [['type' => 'commercial-office']])
+                                ->orWhere('category', 'ilike', '%commercial%')
+                                ->orWhere('name', 'ilike', "%{$category}%")
+                                ->orWhere('area', 'ilike', "%{$category}%");
+                        });
+                    } elseif ($category === 'Plotting') {
+                        $q->where(function ($sub) use ($category) {
+                            $sub->where('category', 'ilike', '%plotting%')
+                                ->orWhereJsonContains('units', [['type' => 'plotting']])
+                                ->orWhere('name', 'ilike', "%{$category}%")
+                                ->orWhere('area', 'ilike', "%{$category}%");
+                        });
+                    } elseif ($category === 'Weekend Home') {
+                        $q->where(function ($sub) use ($category) {
+                            $sub->where('category', 'ilike', '%weekend%')
+                                ->orWhere('category', 'ilike', '%Weekend Home & Others%')
+                                ->orWhereJsonContains('units', [['type' => 'weekend-home']])
+                                ->orWhere('name', 'ilike', "%{$category}%")
+                                ->orWhere('area', 'ilike', "%{$category}%");
+                        });
+                    } else {
+                        // Generic fallback match
+                        $q->where(function ($sub) use ($category) {
+                            $sub->where('category', 'ilike', "%{$category}%")
+                                ->orWhere('name', 'ilike', "%{$category}%")
+                                ->orWhere('area', 'ilike', "%{$category}%");
+                        });
+                    }
+                })->get();
+
+                // Create CSV in memory
+                $csv = fopen('php://temp', 'r+');
+                // Header row: Company Name, Stall Number
+                fputcsv($csv, ['Company Name', 'Stall Number']);
+
+                foreach ($companies as $company) {
+                    fputcsv($csv, [
+                        $company->company_name,
+                        $company->stall_number ?? '',
+                    ]);
+                }
+
+                rewind($csv);
+                $contents = stream_get_contents($csv);
+                fclose($csv);
+
+                // Add to zip with a safe filename
+                $fileName = preg_replace('/[^A-Za-z0-9 _.-]/', '_', $category) . '.csv';
+                $zip->addFromString($fileName, $contents);
+            }
+
+            $zip->close();
+
+            // Stream the zip file
+            readfile($zipFileName);
+            @unlink($zipFileName);
+        };
+
+        ActivityLog::log(
+            'export_companies_by_category',
+            'Exported companies grouped by project category',
+            ['requested_by' => auth()->id() ?? null]
+        );
+
+        return response()->stream($callback, 200, $headers);
+    }
+
     protected function getFilteredCompanies()
     {
         return Company::query()

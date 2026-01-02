@@ -5,12 +5,20 @@
             <flux:subheading>Manage companies and their stall allocations</flux:subheading>
         </div>
         <div class="flex gap-2">
-            <flux:button variant="ghost" icon="qr-code" wire:click="downloadAllQrCodes">
-                Download All QR Codes
-            </flux:button>
+            <flux:dropdown position="bottom" align="end">
+                <flux:button variant="ghost" icon="ellipsis-horizontal">Actions</flux:button>
+                <flux:menu class="w-48">
+                    <flux:menu.item icon="qr-code" icon:variant="outline" wire:click="downloadAllQrCodes">Download
+                        QRs</flux:menu.item>
+                    <flux:menu.item icon="archive-box" icon:variant="outline" wire:click="exportCategoryWiseList">
+                        Category List</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
+
             <flux:button variant="ghost" icon="arrow-down-tray" wire:click="exportCompanies">
                 Export CSV
             </flux:button>
+
             <flux:button variant="primary" :href="route('companies.create')" icon="plus" wire:navigate>
                 Add Company
             </flux:button>
