@@ -63,6 +63,7 @@
             <flux:table.column>Main Person</flux:table.column>
             <flux:table.column>Registered Number</flux:table.column>
             <flux:table.column>Stall Details</flux:table.column>
+            <flux:table.column>Projects</flux:table.column>
             <flux:table.column>
                 <button wire:click="sortByColumn('created_at')"
                     class="flex items-center gap-1 hover:text-zinc-900 dark:hover:text-white">
@@ -127,6 +128,10 @@
                         @endif
                     </flux:table.cell>
                     <flux:table.cell>
+                        {{ $company->exhibitor?->projects?->count() ?? 0 }}
+                    </flux:table.cell>
+
+                    <flux:table.cell>
                         <time datetime="{{ $company->created_at->toISOString() }}" class="text-sm">
                             {{ $company->created_at->format('M d, Y') }}
                         </time>
@@ -146,20 +151,24 @@
                                     size="sm" icon="clipboard" icon:variant="outline" />
                             </div>
 
-                            <div x-tooltip="'Generate QR Code'">
-                                <flux:button wire:click="showCompanyQrCode({{ $company->id }})" variant="ghost"
-                                    size="sm" icon="qr-code" icon:variant="outline" />
-                            </div>
-
-                            <div x-tooltip="'{{ $company->is_locked ? 'Unlock registration link' : 'Lock registration link' }}'">
-                                <flux:button wire:click="toggleLock({{ $company->id }})" variant="ghost" size="sm"
-                                    :icon="$company->is_locked ? 'lock-closed' : 'lock-open'" icon:variant="outline" />
-                            </div>
+                            {{-- QR and Lock actions moved into the dropdown menu below --}}
 
                             <flux:tooltip content="More actions" position="top">
                                 <flux:dropdown position="bottom" align="end">
                                     <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" />
                                     <flux:menu class="w-48">
+                                        <flux:menu.item icon="qr-code" icon:variant="outline"
+                                            wire:click="showCompanyQrCode({{ $company->id }})">Generate QR Code</flux:menu.item>
+
+                                        @if ($company->is_locked)
+                                            <flux:menu.item icon="lock-open" icon:variant="outline"
+                                                wire:click="toggleLock({{ $company->id }})">Unlock registration link</flux:menu.item>
+                                        @else
+                                            <flux:menu.item icon="lock-closed" icon:variant="outline"
+                                                wire:click="toggleLock({{ $company->id }})">Lock registration link</flux:menu.item>
+                                        @endif
+
+                                        <flux:menu.separator />
                                         <flux:menu.item icon="pencil" icon:variant="outline"
                                             :href="route('companies.edit', $company)" wire:navigate>Edit</flux:menu.item>
                                         <flux:menu.separator />

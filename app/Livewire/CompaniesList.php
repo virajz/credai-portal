@@ -392,7 +392,8 @@ class CompaniesList extends Component
                     $query->where('has_submitted', false);
                 }
             })
-            ->orderBy($this->sortBy, $this->sortDirection);
+                ->with('exhibitor.projects')
+                ->orderBy($this->sortBy, $this->sortDirection);
     }
 
     #[Title('Companies')]
