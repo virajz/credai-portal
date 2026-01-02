@@ -229,7 +229,7 @@
                             </div>
                         </div>
                     @endif
-                    @endif
+
 
                     <!-- Company Video -->
                     @if ($exhibitor->video_url)
@@ -263,7 +263,7 @@
                                 @endif
                             </div>
                         </div>
-
+                    @endif
                     <!-- Social Media & Connect -->
                     @if ($exhibitor->social_media_links && count($exhibitor->social_media_links) > 0)
                         @php
