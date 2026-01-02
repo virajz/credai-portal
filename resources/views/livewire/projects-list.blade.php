@@ -119,10 +119,10 @@
                             <a href="{{ route('project.show', $project) }}"
                                 class="group overflow-hidden rounded-lg border border-zinc-200 bg-white transition-all hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
                                 <!-- Project Image/Logo -->
-                                <div class="aspect-video bg-zinc-100 dark:bg-zinc-800">
+                                <div class="aspect-video bg-white dark:bg-zinc-800">
                                     @if ($project->logo_path)
                                         <img src="{{ Storage::url($project->logo_path) }}" alt="{{ $project->name }}"
-                                            class="h-full w-full object-cover">
+                                            class="h-full w-full object-contain p-4">
                                     @else
                                         <div class="flex h-full items-center justify-center">
                                             <x-heroicon-o-building-office-2
