@@ -165,9 +165,82 @@ PROMPT;
         return $prompt;
     }
 
+    protected function extractSearchParameters(string $message): array
+    {
+        // Use LLM to extract structured search parameters
+        $systemPrompt = <<<'PROMPT'
+Extract property search parameters from the user's message. Be intelligent about typos and variations.
+
+Available categories: Residential, Commercial, Plotting, Weekend Home & Others
+Available areas: Athwa - Vesu, Pal - Adajan - Rander, Saroli, Katargam, Dindoli, Outer City, Within City
+Available status: completed, upcoming, ready_to_move, ongoing
+Available handover dates: Within 3 months, Within 6 months, Within a year
+
+Return ONLY a valid JSON object with these fields (null if not mentioned):
+{
+  "category": "Residential|Commercial|Plotting|Weekend Home & Others|null",
+  "area": "area name or null",
+  "budget": "budget value like 2Cr, 50L or null",
+  "size_sqft": number or null,
+  "handover_date": "handover date or null",
+  "bedrooms": "1 BHK|2 BHK|3 BHK|4 BHK|5+ BHK|null"
+}
+
+Examples:
+- "need a flat in pal" → {"category":"Residential","area":"Pal - Adajan - Rander","budget":null,"size_sqft":null,"handover_date":null,"bedrooms":null}
+- "showroom 4000 sq ft" → {"category":"Commercial","area":null,"budget":null,"size_sqft":4000,"handover_date":null,"bedrooms":null}
+- "3 bhk in vesu budget 2 cr" → {"category":"Residential","area":"Athwa - Vesu","budget":"2Cr","size_sqft":null,"handover_date":null,"bedrooms":"3 BHK"}
+PROMPT;
+
+        try {
+            $response = Prism::text()
+                ->using('groq', 'llama-3.3-70b-versatile')
+                ->withSystemPrompt($systemPrompt)
+                ->withPrompt("User message: {$message}")
+                ->asText();
+
+            // Clean response - remove markdown code blocks if present
+            $jsonText = $response->text;
+            $jsonText = preg_replace('/```json\s*/', '', $jsonText);
+            $jsonText = preg_replace('/```\s*$/', '', $jsonText);
+            $jsonText = trim($jsonText);
+
+            $params = json_decode($jsonText, true);
+
+            if (! is_array($params)) {
+                logger()->warning('LLM returned invalid JSON', ['response' => $response->text, 'cleaned' => $jsonText]);
+
+                return $this->fallbackExtraction($message);
+            }
+
+            logger()->info('Extracted parameters', ['params' => $params, 'message' => $message]);
+
+            return $params;
+        } catch (\Exception $e) {
+            logger()->error('Parameter extraction failed', ['error' => $e->getMessage()]);
+
+            return $this->fallbackExtraction($message);
+        }
+    }
+
+    protected function fallbackExtraction(string $message): array
+    {
+        // Fallback to keyword matching if LLM fails
+        return [
+            'category' => null,
+            'area' => null,
+            'budget' => null,
+            'size_sqft' => null,
+            'handover_date' => null,
+            'bedrooms' => null,
+        ];
+    }
+
     protected function searchPropertiesFromMessage(string $message): array
     {
-        // Extract potential search criteria from message using simple keyword matching
+        // Extract structured parameters using LLM
+        $params = $this->extractSearchParameters($message);
+
         $message = strtolower($message);
 
         $query = Project::query()->with('exhibitor');
@@ -188,23 +261,26 @@ PROMPT;
             }
         }
 
-        // Search for area mentions - dynamically get all unique areas from database
-        $availableAreas = Project::query()
-            ->whereNotNull('area')
-            ->distinct()
-            ->pluck('area')
-            ->map(fn ($area) => strtolower($area))
-            ->toArray();
+        // Search for area - use LLM-extracted param if available, otherwise fallback to keywords
+        if (! empty($params['area'])) {
+            $query->where('area', 'ILIKE', "%{$params['area']}%");
+        } else {
+            // Fallback: keyword-based area detection
+            $availableAreas = Project::query()
+                ->whereNotNull('area')
+                ->distinct()
+                ->pluck('area')
+                ->map(fn ($area) => strtolower($area))
+                ->toArray();
 
-        // Check if any area keyword is mentioned in the message
-        $commonWords = ['within', 'outer', 'city']; // Exclude common words that might match incorrectly
-        foreach ($availableAreas as $area) {
-            // Split area by common delimiters to match partial names
-            $areaParts = preg_split('/[\s\-]+/', $area);
-            foreach ($areaParts as $part) {
-                if (strlen($part) >= 3 && ! in_array($part, $commonWords) && str_contains($message, $part)) {
-                    $query->where('area', 'ILIKE', "%{$part}%");
-                    break 2; // Break both loops
+            $commonWords = ['within', 'outer', 'city'];
+            foreach ($availableAreas as $area) {
+                $areaParts = preg_split('/[\s\-]+/', $area);
+                foreach ($areaParts as $part) {
+                    if (strlen($part) >= 3 && ! in_array($part, $commonWords) && str_contains($message, $part)) {
+                        $query->where('area', 'ILIKE', "%{$part}%");
+                        break 2;
+                    }
                 }
             }
         }
@@ -233,28 +309,68 @@ PROMPT;
             });
         }
 
-        // Search for category
-        $categories = ['residential', 'commercial', 'plotting'];
-        foreach ($categories as $category) {
-            if (str_contains($message, $category)) {
-                $query->where('category', 'ILIKE', "%{$category}%");
-                break;
+        // Search for category - use LLM-extracted param if available, otherwise fallback to keywords
+        if (! empty($params['category'])) {
+            $query->where('category', 'ILIKE', "%{$params['category']}%");
+        } else {
+            // Fallback: keyword-based category detection
+            $categoryMatched = false;
+
+            $categories = ['residential', 'commercial', 'plotting'];
+            foreach ($categories as $category) {
+                if (str_contains($message, $category)) {
+                    $query->where('category', 'ILIKE', "%{$category}%");
+                    $categoryMatched = true;
+                    break;
+                }
+            }
+
+            if (! $categoryMatched && (str_contains($message, 'office') || str_contains($message, 'shop') || str_contains($message, 'showroom'))) {
+                $query->where('category', 'ILIKE', '%commercial%');
+                $categoryMatched = true;
+            }
+
+            if (! $categoryMatched && (str_contains($message, 'plot') || str_contains($message, 'land'))) {
+                $query->where('category', 'ILIKE', '%plotting%');
+                $categoryMatched = true;
+            }
+
+            if (! $categoryMatched && (str_contains($message, 'flat') || str_contains($message, 'apartment') || str_contains($message, ' home'))) {
+                $query->where('category', 'ILIKE', '%residential%');
+                $categoryMatched = true;
             }
         }
 
-        // Also match common residential keywords
-        if (str_contains($message, 'flat') || str_contains($message, 'apartment') || str_contains($message, 'home')) {
-            $query->where('category', 'ILIKE', '%residential%');
+        // Search for size/area - use LLM-extracted param if available
+        $requestedSize = null;
+        if (! empty($params['size_sqft'])) {
+            $requestedSize = (int) $params['size_sqft'];
+        } elseif (preg_match('/(\d+)\s*(?:sq\.?\s*ft|square\s*feet|sqft)/i', $message, $matches)) {
+            $requestedSize = (int) $matches[1];
         }
 
-        // Match commercial keywords
-        if (str_contains($message, 'office') || str_contains($message, 'shop') || str_contains($message, 'showroom')) {
-            $query->where('category', 'ILIKE', '%commercial%');
-        }
+        if ($requestedSize) {
+            $tolerance = $requestedSize * 0.2; // 20% tolerance
 
-        // Match plotting keywords
-        if (str_contains($message, 'plot') || str_contains($message, 'land')) {
-            $query->where('category', 'ILIKE', '%plotting%');
+            $query->where(function ($q) use ($requestedSize, $tolerance) {
+                $q->where(function ($subQ) use ($requestedSize, $tolerance) {
+                    $subQ->whereNotNull('sq_ft')
+                        ->where('sq_ft', '!=', '')
+                        ->whereRaw('CAST(sq_ft AS INTEGER) BETWEEN ? AND ?', [
+                            $requestedSize - $tolerance,
+                            $requestedSize + $tolerance,
+                        ]);
+                })
+                    ->orWhereRaw("EXISTS (
+                      SELECT 1 FROM json_array_elements(units) as unit
+                      WHERE unit->>'area' IS NOT NULL
+                      AND unit->>'area' != ''
+                      AND CAST(unit->>'area' AS INTEGER) BETWEEN ? AND ?
+                  )", [
+                        $requestedSize - $tolerance,
+                        $requestedSize + $tolerance,
+                    ]);
+            });
         }
 
         // Search for handover date/timeline mentions
@@ -275,21 +391,18 @@ PROMPT;
             $query->where('handover_date', 'ILIKE', "%{$handoverDate}%");
         }
 
-        // Search for status - default to showing all except ongoing
-        $statuses = ['ongoing', 'completed', 'upcoming', 'ready_to_move'];
-        $statusFound = false;
-        foreach ($statuses as $status) {
-            if (str_contains($message, $status)) {
-                $query->where('status', 'ILIKE', "%{$status}%");
-                $statusFound = true;
-                break;
-            }
+        // Search for status - only filter if user explicitly mentions a status
+        // Check for explicit status keywords
+        if (str_contains($message, 'ready to move') || str_contains($message, 'ready_to_move')) {
+            $query->where('status', 'ready_to_move');
+        } elseif (str_contains($message, 'completed')) {
+            $query->where('status', 'completed');
+        } elseif (str_contains($message, 'upcoming')) {
+            $query->where('status', 'upcoming');
+        } elseif (str_contains($message, 'ongoing') || str_contains($message, 'under construction')) {
+            $query->where('status', 'ongoing');
         }
-
-        // If no specific status mentioned, show all except ongoing (show completed, upcoming, ready_to_move)
-        if (! $statusFound) {
-            $query->whereIn('status', ['completed', 'upcoming', 'ready_to_move']);
-        }
+        // Otherwise, show ALL statuses (no filter applied)
 
         $projects = $query->limit(10)->get();
 
