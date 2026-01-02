@@ -8,6 +8,7 @@ use App\Livewire\PartnerRegistration;
 use App\Livewire\PartnerShow;
 use App\Livewire\PartnersList;
 use App\Livewire\PartnerSuccess;
+use App\Livewire\PropertyCategory;
 use App\Livewire\PublicExhibitorsList;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -24,6 +25,12 @@ Route::get('/', App\Http\Controllers\HomeController::class)->name('home');
 
 // Public exhibitors listing page
 Route::get('/explore-exhibitors', PublicExhibitorsList::class)->name('public.exhibitors');
+
+// Property category pages
+Route::get('/properties/residential/{subType}', PropertyCategory::class)->name('properties.residential');
+Route::get('/properties/commercial/{subType}', PropertyCategory::class)->name('properties.commercial');
+Route::get('/properties/plotting', PropertyCategory::class)->name('properties.plotting');
+Route::get('/properties/weekend-home', PropertyCategory::class)->name('properties.weekend-home');
 
 // Exhibitor Portal Routes (must be before /exhibitor/{exhibitor} wildcard route)
 Route::prefix('exhibitor')->name('exhibitor.')->group(function () {

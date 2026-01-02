@@ -72,11 +72,52 @@
                         </a>
                     @else
                         <!-- Desktop Navigation (for homepage) -->
-                        <div class="hidden lg:flex items-center space-x-1">
-                            <a href="{{ route('public.exhibitors') }}"
-                                class="px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900 transition-colors">
-                                Exhibitors
-                            </a>
+                        <flux:navbar class="-mb-px max-lg:hidden">
+                            <!-- Properties Dropdown -->
+                            <flux:dropdown>
+                                <flux:navbar.item icon:trailing="chevron-down">Properties</flux:navbar.item>
+
+                                <flux:navmenu>
+                                    <div class="px-2 py-1.5">
+                                        <flux:text size="sm">Residential</flux:text>
+                                    </div>
+                                    <flux:navmenu.item :href="route('properties.residential', ['subType' => '2 BHK'])">
+                                        2 BHK
+                                    </flux:navmenu.item>
+                                    <flux:navmenu.item :href="route('properties.residential', ['subType' => '3 BHK'])">
+                                        3 BHK
+                                    </flux:navmenu.item>
+                                    <flux:navmenu.item :href="route('properties.residential', ['subType' => '4 BHK'])">
+                                        4 BHK
+                                    </flux:navmenu.item>
+                                    <flux:navmenu.item :href="route('properties.residential', ['subType' => '5+ BHK'])">
+                                        5+ BHK
+                                    </flux:navmenu.item>
+
+                                    <flux:navmenu.separator />
+
+                                    <div class="px-2 py-1.5">
+                                        <flux:text size="sm">Commercial</flux:text>
+                                    </div>
+                                    <flux:navmenu.item :href="route('properties.commercial', ['subType' => 'commercial-shop'])">
+                                        Showroom
+                                    </flux:navmenu.item>
+                                    <flux:navmenu.item :href="route('properties.commercial', ['subType' => 'commercial-office'])">
+                                        Office Space
+                                    </flux:navmenu.item>
+
+                                    <flux:navmenu.separator />
+
+                                    <flux:navmenu.item :href="route('properties.plotting')">
+                                        Plotting
+                                    </flux:navmenu.item>
+                                    <flux:navmenu.item :href="route('properties.weekend-home')">
+                                        Weekend Home
+                                    </flux:navmenu.item>
+                                </flux:navmenu>
+                            </flux:dropdown>
+
+                            <flux:navbar.item :href="route('public.exhibitors')">Exhibitors</flux:navbar.item>
 
                             <!-- CTA Button -->
                             <div class="ml-6">
@@ -84,10 +125,10 @@
                                     Get Free Pass
                                 </flux:button>
                             </div>
-                        </div>
+                        </flux:navbar>
 
                         <!-- Mobile menu button -->
-                        <div class="lg:hidden" x-data="{ open: false }">
+                        <div class="lg:hidden" x-data="{ open: false, propertiesOpen: false }">
                             <button @click="open = !open"
                                 class="inline-flex items-center justify-center p-2 text-zinc-600 hover:text-zinc-900 transition-colors">
                                 <x-heroicon-o-bars-3 class="h-5 w-5" />
@@ -100,8 +141,66 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 scale-100"
                                 x-transition:leave-end="opacity-0 scale-95" @click.away="open = false"
-                                class="absolute right-4 top-full mt-2 w-48 bg-white border border-zinc-100 rounded-lg shadow-lg">
+                                class="absolute right-4 top-full mt-2 w-56 bg-white border border-zinc-100 rounded-lg shadow-lg">
                                 <div class="py-2">
+                                    <!-- Properties Expandable -->
+                                    <div>
+                                        <button @click="propertiesOpen = !propertiesOpen"
+                                            class="w-full flex items-center justify-between px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                            <span>Properties</span>
+                                            <x-heroicon-o-chevron-down class="w-3.5 h-3.5 transition-transform"
+                                                x-bind:class="{ 'rotate-180': propertiesOpen }" />
+                                        </button>
+
+                                        <div x-show="propertiesOpen" x-collapse>
+                                            <div class="bg-zinc-50 py-2">
+                                                <!-- Residential -->
+                                                <div class="px-4 py-1 text-xs font-normal text-zinc-400 uppercase">
+                                                    Residential
+                                                </div>
+                                                <a href="{{ route('properties.residential', ['subType' => '2 BHK']) }}"
+                                                    class="block px-6 py-1.5 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                                    2 BHK
+                                                </a>
+                                                <a href="{{ route('properties.residential', ['subType' => '3 BHK']) }}"
+                                                    class="block px-6 py-1.5 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                                    3 BHK
+                                                </a>
+                                                <a href="{{ route('properties.residential', ['subType' => '4 BHK']) }}"
+                                                    class="block px-6 py-1.5 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                                    4 BHK
+                                                </a>
+                                                <a href="{{ route('properties.residential', ['subType' => '5+ BHK']) }}"
+                                                    class="block px-6 py-1.5 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                                    5+ BHK
+                                                </a>
+
+                                                <!-- Commercial -->
+                                                <div class="px-4 py-1 mt-2 text-xs font-normal text-zinc-400 uppercase">
+                                                    Commercial
+                                                </div>
+                                                <a href="{{ route('properties.commercial', ['subType' => 'commercial-shop']) }}"
+                                                    class="block px-6 py-1.5 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                                    Showroom
+                                                </a>
+                                                <a href="{{ route('properties.commercial', ['subType' => 'commercial-office']) }}"
+                                                    class="block px-6 py-1.5 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                                    Office Space
+                                                </a>
+
+                                                <!-- Plotting & Weekend Home -->
+                                                <a href="{{ route('properties.plotting') }}"
+                                                    class="block px-6 py-1.5 mt-2 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                                    Plotting
+                                                </a>
+                                                <a href="{{ route('properties.weekend-home') }}"
+                                                    class="block px-6 py-1.5 text-sm font-light text-zinc-600 hover:text-zinc-900">
+                                                    Weekend Home
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <a href="{{ route('public.exhibitors') }}"
                                         class="block px-4 py-2 text-sm font-light text-zinc-600 hover:text-zinc-900">Exhibitors</a>
                                     <div class="border-t border-zinc-100 my-2"></div>
