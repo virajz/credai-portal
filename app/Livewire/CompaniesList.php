@@ -233,7 +233,7 @@ class CompaniesList extends Component
 
         $headers = [
             'Content-Type' => 'application/zip',
-            'Content-Disposition' => 'attachment; filename="company-qr-codes-'.now()->format('Y-m-d').'.zip"',
+            'Content-Disposition' => 'attachment; filename="company-qr-codes-' . now()->format('Y-m-d') . '.zip"',
         ];
 
         $callback = function () use ($companies) {
@@ -285,7 +285,7 @@ class CompaniesList extends Component
 
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="companies-'.now()->format('Y-m-d').'.csv"',
+            'Content-Disposition' => 'attachment; filename="companies-' . now()->format('Y-m-d') . '.csv"',
         ];
 
         $callback = function () use ($companies) {
@@ -392,8 +392,8 @@ class CompaniesList extends Component
                     $query->where('has_submitted', false);
                 }
             })
-                ->with('exhibitor.projects')
-                ->orderBy($this->sortBy, $this->sortDirection);
+            ->with('exhibitor.projects')
+            ->orderBy($this->sortBy, $this->sortDirection);
     }
 
     #[Title('Companies')]

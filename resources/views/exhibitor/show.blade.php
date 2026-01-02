@@ -118,14 +118,30 @@
                                                             @php
                                                                 $categoryLower = strtolower($category ?? '');
                                                                 $icon = 'building-office';
-                                                                
-                                                                if (str_contains($categoryLower, 'villa') || str_contains($categoryLower, 'bungalow') || str_contains($categoryLower, 'weekend')) {
+
+                                                                if (
+                                                                    str_contains($categoryLower, 'villa') ||
+                                                                    str_contains($categoryLower, 'bungalow') ||
+                                                                    str_contains($categoryLower, 'weekend')
+                                                                ) {
                                                                     $icon = 'home-modern';
-                                                                } elseif (str_contains($categoryLower, 'bhk') || str_contains($categoryLower, 'apartment') || str_contains($categoryLower, 'flat')) {
+                                                                } elseif (
+                                                                    str_contains($categoryLower, 'bhk') ||
+                                                                    str_contains($categoryLower, 'apartment') ||
+                                                                    str_contains($categoryLower, 'flat')
+                                                                ) {
                                                                     $icon = 'building-office-2';
-                                                                } elseif (str_contains($categoryLower, 'plot') || str_contains($categoryLower, 'land')) {
+                                                                } elseif (
+                                                                    str_contains($categoryLower, 'plot') ||
+                                                                    str_contains($categoryLower, 'land')
+                                                                ) {
                                                                     $icon = 'square-3-stack-3d';
-                                                                } elseif (str_contains($categoryLower, 'commercial') || str_contains($categoryLower, 'office') || str_contains($categoryLower, 'showroom') || str_contains($categoryLower, 'shop')) {
+                                                                } elseif (
+                                                                    str_contains($categoryLower, 'commercial') ||
+                                                                    str_contains($categoryLower, 'office') ||
+                                                                    str_contains($categoryLower, 'showroom') ||
+                                                                    str_contains($categoryLower, 'shop')
+                                                                ) {
                                                                     $icon = 'building-storefront';
                                                                 } elseif (str_contains($categoryLower, 'penthouse')) {
                                                                     $icon = 'building-office';
@@ -213,16 +229,79 @@
                             </div>
                         </div>
                     @endif
+                    @endif
+
+                    <!-- Company Video -->
+                    @if ($exhibitor->video_url)
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <h2 class="text-sm font-medium text-zinc-900 mb-4">Company Video</h2>
+                            <div class="aspect-video rounded-lg overflow-hidden bg-zinc-100">
+                                @if (str_contains($exhibitor->video_url, 'youtube') || str_contains($exhibitor->video_url, 'youtu.be'))
+                                    @php
+                                        preg_match(
+                                            '/(?:youtube\.com\/(?:[^\/]+\/.+\/(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/',
+                                            $exhibitor->video_url,
+                                            $matches,
+                                        );
+                                        $videoId = $matches[1] ?? '';
+                                    @endphp
+                                    @if ($videoId)
+                                        <iframe src="https://www.youtube.com/embed/{{ $videoId }}"
+                                            class="w-full h-full" frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                        </iframe>
+                                    @endif
+                                @else
+                                    <a href="{{ $exhibitor->video_url }}" target="_blank" rel="noopener"
+                                        class="flex items-center justify-center h-full text-zinc-500 hover:text-zinc-700 transition-colors">
+                                        <div class="text-center">
+                                            <x-heroicon-o-play-circle class="w-12 h-12 mx-auto mb-2" />
+                                            <span class="text-sm font-light">Watch Video</span>
+                                        </div>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
 
                     <!-- Social Media & Connect -->
                     @if ($exhibitor->social_media_links && count($exhibitor->social_media_links) > 0)
+                        @php
+                            $socialIcons = [
+                                'facebook' => 'bi-facebook',
+                                'instagram' => 'bi-instagram',
+                                'linkedin' => 'bi-linkedin',
+                                'youtube' => 'bi-youtube',
+                                'whatsapp' => 'bi-whatsapp',
+                            ];
+                        @endphp
+
                         <div class="bg-white rounded-xl p-6 shadow-sm">
                             <h2 class="text-sm font-medium text-zinc-900 mb-4">Connect</h2>
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($exhibitor->social_media_links as $platform => $url)
                                     @if ($url)
+                                        @php $icon = $socialIcons[$platform] ?? null; @endphp
                                         <flux:button href="{{ $url }}" target="_blank" rel="noopener"
-                                            variant="ghost" size="sm" icon-trailing="arrow-top-right-on-square">
+                                            variant="subtle" size="sm" class="text-xs font-normal">
+                                            @if ($icon)
+                                                <x-slot name="iconLeading">
+                                                    @if ($icon === 'bi-facebook')
+                                                        <x-bi-facebook />
+                                                    @elseif ($icon === 'bi-instagram')
+                                                        <x-bi-instagram />
+                                                    @elseif ($icon === 'bi-linkedin')
+                                                        <x-bi-linkedin />
+                                                    @elseif ($icon === 'bi-youtube')
+                                                        <x-bi-youtube />
+                                                    @elseif ($icon === 'bi-whatsapp')
+                                                        <x-bi-whatsapp />
+                                                    @else
+                                                        {{-- fallback to globe icon component --}}
+                                                        <x-heroicon-o-globe-alt class="w-4 h-4" />
+                                                    @endif
+                                                </x-slot>
+                                            @endif
                                             {{ ucfirst($platform) }}
                                         </flux:button>
                                     @endif
@@ -331,8 +410,7 @@
 
                                 @if ($exhibitor->website)
                                     <flux:button href="{{ route('track.exhibitor.website', $exhibitor) }}"
-                                        target="_blank" rel="noopener" variant="ghost" class="w-full"
-                                        icon-trailing="arrow-top-right-on-square">
+                                        target="_blank" rel="noopener" variant="ghost" class="w-full">
                                         Visit Website
                                     </flux:button>
                                 @endif

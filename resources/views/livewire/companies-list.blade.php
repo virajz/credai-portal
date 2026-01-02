@@ -142,7 +142,8 @@
                             @if ($company->has_submitted)
                                 <flux:tooltip content="View Submission" position="top">
                                     <flux:button :href="route('companies.submission', $company)" variant="ghost"
-                                        size="sm" icon="document-magnifying-glass" icon:variant="outline" wire:navigate />
+                                        size="sm" icon="document-magnifying-glass" icon:variant="outline"
+                                        wire:navigate />
                                 </flux:tooltip>
                             @endif
 
@@ -158,19 +159,23 @@
                                     <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" />
                                     <flux:menu class="w-48">
                                         <flux:menu.item icon="qr-code" icon:variant="outline"
-                                            wire:click="showCompanyQrCode({{ $company->id }})">Generate QR Code</flux:menu.item>
+                                            wire:click="showCompanyQrCode({{ $company->id }})">Generate QR Code
+                                        </flux:menu.item>
 
                                         @if ($company->is_locked)
                                             <flux:menu.item icon="lock-open" icon:variant="outline"
-                                                wire:click="toggleLock({{ $company->id }})">Unlock registration link</flux:menu.item>
+                                                wire:click="toggleLock({{ $company->id }})">Unlock registration link
+                                            </flux:menu.item>
                                         @else
                                             <flux:menu.item icon="lock-closed" icon:variant="outline"
-                                                wire:click="toggleLock({{ $company->id }})">Lock registration link</flux:menu.item>
+                                                wire:click="toggleLock({{ $company->id }})">Lock registration link
+                                            </flux:menu.item>
                                         @endif
 
                                         <flux:menu.separator />
                                         <flux:menu.item icon="pencil" icon:variant="outline"
-                                            :href="route('companies.edit', $company)" wire:navigate>Edit</flux:menu.item>
+                                            :href="route('companies.edit', $company)" wire:navigate>Edit
+                                        </flux:menu.item>
                                         <flux:menu.separator />
                                         <flux:menu.item icon="trash" icon:variant="outline" variant="danger"
                                             wire:click="confirmDelete({{ $company->id }})">Delete</flux:menu.item>
@@ -310,13 +315,15 @@
     </flux:modal>
 
     <!-- Company QR Code Modal -->
-    <flux:modal name="company-qr-code" class="max-w-2xl" @close="$wire.closeCompanyQrModal()" wire:model="showCompanyQrModal">
+    <flux:modal name="company-qr-code" class="max-w-2xl" @close="$wire.closeCompanyQrModal()"
+        wire:model="showCompanyQrModal">
         <div class="space-y-6">
             @if ($selectedCompany)
                 <div class="text-center">
                     <flux:heading size="lg">Company QR Code</flux:heading>
                     <flux:text class="mt-2">{{ $selectedCompany->company_name }}</flux:text>
-                    <flux:text class="mt-1 text-sm text-zinc-500">Scans will open WhatsApp to inquire about this company</flux:text>
+                    <flux:text class="mt-1 text-sm text-zinc-500">Scans will open WhatsApp to inquire about this
+                        company</flux:text>
                 </div>
 
                 <div class="flex flex-col items-center justify-center space-y-4">
