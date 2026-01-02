@@ -80,96 +80,129 @@
                     @endif
 
                     <!-- Projects Section -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-sm font-medium text-zinc-900">
-                                Projects
-                            </h2>
-                            @if ($exhibitor->projects->count() > 0)
-                                <span class="text-xs font-light text-zinc-400">{{ $exhibitor->projects->count() }}
-                                    {{ Str::plural('project', $exhibitor->projects->count()) }}</span>
-                            @endif
-                        </div>
+                    @if ($exhibitor->projects->count() > 0)
+                        @php
+                            $projectsByCategory = $exhibitor->projects->groupBy('category')->sortKeys();
+                        @endphp
 
-                        @if ($exhibitor->projects->count() > 0)
-                            <div class="space-y-4">
-                                @foreach ($exhibitor->projects as $project)
-                                    <a href="{{ route('project.show', $project) }}"
-                                        class="group block bg-zinc-50 hover:bg-zinc-100 rounded-xl p-5 transition-colors">
-                                        <div class="flex items-start justify-between gap-4">
-                                            <div class="flex-1 min-w-0">
-                                                <div class="flex items-center gap-2 mb-2">
-                                                    <h3
-                                                        class="text-sm font-normal text-zinc-900 truncate group-hover:text-zinc-700">
-                                                        {{ $project->name }}</h3>
-                                                    @if ($project->status)
-                                                        <span
-                                                            class="inline-flex items-center px-2 py-0.5 text-[10px] font-normal rounded-full
-                                                            {{ $project->status === 'completed' ? 'bg-teal-100 text-teal-700' : '' }}
-                                                            {{ $project->status === 'ongoing' ? 'bg-blue-100 text-blue-700' : '' }}
-                                                            {{ $project->status === 'upcoming' ? 'bg-amber-100 text-amber-700' : '' }}
-                                                            {{ !in_array($project->status, ['completed', 'ongoing', 'upcoming']) ? 'bg-zinc-200 text-zinc-600' : '' }}">
-                                                            {{ ucfirst($project->status) }}
-                                                        </span>
-                                                    @endif
-                                                </div>
-
-                                                <div
-                                                    class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-500">
-                                                    @if ($project->area)
-                                                        <span class="flex items-center gap-1">
-                                                            <x-heroicon-o-map-pin class="w-3.5 h-3.5 text-zinc-400" />
-                                                            <span class="font-light">{{ $project->area }}</span>
-                                                        </span>
-                                                    @endif
-                                                    @if ($project->category)
-                                                        <span class="flex items-center gap-1">
-                                                            <x-heroicon-o-building-office
-                                                                class="w-3.5 h-3.5 text-zinc-400" />
-                                                            <span class="font-light">{{ $project->category }}</span>
-                                                        </span>
-                                                    @endif
-                                                    @if ($project->budget_range)
-                                                        <span class="flex items-center gap-1">
-                                                            <x-heroicon-o-currency-rupee
-                                                                class="w-3.5 h-3.5 text-zinc-400" />
-                                                            <span
-                                                                class="font-light">{{ $project->budget_range }}</span>
-                                                        </span>
-                                                    @endif
-                                                    @if ($project->handover_date)
-                                                        <span class="flex items-center gap-1">
-                                                            <x-heroicon-o-calendar class="w-3.5 h-3.5 text-zinc-400" />
-                                                            <span
-                                                                class="font-light">{{ $project->handover_date }}</span>
-                                                        </span>
-                                                    @endif
-                                                </div>
-
-                                                @if ($project->usp)
-                                                    <p class="mt-3 text-xs text-zinc-500 font-light line-clamp-2">
-                                                        {{ $project->usp }}</p>
-                                                @endif
-                                            </div>
-
-                                            <div class="flex items-center gap-2 flex-shrink-0">
-                                                @if ($project->pdf_path)
-                                                    <flux:button
-                                                        onclick="event.preventDefault(); event.stopPropagation(); window.open('{{ route('track.project.brochure', $project) }}', '_blank');"
-                                                        variant="ghost" size="sm" square icon="document-arrow-down"
-                                                        title="Download PDF" />
-                                                @endif
-                                                <span
-                                                    class="inline-flex items-center justify-center w-9 h-9 text-zinc-400 group-hover:text-zinc-600 transition-colors">
-                                                    <x-heroicon-o-chevron-right class="w-4 h-4" />
-                                                </span>
-                                            </div>
+                        <div class="space-y-6">
+                            @foreach ($projectsByCategory as $category => $categoryProjects)
+                                <div class="bg-white rounded-xl p-6 shadow-sm">
+                                    <!-- Category Header -->
+                                    <div class="mb-5">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-zinc-900">
+                                                {{ $category ?: 'Uncategorized' }}
+                                            </h3>
+                                            <span class="text-xs font-light text-zinc-400">
+                                                {{ $categoryProjects->count() }}
+                                                {{ Str::plural('project', $categoryProjects->count()) }}
+                                            </span>
                                         </div>
-                                    </a>
-                                @endforeach
-                            </div>
-                        @else
-                            <!-- Empty State -->
+                                    </div>
+
+                                    <!-- Projects Grid -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        @foreach ($categoryProjects as $project)
+                                            <a href="{{ route('project.show', $project) }}"
+                                                class="group block bg-zinc-50 hover:bg-zinc-100 rounded-lg p-3 transition-colors">
+                                                <div class="flex flex-col h-full">
+                                                    <!-- Logo/Icon -->
+                                                    <div
+                                                        class="w-full aspect-square bg-white rounded-lg flex items-center justify-center mb-3 overflow-hidden">
+                                                        @if ($project->logo_path)
+                                                            <img src="{{ Storage::url($project->logo_path) }}"
+                                                                alt="{{ $project->name }}"
+                                                                class="w-full h-full object-contain p-2" />
+                                                        @else
+                                                            @php
+                                                                $categoryLower = strtolower($category ?? '');
+                                                                $icon = 'building-office';
+                                                                
+                                                                if (str_contains($categoryLower, 'villa') || str_contains($categoryLower, 'bungalow') || str_contains($categoryLower, 'weekend')) {
+                                                                    $icon = 'home-modern';
+                                                                } elseif (str_contains($categoryLower, 'bhk') || str_contains($categoryLower, 'apartment') || str_contains($categoryLower, 'flat')) {
+                                                                    $icon = 'building-office-2';
+                                                                } elseif (str_contains($categoryLower, 'plot') || str_contains($categoryLower, 'land')) {
+                                                                    $icon = 'square-3-stack-3d';
+                                                                } elseif (str_contains($categoryLower, 'commercial') || str_contains($categoryLower, 'office') || str_contains($categoryLower, 'showroom') || str_contains($categoryLower, 'shop')) {
+                                                                    $icon = 'building-storefront';
+                                                                } elseif (str_contains($categoryLower, 'penthouse')) {
+                                                                    $icon = 'building-office';
+                                                                }
+                                                            @endphp
+                                                            <x-dynamic-component :component="'heroicon-o-' . $icon"
+                                                                class="w-12 h-12 text-zinc-300" />
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Header -->
+                                                    <div class="flex-1 mb-2">
+                                                        <h4
+                                                            class="text-xs font-medium text-zinc-900 group-hover:text-zinc-700 line-clamp-2 mb-1.5">
+                                                            {{ $project->name }}
+                                                        </h4>
+                                                        @if ($project->status)
+                                                            <span
+                                                                class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-normal rounded-full
+                                                                {{ $project->status === 'completed' ? 'bg-teal-100 text-teal-700' : '' }}
+                                                                {{ $project->status === 'ongoing' ? 'bg-blue-100 text-blue-700' : '' }}
+                                                                {{ $project->status === 'upcoming' ? 'bg-amber-100 text-amber-700' : '' }}
+                                                                {{ !in_array($project->status, ['completed', 'ongoing', 'upcoming']) ? 'bg-zinc-200 text-zinc-600' : '' }}">
+                                                                {{ ucfirst($project->status) }}
+                                                            </span>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Details -->
+                                                    <div class="space-y-1 mb-2">
+                                                        @if ($project->area)
+                                                            <div
+                                                                class="flex items-center gap-1 text-[11px] text-zinc-600">
+                                                                <x-heroicon-o-map-pin
+                                                                    class="w-3 h-3 text-zinc-400 flex-shrink-0" />
+                                                                <span
+                                                                    class="font-light truncate">{{ $project->area }}</span>
+                                                            </div>
+                                                        @endif
+                                                        @if ($project->handover_date)
+                                                            <div
+                                                                class="flex items-center gap-1 text-[11px] text-zinc-600">
+                                                                <x-heroicon-o-calendar
+                                                                    class="w-3 h-3 text-zinc-400 flex-shrink-0" />
+                                                                <span
+                                                                    class="font-light truncate">{{ $project->handover_date }}</span>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Footer -->
+                                                    <div
+                                                        class="flex items-center justify-between gap-1 pt-2 border-t border-zinc-200">
+                                                        @if ($project->pdf_path)
+                                                            <flux:button
+                                                                onclick="event.preventDefault(); event.stopPropagation(); window.open('{{ route('track.project.brochure', $project) }}', '_blank');"
+                                                                variant="ghost" size="xs" icon="arrow-down-tray">
+                                                                Brochure
+                                                            </flux:button>
+                                                        @else
+                                                            <span></span>
+                                                        @endif
+                                                        <span
+                                                            class="inline-flex items-center justify-center w-6 h-6 text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                                                            <x-heroicon-o-arrow-right class="w-3.5 h-3.5" />
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <!-- Empty State -->
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
                             <div class="text-center py-8">
                                 <div
                                     class="w-12 h-12 bg-zinc-100 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -178,8 +211,8 @@
                                 <p class="text-sm font-light text-zinc-500 mb-1">No projects listed yet</p>
                                 <p class="text-xs font-light text-zinc-400">Check back soon for updates</p>
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
 
                     <!-- Social Media & Connect -->
                     @if ($exhibitor->social_media_links && count($exhibitor->social_media_links) > 0)
