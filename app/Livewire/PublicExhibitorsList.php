@@ -76,16 +76,22 @@ class PublicExhibitorsList extends Component
     {
         $ranges = [];
 
-        // Get all projects with units
-        $projects = Project::whereNotNull('units')->get();
+        // Get all projects
+        $projects = Project::all();
 
         foreach ($projects as $project) {
+            // Get prices from units (for Residential & Commercial)
             if (is_array($project->units)) {
                 foreach ($project->units as $unit) {
                     if (! empty($unit['budget'])) {
                         $ranges[] = $unit['budget'];
                     }
                 }
+            }
+
+            // Get prices from budget_range (for Plotting & Weekend Home & Others)
+            if (! empty($project->budget_range)) {
+                $ranges[] = $project->budget_range;
             }
         }
 
@@ -152,7 +158,10 @@ class PublicExhibitorsList extends Component
             $query->whereHas('projects', function ($projectQuery) {
                 $projectQuery->where(function ($q) {
                     foreach ($this->priceRange as $budget) {
-                        $q->orWhereJsonContains('units', [['budget' => $budget]]);
+                        // Check units column (for Residential & Commercial)
+                        $q->orWhereJsonContains('units', [['budget' => $budget]])
+                          // Check budget_range column (for Plotting & Weekend Home & Others)
+                          ->orWhere('budget_range', $budget);
                     }
                 });
             });
