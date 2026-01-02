@@ -61,10 +61,24 @@ class ChatService
                 if ($budget_min || $budget_max) {
                     $query->where(function ($q) use ($budget_min, $budget_max) {
                         if ($budget_min) {
-                            $q->where('budget_range', 'ILIKE', "%{$budget_min}%");
+                            // Search in both budget_range and units columns
+                            $q->where(function ($subQ) use ($budget_min) {
+                                $subQ->where('budget_range', 'ILIKE', "%{$budget_min}%")
+                                    ->orWhereRaw('EXISTS (
+                                      SELECT 1 FROM json_array_elements(units) as unit
+                                      WHERE unit->>\'budget\' ILIKE ?
+                                  )', ["%{$budget_min}%"]);
+                            });
                         }
                         if ($budget_max) {
-                            $q->where('budget_range', 'ILIKE', "%{$budget_max}%");
+                            // Search in both budget_range and units columns
+                            $q->where(function ($subQ) use ($budget_max) {
+                                $subQ->where('budget_range', 'ILIKE', "%{$budget_max}%")
+                                    ->orWhereRaw('EXISTS (
+                                      SELECT 1 FROM json_array_elements(units) as unit
+                                      WHERE unit->>\'budget\' ILIKE ?
+                                  )', ["%{$budget_max}%"]);
+                            });
                         }
                     });
                 }
@@ -174,12 +188,24 @@ PROMPT;
             }
         }
 
-        // Search for area mentions
-        $areas = ['vesu', 'athwa', 'adajan', 'pal', 'citylight', 'katargam'];
-        foreach ($areas as $area) {
-            if (str_contains($message, $area)) {
-                $query->where('area', 'ILIKE', "%{$area}%");
-                break;
+        // Search for area mentions - dynamically get all unique areas from database
+        $availableAreas = Project::query()
+            ->whereNotNull('area')
+            ->distinct()
+            ->pluck('area')
+            ->map(fn ($area) => strtolower($area))
+            ->toArray();
+
+        // Check if any area keyword is mentioned in the message
+        $commonWords = ['within', 'outer', 'city']; // Exclude common words that might match incorrectly
+        foreach ($availableAreas as $area) {
+            // Split area by common delimiters to match partial names
+            $areaParts = preg_split('/[\s\-]+/', $area);
+            foreach ($areaParts as $part) {
+                if (strlen($part) >= 3 && ! in_array($part, $commonWords) && str_contains($message, $part)) {
+                    $query->where('area', 'ILIKE', "%{$part}%");
+                    break 2; // Break both loops
+                }
             }
         }
 
@@ -188,8 +214,23 @@ PROMPT;
             preg_match('/(\d+)\s*(?:l|lakh|lakhs)/i', $message, $matches) ||
             preg_match('/(\d+)\s*(?:cr|crore|crores)/i', $message, $matches)
         ) {
-            $budget = $matches[0];
-            $query->where('budget_range', 'ILIKE', "%{$budget}%");
+            $rawBudget = $matches[0];
+
+            // Normalize budget format to match database (e.g., "2 cr" -> "2Cr", "50 lakh" -> "50L")
+            $budget = preg_replace('/\s+/', '', $rawBudget); // Remove spaces
+            $budget = preg_replace('/lakh(s)?/i', 'L', $budget); // Replace lakh(s) with L
+            $budget = preg_replace('/crore(s)?/i', 'Cr', $budget); // Replace crore(s) with Cr
+
+            // Search in both budget_range column AND units JSON column
+            $query->where(function ($q) use ($budget) {
+                // Check budget_range column (for Plotting & Weekend Home & Others)
+                $q->where('budget_range', 'ILIKE', "%{$budget}%")
+                  // Check units column (for Residential & Commercial)
+                    ->orWhereRaw('EXISTS (
+                      SELECT 1 FROM json_array_elements(units) as unit
+                      WHERE unit->>\'budget\' ILIKE ?
+                  )', ["%{$budget}%"]);
+            });
         }
 
         // Search for category
@@ -201,8 +242,41 @@ PROMPT;
             }
         }
 
-        // Search for status - default to showing completed and upcoming
-        $statuses = ['ongoing', 'completed', 'upcoming'];
+        // Also match common residential keywords
+        if (str_contains($message, 'flat') || str_contains($message, 'apartment') || str_contains($message, 'home')) {
+            $query->where('category', 'ILIKE', '%residential%');
+        }
+
+        // Match commercial keywords
+        if (str_contains($message, 'office') || str_contains($message, 'shop') || str_contains($message, 'showroom')) {
+            $query->where('category', 'ILIKE', '%commercial%');
+        }
+
+        // Match plotting keywords
+        if (str_contains($message, 'plot') || str_contains($message, 'land')) {
+            $query->where('category', 'ILIKE', '%plotting%');
+        }
+
+        // Search for handover date/timeline mentions
+        if (
+            preg_match('/within\s+(\d+)\s+(month|months|year)/i', $message, $matches) ||
+            preg_match('/in\s+(\d+)\s+(month|months|year)/i', $message, $matches)
+        ) {
+            $number = $matches[1];
+            $unit = strtolower($matches[2]);
+
+            // Normalize to match database format
+            if (str_starts_with($unit, 'month')) {
+                $handoverDate = "Within {$number} months";
+            } else {
+                $handoverDate = 'Within a year';
+            }
+
+            $query->where('handover_date', 'ILIKE', "%{$handoverDate}%");
+        }
+
+        // Search for status - default to showing all except ongoing
+        $statuses = ['ongoing', 'completed', 'upcoming', 'ready_to_move'];
         $statusFound = false;
         foreach ($statuses as $status) {
             if (str_contains($message, $status)) {
@@ -212,9 +286,9 @@ PROMPT;
             }
         }
 
-        // If no specific status mentioned, show completed and upcoming (not ongoing)
+        // If no specific status mentioned, show all except ongoing (show completed, upcoming, ready_to_move)
         if (! $statusFound) {
-            $query->whereIn('status', ['completed', 'upcoming']);
+            $query->whereIn('status', ['completed', 'upcoming', 'ready_to_move']);
         }
 
         $projects = $query->limit(10)->get();
@@ -233,6 +307,7 @@ PROMPT;
                 'exhibitor_name' => $project->exhibitor?->brand_name ?? 'N/A',
                 'contact_person' => $project->contact_person,
                 'url' => route('project.show', $project),
+                'units' => $project->units ?? [], // Include units for Residential/Commercial
             ];
         })->toArray();
     }

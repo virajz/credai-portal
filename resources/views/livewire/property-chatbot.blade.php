@@ -83,14 +83,39 @@
                                                                 <x-heroicon-o-map-pin class="h-3 w-3" />
                                                                 {{ $property['area'] }}
                                                             </span>
-                                                            <span class="flex items-center gap-1">
-                                                                <x-heroicon-o-currency-rupee class="h-3 w-3" />
-                                                                {{ $property['budget_range'] }}
-                                                            </span>
-                                                            @if ($property['sq_ft'])
+
+                                                            @php
+                                                                // For Residential/Commercial: get data from units
+                                                                // For Plotting/Weekend Home: get data from main columns
+                                                                $hasUnits =
+                                                                    !empty($property['units']) &&
+                                                                    is_array($property['units']);
+                                                                $budget = $property['budget_range'] ?? null;
+                                                                $size = $property['sq_ft'] ?? null;
+                                                                $bedrooms = null;
+
+                                                                if ($hasUnits) {
+                                                                    // Get first unit's details for display
+    $firstUnit = $property['units'][0] ?? null;
+    if ($firstUnit) {
+        $budget = $firstUnit['budget'] ?? $budget;
+        $size = $firstUnit['area'] ?? $size;
+        $bedrooms = $firstUnit['bedrooms'] ?? null;
+                                                                    }
+                                                                }
+                                                            @endphp
+
+                                                            @if ($bedrooms)
                                                                 <span class="flex items-center gap-1">
                                                                     <x-heroicon-o-home class="h-3 w-3" />
-                                                                    {{ $property['sq_ft'] }}
+                                                                    {{ $bedrooms }}
+                                                                </span>
+                                                            @endif
+
+                                                            @if ($size)
+                                                                <span class="flex items-center gap-1">
+                                                                    <x-heroicon-o-square-3-stack-3d class="h-3 w-3" />
+                                                                    {{ $size }} sq.ft
                                                                 </span>
                                                             @endif
                                                         </div>

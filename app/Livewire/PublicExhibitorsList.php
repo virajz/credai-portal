@@ -158,10 +158,13 @@ class PublicExhibitorsList extends Component
             $query->whereHas('projects', function ($projectQuery) {
                 $projectQuery->where(function ($q) {
                     foreach ($this->priceRange as $budget) {
-                        // Check units column (for Residential & Commercial)
-                        $q->orWhereJsonContains('units', [['budget' => $budget]])
-                          // Check budget_range column (for Plotting & Weekend Home & Others)
-                          ->orWhere('budget_range', $budget);
+                        // Check budget_range column (for Plotting & Weekend Home & Others)
+                        $q->orWhere('budget_range', $budget)
+                          // Check units column (for Residential & Commercial)
+                            ->orWhereRaw('EXISTS (
+                              SELECT 1 FROM json_array_elements(units) as unit
+                              WHERE unit->>\'budget\' = ?
+                          )', [$budget]);
                     }
                 });
             });
