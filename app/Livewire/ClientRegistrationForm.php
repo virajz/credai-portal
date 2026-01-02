@@ -94,6 +94,22 @@ class ClientRegistrationForm extends Component
     // Track which steps have errors
     public array $stepsWithErrors = [];
 
+    // Predefined area options
+    protected array $predefinedAreas = [
+        'Athwa - Vesu',
+        'Pal - Adajan - Rander',
+        'Katargam',
+        'Varachha',
+        'Udhna - Sachin',
+        'Dindoli',
+        'Kamrej',
+        'Saroli',
+        'Within City',
+        'Outer City',
+        'Puna Kumbhaiya',
+        'Others',
+    ];
+
     /**
      * Component initialization
      */
@@ -154,10 +170,21 @@ class ClientRegistrationForm extends Component
 
             // Load projects
             foreach ($exhibitor->projects as $project) {
+                // Check if area is a custom value (not in predefined list)
+                $area = $project->area;
+                $areaOther = null;
+                
+                if ($area && !in_array($area, $this->predefinedAreas)) {
+                    // Custom area - set dropdown to "Others" and populate area_other
+                    $areaOther = $area;
+                    $area = 'Others';
+                }
+                
                 $this->projects[] = [
                     'id' => $project->id,
                     'name' => $project->name,
-                    'area' => $project->area,
+                    'area' => $area,
+                    'area_other' => $areaOther,
                     'category' => $project->category,
                     'sq_ft' => $project->sq_ft,
                     'budget_range' => $project->budget_range,
@@ -807,9 +834,15 @@ class ClientRegistrationForm extends Component
                         );
                     }
 
+                    // Use custom area if "Others" is selected and area_other is provided
+                    $area = $projectData['area'] ?? null;
+                    if ($area === 'Others' && !empty($projectData['area_other'])) {
+                        $area = $projectData['area_other'];
+                    }
+
                     $projectUpdateData = [
                         'name' => $projectData['name'],
-                        'area' => $projectData['area'] ?? null,
+                        'area' => $area,
                         'category' => $projectData['category'] ?? null,
                         'sq_ft' => $projectData['sq_ft'] ?? null,
                         'budget_range' => $projectData['budget_range'] ?? null,
