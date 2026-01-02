@@ -15,45 +15,12 @@ use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
 use App\Livewire\VisitorRegistration;
 use App\Livewire\VisitorsList;
-use App\Models\Company;
 use App\Models\Exhibitor;
 use App\Models\Project;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    // Get main sponsors (Powered By Sponsor 01, 02, 03) - show companies directly
-    $mainSponsorCompanies = Company::with(['exhibitor', 'exhibitor.projects'])
-        ->where('stall_type', 'ILIKE', 'Powered By Sponsor%')
-        ->where('category', 'Builders')
-        ->orderBy('stall_number', 'asc')
-        ->limit(3)
-        ->get();
-
-    // Get other exhibitors (excluding main sponsors)
-    $exhibitors = Exhibitor::with(['company', 'projects'])
-        ->whereHas('company', function ($query) {
-            $query->where('category', 'Builders')
-                ->where(function ($q) {
-                    $q->where('stall_type', 'NOT ILIKE', 'Powered By Sponsor%')
-                        ->orWhereNull('stall_type');
-                });
-        })
-        ->join('companies', 'exhibitors.company_id', '=', 'companies.id')
-        ->orderBy('companies.company_name', 'asc')
-        ->select('exhibitors.*')
-        ->get();
-
-    return view('welcome', [
-        'mainSponsors' => $mainSponsorCompanies,
-        'exhibitors' => $exhibitors,
-    ]);
-
-    return view('welcome', [
-        'mainSponsors' => $mainSponsors,
-        'exhibitors' => $exhibitors,
-    ]);
-})->name('home');
+Route::get('/', App\Http\Controllers\HomeController::class)->name('home');
 
 // Public exhibitors listing page
 Route::get('/explore-exhibitors', PublicExhibitorsList::class)->name('public.exhibitors');

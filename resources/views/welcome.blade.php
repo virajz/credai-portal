@@ -13,6 +13,12 @@
     <!-- Main Sponsors Section -->
     <x-main-sponsors :sponsors="$mainSponsors" />
 
+    <!-- Associate Partners Section -->
+    <x-associate-partners :partners="$associatePartners" />
+
+    <!-- Co-Partners Section -->
+    <x-co-partners :partners="$coPartners" />
+
     <!-- Other Exhibitors Section -->
     <section id="exhibitors" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
