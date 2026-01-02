@@ -92,23 +92,29 @@
                                                                     is_array($property['units']);
                                                                 $budget = $property['budget_range'] ?? null;
                                                                 $size = $property['sq_ft'] ?? null;
-                                                                $bedrooms = null;
+                                                                $allBedrooms = [];
 
                                                                 if ($hasUnits) {
-                                                                    // Get first unit's details for display
-    $firstUnit = $property['units'][0] ?? null;
-    if ($firstUnit) {
-        $budget = $firstUnit['budget'] ?? $budget;
-        $size = $firstUnit['area'] ?? $size;
-        $bedrooms = $firstUnit['bedrooms'] ?? null;
+                                                                    foreach ($property['units'] as $unit) {
+                                                                        if (!empty($unit['budget'])) {
+                                                                            $budget = $unit['budget'];
+                                                                        }
+                                                                        if (!empty($unit['area'])) {
+                                                                            $size = $unit['area'];
+                                                                        }
+                                                                        if (!empty($unit['bedrooms'])) {
+                                                                            $allBedrooms[] = $unit['bedrooms'];
+                                                                        }
                                                                     }
+                                                                    $allBedrooms = array_unique($allBedrooms);
+                                                                    sort($allBedrooms);
                                                                 }
                                                             @endphp
 
-                                                            @if ($bedrooms)
+                                                            @if (!empty($allBedrooms))
                                                                 <span class="flex items-center gap-1">
                                                                     <x-heroicon-o-home class="h-3 w-3" />
-                                                                    {{ $bedrooms }}
+                                                                    {{ implode(', ', $allBedrooms) }}
                                                                 </span>
                                                             @endif
 
@@ -125,6 +131,14 @@
                                                 </div>
                                             </a>
                                         @endforeach
+
+                                        @if (isset($msg['has_more']) && $msg['has_more'])
+                                            <a href="{{ route('projects.index', ['search' => $msg['search_message'] ?? '']) }}"
+                                                target="_blank"
+                                                class="mt-2 block rounded-lg border border-zinc-900 bg-zinc-900 px-4 py-2.5 text-center text-xs font-medium text-white transition-all hover:bg-zinc-800 dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
+                                                View All {{ $msg['total_count'] }} Results →
+                                            </a>
+                                        @endif
                                     </div>
                                 @endif
                             </div>

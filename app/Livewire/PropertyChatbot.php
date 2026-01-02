@@ -69,6 +69,9 @@ class PropertyChatbot extends Component
             // Only add properties if they exist and are not empty
             if (! empty($response['properties'])) {
                 $assistantMessage['properties'] = $response['properties'];
+                $assistantMessage['total_count'] = $response['total_count'] ?? count($response['properties']);
+                $assistantMessage['has_more'] = $response['has_more'] ?? false;
+                $assistantMessage['search_message'] = $userMessage; // Store for filter link
             }
 
             $this->messages[] = $assistantMessage;
@@ -77,6 +80,8 @@ class PropertyChatbot extends Component
             logger()->info('Chatbot response', [
                 'response_text' => $response['response'],
                 'properties_count' => count($response['properties'] ?? []),
+                'total_count' => $response['total_count'] ?? 0,
+                'has_more' => $response['has_more'] ?? false,
                 'properties' => $response['properties'] ?? [],
             ]);
         } catch (\Exception $e) {

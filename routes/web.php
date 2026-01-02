@@ -8,6 +8,7 @@ use App\Livewire\PartnerRegistration;
 use App\Livewire\PartnerShow;
 use App\Livewire\PartnersList;
 use App\Livewire\PartnerSuccess;
+use App\Livewire\ProjectsList;
 use App\Livewire\PropertyCategory;
 use App\Livewire\PublicExhibitorsList;
 use App\Livewire\Settings\Appearance;
@@ -25,6 +26,9 @@ Route::get('/', App\Http\Controllers\HomeController::class)->name('home');
 
 // Public exhibitors listing page
 Route::get('/explore-exhibitors', PublicExhibitorsList::class)->name('public.exhibitors');
+
+// Projects listing page
+Route::get('/projects', ProjectsList::class)->name('projects.index');
 
 // Property category pages
 Route::get('/properties/residential/{subType}', PropertyCategory::class)->name('properties.residential');

@@ -14,9 +14,13 @@ class ChatService
     {
         // Extract search parameters from the user message
         $searchResults = $this->searchPropertiesFromMessage($message);
+        $totalResults = count($searchResults);
+
+        // Limit to 5 properties for display
+        $displayResults = array_slice($searchResults, 0, 5);
 
         // Build context with search results
-        $contextPrompt = $this->buildPromptWithResults($message, $searchResults, $conversationHistory);
+        $contextPrompt = $this->buildPromptWithResults($message, $displayResults, $conversationHistory);
 
         $response = Prism::text()
             ->using('groq', 'llama-3.3-70b-versatile')
@@ -26,7 +30,9 @@ class ChatService
 
         return [
             'response' => $response->text,
-            'properties' => $searchResults,
+            'properties' => $displayResults,
+            'total_count' => $totalResults,
+            'has_more' => $totalResults > 5,
             'tool_calls' => [],
         ];
     }
@@ -165,7 +171,7 @@ PROMPT;
         return $prompt;
     }
 
-    protected function extractSearchParameters(string $message): array
+    public function extractSearchParameters(string $message): array
     {
         // Use LLM to extract structured search parameters
         $systemPrompt = <<<'PROMPT'
@@ -270,7 +276,7 @@ PROMPT;
                 ->whereNotNull('area')
                 ->distinct()
                 ->pluck('area')
-                ->map(fn ($area) => strtolower($area))
+                ->map(fn($area) => strtolower($area))
                 ->toArray();
 
             $commonWords = ['within', 'outer', 'city'];
@@ -301,7 +307,7 @@ PROMPT;
             $query->where(function ($q) use ($budget) {
                 // Check budget_range column (for Plotting & Weekend Home & Others)
                 $q->where('budget_range', 'ILIKE', "%{$budget}%")
-                  // Check units column (for Residential & Commercial)
+                    // Check units column (for Residential & Commercial)
                     ->orWhereRaw('EXISTS (
                       SELECT 1 FROM json_array_elements(units) as unit
                       WHERE unit->>\'budget\' ILIKE ?
@@ -391,6 +397,25 @@ PROMPT;
             $query->where('handover_date', 'ILIKE', "%{$handoverDate}%");
         }
 
+        // Search for BHK/bedrooms - use LLM-extracted param if available
+        if (! empty($params['bedrooms'])) {
+            // Filter units column for matching bedrooms
+            $query->whereRaw('EXISTS (
+                SELECT 1 FROM json_array_elements(units) as unit
+                WHERE unit->>\'bedrooms\' = ?
+            )', [$params['bedrooms']]);
+        } elseif (preg_match('/(\d+)\s*bhk/i', $message, $matches)) {
+            // Fallback: keyword-based BHK detection
+            $bhkCount = $matches[1];
+            $bhkString = "{$bhkCount} BHK";
+
+            // Filter units column for matching bedrooms
+            $query->whereRaw('EXISTS (
+                SELECT 1 FROM json_array_elements(units) as unit
+                WHERE unit->>\'bedrooms\' = ?
+            )', [$bhkString]);
+        }
+
         // Search for status - only filter if user explicitly mentions a status
         // Check for explicit status keywords
         if (str_contains($message, 'ready to move') || str_contains($message, 'ready_to_move')) {
@@ -441,7 +466,7 @@ PROMPT;
 
         // Add search results context
         if (! empty($searchResults)) {
-            $prompt .= 'Database search results ('.count($searchResults)." properties found):\n";
+            $prompt .= 'Database search results (' . count($searchResults) . " properties found):\n";
             foreach ($searchResults as $index => $property) {
                 $num = $index + 1;
                 $prompt .= "\nProperty {$num}:\n";
