@@ -20,24 +20,22 @@
     <x-co-partners :partners="$coPartners" />
 
     <!-- Other Exhibitors Section -->
-    <section id="exhibitors" class="py-20 bg-white">
+    <section id="exhibitors" class="py-16 bg-white border-b border-zinc-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
             <div class="text-center mb-12">
-                <span class="text-xs font-light tracking-widest text-zinc-400 uppercase">Our Exhibitors</span>
-                <h2 class="mt-3 text-2xl sm:text-3xl font-light text-zinc-900">
+                <span class="text-xs font-semibold tracking-wider text-teal-600 uppercase">Our Exhibitors</span>
+                <h2 class="mt-2 text-2xl sm:text-3xl font-semibold text-zinc-900">
                     Meet the Industry Leaders
                 </h2>
-                <p class="mt-3 text-sm text-zinc-500 max-w-xl mx-auto font-light">
-                    Connect with trusted developers and real estate professionals
-                </p>
+                <div class="mt-3 w-16 h-1 bg-teal-600 mx-auto rounded-full"></div>
             </div>
 
             <!-- Exhibitors Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 @forelse($exhibitors->take(6) as $exhibitor)
                     <a href="{{ route('exhibitor.show', $exhibitor) }}"
-                        class="group block h-full bg-zinc-50 rounded-xl p-6 hover:bg-zinc-100 hover:shadow-lg transition-all duration-300">
+                        class="group block h-full bg-white rounded-xl p-6 hover:bg-zinc-50 hover:shadow-lg transition-all duration-300 border border-zinc-200">
                         <!-- Header with Logo and Name -->
                         <div class="flex items-start gap-4 mb-4">
                             <div class="w-14 h-14 flex items-center justify-center flex-shrink-0">
@@ -103,7 +101,7 @@
                 @empty
                     <!-- Placeholder cards when no exhibitors -->
                     @for ($i = 0; $i < 3; $i++)
-                        <div class="h-full bg-zinc-50 rounded-xl p-6">
+                        <div class="h-full bg-white rounded-xl p-6 border border-zinc-200">
                             <div class="flex items-start gap-4 mb-4">
                                 <div
                                     class="w-14 h-14 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm border border-zinc-100">

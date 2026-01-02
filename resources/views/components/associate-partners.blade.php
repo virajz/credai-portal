@@ -1,14 +1,15 @@
 @props(['partners'])
 
 @if ($partners->count() > 0)
-    <section class="py-12 bg-zinc-50">
+    <section class="py-12 bg-white border-b border-zinc-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
-            <div class="text-center mb-8">
-                <span class="text-xs font-light tracking-widest text-zinc-400 uppercase">Our Partners</span>
-                <h2 class="mt-2 text-xl sm:text-2xl font-light text-zinc-900">
+            <div class="text-center mb-10">
+                <span class="text-xs font-semibold tracking-wider text-teal-600 uppercase">Our Partners</span>
+                <h2 class="mt-2 text-2xl sm:text-3xl font-semibold text-zinc-900">
                     Associate Partners
                 </h2>
+                <div class="mt-3 w-16 h-1 bg-teal-600 mx-auto rounded-full"></div>
             </div>
 
             <!-- First Row: A-1, A-2, A-3 (3 columns) -->
@@ -25,8 +26,8 @@
                             $hasExhibitor = $exhibitor !== null;
                             $wrapperTag = $hasExhibitor ? 'a' : 'div';
                             $wrapperClasses = $hasExhibitor
-                                ? 'group block bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden border border-zinc-200 hover:border-zinc-300 min-h-[140px]'
-                                : 'group block bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-sm overflow-hidden border border-zinc-200 cursor-default min-h-[140px]';
+                                ? 'group block bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden border border-zinc-200 hover:border-zinc-300 min-h-[160px]'
+                                : 'group block bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-sm overflow-hidden border border-zinc-200 cursor-default min-h-[160px]';
                         @endphp
 
                         <{{ $wrapperTag }}
@@ -46,41 +47,33 @@
                                 </div>
 
                                 <!-- Details Section (Right) -->
-                                <div class="flex-1 p-3 bg-gradient-to-br from-white to-zinc-50 flex flex-col">
-                                    <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1 p-4 bg-gradient-to-br from-white to-zinc-50 flex flex-col">
+                                    <div class="flex items-start justify-between gap-3 mb-3">
                                         <h3
-                                            class="text-sm font-medium text-zinc-900 {{ $hasExhibitor ? 'group-hover:text-teal-700 transition-colors' : '' }}">
+                                            class="text-base font-semibold text-zinc-900 leading-tight {{ $hasExhibitor ? 'group-hover:text-teal-700 transition-colors' : '' }}">
                                             {{ $company->company_name }}
                                         </h3>
                                         @if ($company->stall_number)
                                             <span
-                                                class="inline-flex items-center px-2 py-0.5 text-xs font-light bg-zinc-200 text-zinc-600 rounded flex-shrink-0 ml-2">
+                                                class="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-zinc-100 text-zinc-700 rounded-md flex-shrink-0">
                                                 {{ $company->stall_number }}
                                             </span>
                                         @endif
                                     </div>
 
                                     <!-- Info Grid -->
-                                    <div class="space-y-1 flex-grow">
-                                        @if ($hasExhibitor && $exhibitor->city)
-                                            <div class="flex items-center gap-1.5 text-xs text-zinc-600">
-                                                <x-heroicon-o-map-pin class="w-3 h-3 text-zinc-400 flex-shrink-0" />
-                                                <span class="font-light">{{ $exhibitor->city }}</span>
-                                            </div>
-                                        @endif
-
+                                    <div class="space-y-2 flex-grow">
                                         @if ($company->registered_number)
-                                            <div class="flex items-center gap-1.5 text-xs text-zinc-600">
-                                                <x-heroicon-o-phone class="w-3 h-3 text-zinc-400 flex-shrink-0" />
-                                                <span class="font-light">{{ $company->registered_number }}</span>
+                                            <div class="flex items-center gap-2 text-sm text-zinc-600">
+                                                <x-heroicon-o-phone class="w-4 h-4 text-zinc-400 flex-shrink-0" />
+                                                <span>{{ $company->registered_number }}</span>
                                             </div>
                                         @endif
 
                                         @if ($hasExhibitor && $exhibitor->website)
-                                            <div class="flex items-center gap-1.5 text-xs text-zinc-600">
-                                                <x-heroicon-o-globe-alt class="w-3 h-3 text-zinc-400 flex-shrink-0" />
-                                                <span
-                                                    class="font-light truncate">{{ parse_url($exhibitor->website, PHP_URL_HOST) ?? $exhibitor->website }}</span>
+                                            <div class="flex items-center gap-2 text-sm text-zinc-600">
+                                                <x-heroicon-o-globe-alt class="w-4 h-4 text-zinc-400 flex-shrink-0" />
+                                                <span class="truncate">{{ parse_url($exhibitor->website, PHP_URL_HOST) ?? $exhibitor->website }}</span>
                                             </div>
                                         @endif
                                     </div>
@@ -88,10 +81,10 @@
                                     <!-- CTA -->
                                     @if ($hasExhibitor)
                                         <div
-                                            class="flex items-center gap-1 mt-2 pt-2 border-t border-zinc-200 text-teal-600 group-hover:text-teal-700 transition-colors">
-                                            <span class="text-xs font-medium">View Projects</span>
+                                            class="flex items-center gap-1.5 mt-3 pt-3 border-t border-zinc-200 text-teal-600 group-hover:text-teal-700 transition-colors">
+                                            <span class="text-sm font-medium">View Projects</span>
                                             <x-heroicon-o-arrow-right
-                                                class="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                                class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </div>
                                     @endif
                                 </div>
@@ -110,8 +103,8 @@
                             $hasExhibitor = $exhibitor !== null;
                             $wrapperTag = $hasExhibitor ? 'a' : 'div';
                             $wrapperClasses = $hasExhibitor
-                                ? 'group block bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden border border-zinc-200 hover:border-zinc-300 min-h-[140px]'
-                                : 'group block bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-sm overflow-hidden border border-zinc-200 cursor-default min-h-[140px]';
+                                ? 'group block bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden border border-zinc-200 hover:border-zinc-300 min-h-[160px]'
+                                : 'group block bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-sm overflow-hidden border border-zinc-200 cursor-default min-h-[160px]';
                         @endphp
 
                         <{{ $wrapperTag }}
@@ -131,41 +124,33 @@
                                 </div>
 
                                 <!-- Details Section (Right) -->
-                                <div class="flex-1 p-3 bg-gradient-to-br from-white to-zinc-50 flex flex-col">
-                                    <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1 p-4 bg-gradient-to-br from-white to-zinc-50 flex flex-col">
+                                    <div class="flex items-start justify-between gap-3 mb-3">
                                         <h3
-                                            class="text-sm font-medium text-zinc-900 {{ $hasExhibitor ? 'group-hover:text-teal-700 transition-colors' : '' }}">
+                                            class="text-base font-semibold text-zinc-900 leading-tight {{ $hasExhibitor ? 'group-hover:text-teal-700 transition-colors' : '' }}">
                                             {{ $company->company_name }}
                                         </h3>
                                         @if ($company->stall_number)
                                             <span
-                                                class="inline-flex items-center px-2 py-0.5 text-xs font-light bg-zinc-200 text-zinc-600 rounded flex-shrink-0 ml-2">
+                                                class="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-zinc-100 text-zinc-700 rounded-md flex-shrink-0">
                                                 {{ $company->stall_number }}
                                             </span>
                                         @endif
                                     </div>
 
                                     <!-- Info Grid -->
-                                    <div class="space-y-1 flex-grow">
-                                        @if ($hasExhibitor && $exhibitor->city)
-                                            <div class="flex items-center gap-1.5 text-xs text-zinc-600">
-                                                <x-heroicon-o-map-pin class="w-3 h-3 text-zinc-400 flex-shrink-0" />
-                                                <span class="font-light">{{ $exhibitor->city }}</span>
-                                            </div>
-                                        @endif
-
+                                    <div class="space-y-2 flex-grow">
                                         @if ($company->registered_number)
-                                            <div class="flex items-center gap-1.5 text-xs text-zinc-600">
-                                                <x-heroicon-o-phone class="w-3 h-3 text-zinc-400 flex-shrink-0" />
-                                                <span class="font-light">{{ $company->registered_number }}</span>
+                                            <div class="flex items-center gap-2 text-sm text-zinc-600">
+                                                <x-heroicon-o-phone class="w-4 h-4 text-zinc-400 flex-shrink-0" />
+                                                <span>{{ $company->registered_number }}</span>
                                             </div>
                                         @endif
 
                                         @if ($hasExhibitor && $exhibitor->website)
-                                            <div class="flex items-center gap-1.5 text-xs text-zinc-600">
-                                                <x-heroicon-o-globe-alt class="w-3 h-3 text-zinc-400 flex-shrink-0" />
-                                                <span
-                                                    class="font-light truncate">{{ parse_url($exhibitor->website, PHP_URL_HOST) ?? $exhibitor->website }}</span>
+                                            <div class="flex items-center gap-2 text-sm text-zinc-600">
+                                                <x-heroicon-o-globe-alt class="w-4 h-4 text-zinc-400 flex-shrink-0" />
+                                                <span class="truncate">{{ parse_url($exhibitor->website, PHP_URL_HOST) ?? $exhibitor->website }}</span>
                                             </div>
                                         @endif
                                     </div>
@@ -173,10 +158,10 @@
                                     <!-- CTA -->
                                     @if ($hasExhibitor)
                                         <div
-                                            class="flex items-center gap-1 mt-2 pt-2 border-t border-zinc-200 text-teal-600 group-hover:text-teal-700 transition-colors">
-                                            <span class="text-xs font-medium">View Projects</span>
+                                            class="flex items-center gap-1.5 mt-3 pt-3 border-t border-zinc-200 text-teal-600 group-hover:text-teal-700 transition-colors">
+                                            <span class="text-sm font-medium">View Projects</span>
                                             <x-heroicon-o-arrow-right
-                                                class="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                                class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </div>
                                     @endif
                                 </div>
