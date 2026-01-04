@@ -147,7 +147,7 @@
                         <div class="flex items-center gap-2">
                             <flux:tooltip content="View Entry/Exit Logs" position="top">
                                 <flux:button variant="ghost" size="sm" icon="clock" iconVariant="outline"
-                                    wire:click="showEntryExitLogs({{ $visitor->id }})" />
+                                    @click="$wire.loadEntryExitLogs({{ $visitor->id }}).then(() => $flux.modal('entry-exit-logs').show())" />
                             </flux:tooltip>
                             @if (auth()->user()->isAdmin())
                                 <flux:tooltip content="Send WhatsApp Message" position="top">
@@ -641,8 +641,8 @@
     </flux:modal>
 
     <!-- Entry/Exit Logs Modal -->
-    <flux:modal name="entry-exit-logs" class="md:w-7xl">
-        @if ($showEntryExitModal && $visitorForEntries)
+    <flux:modal name="entry-exit-logs" class="md:w-7xl" x-on:close="$wire.set('visitorForEntries', null)">
+        @if ($visitorForEntries)
             <div class="space-y-6">
                 <div>
                     <flux:heading size="lg">Entry/Exit Logs</flux:heading>
@@ -704,7 +704,7 @@
 
                 <div class="flex gap-2">
                     <flux:spacer />
-                    <flux:button variant="primary" wire:click="closeEntryExitModal">Close</flux:button>
+                    <flux:button variant="primary" @click="$flux.modal('entry-exit-logs').close()">Close</flux:button>
                 </div>
             </div>
         @endif
