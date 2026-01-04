@@ -230,28 +230,38 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <a href="{{ Storage::url($company->exhibitor->preview_logo) }}"
-                                                    download="{{ $adminPreviewLogoName }}">
-                                                    <flux:button variant="primary" size="sm" icon="arrow-down-tray">
-                                                        Download
-                                                    </flux:button>
-                                                </a>
-                                            </div>
-                                        @else
-                                            <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
-                                                <flux:input type="file" wire:model="previewLogo" accept="image/png,image/jpeg,image/jpg" />
-                                                @error('previewLogo')
-                                                    <div class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</div>
-                                                @enderror
-                                                @if ($previewLogo)
-                                                    <div class="mt-3">
-                                                        <flux:button wire:click="uploadPreviewLogo" variant="primary" size="sm" icon="arrow-up-tray">
-                                                            Upload Preview Logo
+                                                <div class="flex gap-2">
+                                                    <a href="{{ Storage::url($company->exhibitor->preview_logo) }}"
+                                                        download="{{ $adminPreviewLogoName }}">
+                                                        <flux:button variant="primary" size="sm" icon="arrow-down-tray">
+                                                            Download
                                                         </flux:button>
-                                                    </div>
-                                                @endif
+                                                    </a>
+                                                    <flux:button
+                                                        wire:click="removePreviewLogo"
+                                                        wire:confirm="Are you sure you want to remove this preview logo?"
+                                                        variant="danger"
+                                                        size="sm"
+                                                        icon="trash">
+                                                        Remove
+                                                    </flux:button>
+                                                </div>
                                             </div>
                                         @endif
+
+                                        <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                                            <flux:input type="file" wire:model="previewLogo" accept="image/png,image/jpeg,image/jpg" />
+                                            @error('previewLogo')
+                                                <div class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</div>
+                                            @enderror
+                                            @if ($previewLogo)
+                                                <div class="mt-3">
+                                                    <flux:button wire:click="uploadPreviewLogo" variant="primary" size="sm" icon="arrow-up-tray">
+                                                        {{ $company->exhibitor->preview_logo ? 'Replace Preview Logo' : 'Upload Preview Logo' }}
+                                                    </flux:button>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             @endif

@@ -44,6 +44,11 @@ class CompanySubmission extends Component
         ]);
 
         if ($this->company->exhibitor) {
+            // Delete old preview logo if it exists
+            if ($this->company->exhibitor->preview_logo && \Storage::disk('public')->exists($this->company->exhibitor->preview_logo)) {
+                \Storage::disk('public')->delete($this->company->exhibitor->preview_logo);
+            }
+
             $path = $this->previewLogo->storeAs(
                 'exhibitors/preview-logos',
                 time().'_'.$this->previewLogo->getClientOriginalName(),
@@ -59,6 +64,27 @@ class CompanySubmission extends Component
             Flux::toast(
                 heading: 'Preview logo uploaded',
                 text: 'The preview logo has been uploaded successfully.',
+                variant: 'success'
+            );
+        }
+    }
+
+    public function removePreviewLogo(): void
+    {
+        if ($this->company->exhibitor && $this->company->exhibitor->preview_logo) {
+            // Delete the file from storage
+            if (\Storage::disk('public')->exists($this->company->exhibitor->preview_logo)) {
+                \Storage::disk('public')->delete($this->company->exhibitor->preview_logo);
+            }
+
+            // Clear the preview_logo column
+            $this->company->exhibitor->update([
+                'preview_logo' => null,
+            ]);
+
+            Flux::toast(
+                heading: 'Preview logo removed',
+                text: 'The preview logo has been removed successfully.',
                 variant: 'success'
             );
         }
