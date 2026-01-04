@@ -41,6 +41,10 @@
         </footer>
     </div>
 
+    <flux:toast />
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
     @fluxScripts
 </body>
 

@@ -4,6 +4,8 @@ use App\Livewire\ClientRegistrationForm;
 use App\Livewire\CompaniesList;
 use App\Livewire\CreateCompany;
 use App\Livewire\EditCompany;
+use App\Livewire\Entry\ScanEntry;
+use App\Livewire\Entry\ScanExit;
 use App\Livewire\PartnerRegistration;
 use App\Livewire\PartnerShow;
 use App\Livewire\PartnersList;
@@ -23,6 +25,10 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::get('/', App\Http\Controllers\HomeController::class)->name('home');
+
+// Entry and Exit Scanner Routes (no authentication required)
+Route::get('/scan/entry', ScanEntry::class)->name('entry');
+Route::get('/scan/exit', ScanExit::class)->name('exit');
 
 // Public exhibitors listing page
 Route::get('/explore-exhibitors', PublicExhibitorsList::class)->name('public.exhibitors');

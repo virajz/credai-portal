@@ -50,6 +50,10 @@ class VisitorsList extends Component
 
     public ?int $visitorToSendWhatsApp = null;
 
+    public bool $showEntryExitModal = false;
+
+    public ?Visitor $visitorForEntries = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -210,6 +214,23 @@ class VisitorsList extends Component
                 variant: 'success'
             );
         }
+    }
+
+    public function showEntryExitLogs(int $visitorId): void
+    {
+        $this->visitorForEntries = Visitor::with(['entryExitLogs' => function ($query) {
+            $query->orderBy('entry_time', 'desc');
+        }])->findOrFail($visitorId);
+
+        $this->showEntryExitModal = true;
+        $this->modal('entry-exit-logs')->show();
+    }
+
+    public function closeEntryExitModal(): void
+    {
+        $this->showEntryExitModal = false;
+        $this->visitorForEntries = null;
+        $this->modal('entry-exit-logs')->close();
     }
 
     public function exportVisitors()

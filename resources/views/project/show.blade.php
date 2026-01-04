@@ -116,13 +116,15 @@
                                                 <p class="text-base font-medium text-zinc-900">
                                                     {{ $unit['type'] === 'commercial-office' ? 'Office' : 'Shop / Showroom' }}
                                                 </p>
-                                                @if (isset($unit['area']))
-                                                    <p class="text-xs font-light text-zinc-600 mt-1">
+                                                <p class="text-xs font-light text-zinc-600 mt-1">
+                                                    @if (isset($unit['area']) && is_numeric($unit['area']) && $unit['area'] > 0)
                                                         <span
                                                             class="font-medium">{{ number_format($unit['area']) }}</span>
                                                         sq.ft carpet area
-                                                    </p>
-                                                @endif
+                                                    @else
+                                                        <span class="text-zinc-500">Size available on request</span>
+                                                    @endif
+                                                </p>
                                             </div>
                                         @else
                                             {{-- Residential Unit --}}
@@ -135,13 +137,15 @@
                                                     <p class="text-base font-medium text-zinc-900">
                                                         {{ $unit['bedrooms'] }}</p>
                                                 @endif
-                                                @if (isset($unit['area']))
-                                                    <p class="text-xs font-light text-zinc-600 mt-1">
+                                                <p class="text-xs font-light text-zinc-600 mt-1">
+                                                    @if (isset($unit['area']) && is_numeric($unit['area']) && $unit['area'] > 0)
                                                         <span
                                                             class="font-medium">{{ number_format($unit['area']) }}</span>
                                                         sq.ft carpet area
-                                                    </p>
-                                                @endif
+                                                    @else
+                                                        <span class="text-zinc-500">Size available on request</span>
+                                                    @endif
+                                                </p>
                                             </div>
                                         @endif
                                     </div>

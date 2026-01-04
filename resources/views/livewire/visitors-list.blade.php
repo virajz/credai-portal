@@ -21,9 +21,10 @@
                 placeholder="Search by name, phone, company name, or area..." icon="magnifying-glass" />
         </div>
 
-        @if (! empty($availableCampaigns))
+        @if (!empty($availableCampaigns))
             <div class="w-full lg:w-64">
-                <flux:select wire:model.live="selectedCampaigns" variant="listbox" multiple searchable placeholder="Filter by campaign...">
+                <flux:select wire:model.live="selectedCampaigns" variant="listbox" multiple searchable
+                    placeholder="Filter by campaign...">
                     @foreach ($availableCampaigns as $campaign)
                         <flux:select.option value="{{ $campaign }}">{{ $campaign }}</flux:select.option>
                     @endforeach
@@ -40,7 +41,7 @@
             @endif
         </flux:button>
 
-        @if ($search || ! empty($selectedCampaigns) || $this->hasActiveFilters())
+        @if ($search || !empty($selectedCampaigns) || $this->hasActiveFilters())
             <flux:button variant="ghost" icon="x-mark" wire:click="clearFilters">
                 Clear All
             </flux:button>
@@ -144,7 +145,11 @@
                     </flux:table.cell>
                     <flux:table.cell>
                         <div class="flex items-center gap-2">
-                            @if(auth()->user()->isAdmin())
+                            <flux:tooltip content="View Entry/Exit Logs" position="top">
+                                <flux:button variant="ghost" size="sm" icon="clock" iconVariant="outline"
+                                    wire:click="showEntryExitLogs({{ $visitor->id }})" />
+                            </flux:tooltip>
+                            @if (auth()->user()->isAdmin())
                                 <flux:tooltip content="Send WhatsApp Message" position="top">
                                     <flux:button variant="ghost" size="sm" icon="bi-whatsapp"
                                         wire:click="confirmSendWhatsApp({{ $visitor->id }})"
@@ -360,7 +365,8 @@
     </flux:modal>
 
     <!-- Visitor QR Code Modal -->
-    <flux:modal name="visitor-qr-code" class="max-w-2xl" @close="$wire.closeVisitorQrModal()" wire:model="showVisitorQrModal">
+    <flux:modal name="visitor-qr-code" class="max-w-2xl" @close="$wire.closeVisitorQrModal()"
+        wire:model="showVisitorQrModal">
         <div class="space-y-6">
             @if ($selectedVisitor)
                 <div class="text-center">
@@ -451,7 +457,8 @@
     </flux:modal>
 
     <!-- Visitor Details Modal -->
-    <flux:modal name="visitor-details" class="max-w-4xl" @close="$wire.closeVisitorDetailsModal()" wire:model="showVisitorDetailsModal">
+    <flux:modal name="visitor-details" class="max-w-4xl" @close="$wire.closeVisitorDetailsModal()"
+        wire:model="showVisitorDetailsModal">
         @if ($visitorDetails)
             <div class="space-y-6">
                 <div class="text-center">
@@ -461,8 +468,10 @@
 
                 <div class="grid gap-6 md:grid-cols-2">
                     <!-- Personal Details -->
-                    <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800">
-                        <flux:heading size="lg" class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">Personal Details</flux:heading>
+                    <div
+                        class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800">
+                        <flux:heading size="lg" class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">
+                            Personal Details</flux:heading>
                         <div class="space-y-3">
                             <div>
                                 <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Name</div>
@@ -477,7 +486,8 @@
                                 <div class="font-medium">{{ $visitorDetails->age_group }}</div>
                             </div>
                             <div>
-                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Current Residential Area</div>
+                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Current Residential
+                                    Area</div>
                                 <div class="font-medium">{{ $visitorDetails->current_residential_area }}</div>
                             </div>
                             @if ($visitorDetails->company_name)
@@ -493,18 +503,23 @@
                                 </div>
                             @endif
                             <div>
-                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Registration Date</div>
-                                <div class="font-medium">{{ $visitorDetails->created_at->format('M d, Y h:i A') }}</div>
+                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Registration Date
+                                </div>
+                                <div class="font-medium">{{ $visitorDetails->created_at->format('M d, Y h:i A') }}
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Property Interests -->
-                    <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800">
-                        <flux:heading size="lg" class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">Property Interests</flux:heading>
+                    <div
+                        class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800">
+                        <flux:heading size="lg" class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">
+                            Property Interests</flux:heading>
                         <div class="space-y-4">
                             <div>
-                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Property Types</div>
+                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Property Types
+                                </div>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach ($visitorDetails->interests as $interest)
                                         <flux:badge color="teal">{{ $interest }}</flux:badge>
@@ -514,7 +529,8 @@
 
                             @if (!empty($visitorDetails->residential_types))
                                 <div>
-                                    <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Residential Types</div>
+                                    <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Residential
+                                        Types</div>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach ($visitorDetails->residential_types as $type)
                                             <flux:badge color="blue">{{ $type }}</flux:badge>
@@ -525,7 +541,8 @@
 
                             @if (!empty($visitorDetails->commercial_types))
                                 <div>
-                                    <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Commercial Types</div>
+                                    <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Commercial
+                                        Types</div>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach ($visitorDetails->commercial_types as $type)
                                             <flux:badge color="purple">{{ $type }}</flux:badge>
@@ -536,7 +553,8 @@
 
                             @if (!empty($visitorDetails->plotting_types))
                                 <div>
-                                    <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Plotting Types</div>
+                                    <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Plotting
+                                        Types</div>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach ($visitorDetails->plotting_types as $type)
                                             <flux:badge color="orange">{{ $type }}</flux:badge>
@@ -546,12 +564,15 @@
                             @endif
 
                             <div>
-                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Planning to Buy</div>
-                                <flux:badge color="green" size="lg">{{ $visitorDetails->planning_to_buy }}</flux:badge>
+                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Planning to Buy
+                                </div>
+                                <flux:badge color="green" size="lg">{{ $visitorDetails->planning_to_buy }}
+                                </flux:badge>
                             </div>
 
                             <div>
-                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Preferred Areas</div>
+                                <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-2">Preferred Areas
+                                </div>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach ($visitorDetails->areas as $area)
                                         <flux:badge color="zinc">{{ $area }}</flux:badge>
@@ -565,7 +586,9 @@
                 <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
                     <flux:spacer />
                     <flux:button variant="ghost" @click="$flux.modal('visitor-details').close()">Close</flux:button>
-                    <flux:button variant="primary" wire:click="showVisitorQrCode({{ $visitorDetails->id }}); $flux.modal('visitor-details').close()" icon="qr-code">
+                    <flux:button variant="primary"
+                        wire:click="showVisitorQrCode({{ $visitorDetails->id }}); $flux.modal('visitor-details').close()"
+                        icon="qr-code">
                         View QR Code
                     </flux:button>
                 </div>
@@ -581,9 +604,11 @@
             @endphp
             <div>
                 <flux:heading size="lg" class="mb-1">Send WhatsApp Message</flux:heading>
-                <flux:subheading class="mb-6">Are you sure you want to send a WhatsApp message to this visitor?</flux:subheading>
+                <flux:subheading class="mb-6">Are you sure you want to send a WhatsApp message to this visitor?
+                </flux:subheading>
 
-                <div class="mb-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
+                <div
+                    class="mb-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
                     <div class="space-y-3">
                         <div class="flex items-center gap-3">
                             <flux:icon.user class="text-zinc-500" />
@@ -595,7 +620,8 @@
                         @if ($visitor->company_name)
                             <div class="flex items-center gap-3">
                                 <flux:icon.building-office class="text-zinc-500" />
-                                <div class="text-sm text-zinc-600 dark:text-zinc-400">{{ $visitor->company_name }}</div>
+                                <div class="text-sm text-zinc-600 dark:text-zinc-400">{{ $visitor->company_name }}
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -603,11 +629,82 @@
 
                 <div class="flex gap-2">
                     <flux:spacer />
-                    <flux:button variant="ghost" @click="$flux.modal('send-whatsapp-confirmation').close()">Cancel</flux:button>
+                    <flux:button variant="ghost" @click="$flux.modal('send-whatsapp-confirmation').close()">Cancel
+                    </flux:button>
                     <flux:button variant="primary" wire:click="sendWhatsApp" icon="bi-whatsapp"
                         class="bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700">
                         Send Message
                     </flux:button>
+                </div>
+            </div>
+        @endif
+    </flux:modal>
+
+    <!-- Entry/Exit Logs Modal -->
+    <flux:modal name="entry-exit-logs" class="md:w-7xl">
+        @if ($showEntryExitModal && $visitorForEntries)
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Entry/Exit Logs</flux:heading>
+                    <flux:subheading>{{ $visitorForEntries->name }} - {{ $visitorForEntries->phone }}
+                    </flux:subheading>
+                </div>
+
+                @if ($visitorForEntries->entryExitLogs && $visitorForEntries->entryExitLogs->count() > 0)
+                    <div class="space-y-4">
+                        @foreach ($visitorForEntries->entryExitLogs as $log)
+                            <flux:card>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Entry Time
+                                        </div>
+                                        <div class="text-lg">
+                                            @if ($log->entry_time)
+                                                {{ $log->entry_time->format('M d, Y') }}<br>
+                                                <span
+                                                    class="text-sm text-zinc-500">{{ $log->entry_time->format('h:i A') }}</span>
+                                            @else
+                                                <span class="text-zinc-400">—</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Exit Time
+                                        </div>
+                                        <div class="text-lg">
+                                            @if ($log->exit_time)
+                                                {{ $log->exit_time->format('M d, Y') }}<br>
+                                                <span
+                                                    class="text-sm text-zinc-500">{{ $log->exit_time->format('h:i A') }}</span>
+                                            @else
+                                                <flux:badge color="yellow">Still Inside</flux:badge>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if ($log->entry_time && $log->exit_time)
+                                    <flux:separator class="my-3" />
+                                    <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                                        <span class="font-semibold">Duration:</span>
+                                        {{ $log->entry_time->diff($log->exit_time)->format('%H hours %I minutes') }}
+                                    </div>
+                                @endif
+                            </flux:card>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="flex flex-col items-center justify-center py-12 text-center">
+                        <flux:icon.arrow-right-start-on-rectangle class="h-12 w-12 text-zinc-400 mb-4" />
+                        <flux:heading size="lg" class="text-zinc-600 dark:text-zinc-400">No Entry/Exit Logs
+                        </flux:heading>
+                        <flux:subheading>This visitor hasn't entered or exited yet.</flux:subheading>
+                    </div>
+                @endif
+
+                <div class="flex gap-2">
+                    <flux:spacer />
+                    <flux:button variant="primary" wire:click="closeEntryExitModal">Close</flux:button>
                 </div>
             </div>
         @endif
