@@ -142,7 +142,14 @@ class ProjectsList extends Component
             });
         }
 
-        $projects = $query->inRandomOrder()->paginate(12);
+        // Only randomize when no filters are applied
+        $hasFilters = $this->category || $this->area || $this->bedrooms || $this->status || $this->budget || $this->searchQuery;
+
+        if ($hasFilters) {
+            $projects = $query->orderBy('created_at', 'desc')->paginate(12);
+        } else {
+            $projects = $query->inRandomOrder()->paginate(12);
+        }
 
         // Get available filter options
         $categories = Project::query()

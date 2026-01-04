@@ -93,7 +93,8 @@ class ChatService
                     $query->where('status', 'ILIKE', "%{$status}%");
                 }
 
-                $projects = $query->inRandomOrder()->limit(10)->get();
+                // Order by created_at desc to show newest first (tool search is always filtered)
+                $projects = $query->orderBy('created_at', 'desc')->limit(10)->get();
 
                 if ($projects->isEmpty()) {
                     return json_encode([
@@ -276,7 +277,7 @@ PROMPT;
                 ->whereNotNull('area')
                 ->distinct()
                 ->pluck('area')
-                ->map(fn($area) => strtolower($area))
+                ->map(fn ($area) => strtolower($area))
                 ->toArray();
 
             $commonWords = ['within', 'outer', 'city'];
@@ -429,7 +430,8 @@ PROMPT;
         }
         // Otherwise, show ALL statuses (no filter applied)
 
-        $projects = $query->inRandomOrder()->limit(10)->get();
+        // Order by created_at desc to show newest first (chatbot search is always filtered)
+        $projects = $query->orderBy('created_at', 'desc')->limit(10)->get();
 
         return $projects->map(function ($project) {
             return [
@@ -466,7 +468,7 @@ PROMPT;
 
         // Add search results context
         if (! empty($searchResults)) {
-            $prompt .= 'Database search results (' . count($searchResults) . " properties found):\n";
+            $prompt .= 'Database search results ('.count($searchResults)." properties found):\n";
             foreach ($searchResults as $index => $property) {
                 $num = $index + 1;
                 $prompt .= "\nProperty {$num}:\n";
