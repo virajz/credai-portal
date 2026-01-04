@@ -12,9 +12,19 @@
     </div>
 
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <!-- Mobile Filter Toggle Button -->
+        <div class="mb-4 lg:hidden">
+            <flux:button wire:click="toggleFilters" variant="outline" class="w-full" icon="adjustments-horizontal">
+                {{ $showFilters ? 'Hide Filters' : 'Show Filters' }}
+                @if ($category || $area || $bedrooms || $status || $budget)
+                    <flux:badge color="zinc" size="sm" class="ml-2">Active</flux:badge>
+                @endif
+            </flux:button>
+        </div>
+
         <div class="grid gap-8 lg:grid-cols-4">
             <!-- Filters Sidebar -->
-            <div class="lg:col-span-1">
+            <div class="lg:col-span-1" x-data="{ show: @entangle('showFilters') }" x-show="show || window.innerWidth >= 1024" x-cloak>
                 <div class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
                     <flux:card>
                         <div class="space-y-6">

@@ -1,7 +1,7 @@
 <div>
     <!-- Chat Button (Fixed Position) -->
     <button wire:click="toggleChat" type="button"
-        class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg transition-all hover:bg-zinc-800 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
+        class="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg transition-all hover:bg-zinc-800 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 sm:bottom-6 sm:right-6">
         @if ($isOpen)
             <x-heroicon-o-x-mark class="h-6 w-6" />
         @else
@@ -12,7 +12,7 @@
     <!-- Chat Window -->
     @if ($isOpen)
         <div
-            class="fixed bottom-24 right-6 z-50 flex h-[600px] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
+            class="fixed inset-x-4 bottom-20 z-50 flex h-[calc(100vh-8rem)] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900 sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[600px] sm:w-full sm:max-w-md">
             <!-- Header -->
             <div
                 class="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-6 py-4 dark:border-zinc-700 dark:bg-zinc-800">

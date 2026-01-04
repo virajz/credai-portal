@@ -93,7 +93,7 @@ class ChatService
                     $query->where('status', 'ILIKE', "%{$status}%");
                 }
 
-                $projects = $query->limit(10)->get();
+                $projects = $query->inRandomOrder()->limit(10)->get();
 
                 if ($projects->isEmpty()) {
                     return json_encode([
@@ -429,7 +429,7 @@ PROMPT;
         }
         // Otherwise, show ALL statuses (no filter applied)
 
-        $projects = $query->limit(10)->get();
+        $projects = $query->inRandomOrder()->limit(10)->get();
 
         return $projects->map(function ($project) {
             return [

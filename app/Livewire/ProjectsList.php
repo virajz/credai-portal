@@ -32,6 +32,13 @@ class ProjectsList extends Component
     #[Url]
     public string $budget = '';
 
+    public bool $showFilters = false;
+
+    public function toggleFilters(): void
+    {
+        $this->showFilters = ! $this->showFilters;
+    }
+
     public function mount(): void
     {
         // If search query is provided, extract filters from it
