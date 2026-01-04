@@ -135,7 +135,7 @@ class ProjectsList extends Component
             });
         }
 
-        $projects = $query->orderBy('created_at', 'desc')->paginate(12);
+        $projects = $query->inRandomOrder()->paginate(12);
 
         // Get available filter options
         $categories = Project::query()
