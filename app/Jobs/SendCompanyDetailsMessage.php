@@ -6,7 +6,6 @@ use App\Models\Company;
 use App\Services\WhatsAppService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 
 class SendCompanyDetailsMessage implements ShouldQueue
@@ -26,12 +25,21 @@ class SendCompanyDetailsMessage implements ShouldQueue
 
     public function handle(WhatsAppService $whatsappService): void
     {
-        $company = Company::with(['exhibitor', 'exhibitor.projects'])->find($this->companyId);
+        $company = Company::with(['exhibitor'])->find($this->companyId);
 
         if (! $company) {
             Log::error('Company not found for sending details', [
                 'company_id' => $this->companyId,
                 'phone_number' => $this->phoneNumber,
+            ]);
+
+            return;
+        }
+
+        if (! $company->exhibitor) {
+            Log::error('Exhibitor not found for company', [
+                'company_id' => $company->id,
+                'company_name' => $company->company_name,
             ]);
 
             return;
@@ -43,12 +51,20 @@ class SendCompanyDetailsMessage implements ShouldQueue
             'phone_number' => $this->phoneNumber,
         ]);
 
-        // Step 1: Send company details (text only)
-        $companyDetailsMessage = $this->buildCompanyDetailsMessage($company);
-        $result = $whatsappService->sendSessionMessage($this->phoneNumber, $companyDetailsMessage);
+        // Send message with exhibitor link and optional brochure
+        $message = $this->buildMessage($company);
+        $brochureUrl = $company->exhibitor->brochure_path
+            ? url(\Storage::url($company->exhibitor->brochure_path))
+            : null;
+
+        $result = $whatsappService->sendSessionMessage(
+            $this->phoneNumber,
+            $message,
+            $brochureUrl
+        );
 
         if (! $result['success']) {
-            Log::error('Failed to send company details', [
+            Log::error('Failed to send company message', [
                 'company_id' => $company->id,
                 'error' => $result['error'],
             ]);
@@ -56,49 +72,10 @@ class SendCompanyDetailsMessage implements ShouldQueue
             throw new \Exception('WhatsApp API error: '.$result['error']);
         }
 
-        Log::info('Company details sent successfully', [
+        Log::info('Company message sent successfully', [
             'company_id' => $company->id,
+            'has_brochure' => $brochureUrl !== null,
         ]);
-
-        // Step 2: Send brochure if available
-        if ($company->exhibitor?->brochure_path) {
-            $brochureUrl = url(\Storage::url($company->exhibitor->brochure_path));
-            $brochureMessage = "Here is the company brochure for *{$company->company_name}*.";
-
-            $brochureResult = $whatsappService->sendSessionMessage($this->phoneNumber, $brochureMessage, $brochureUrl);
-
-            if ($brochureResult['success']) {
-                Log::info('Company brochure sent successfully', [
-                    'company_id' => $company->id,
-                ]);
-            } else {
-                Log::error('Failed to send company brochure', [
-                    'company_id' => $company->id,
-                    'error' => $brochureResult['error'],
-                ]);
-            }
-        }
-
-        // Step 3: Dispatch individual jobs for each project with delays
-        if ($company->exhibitor && $company->exhibitor->projects->isNotEmpty()) {
-            $projectJobs = [];
-
-            foreach ($company->exhibitor->projects as $index => $project) {
-                $projectJobs[] = (new SendProjectDetailsMessage(
-                    projectId: $project->id,
-                    phoneNumber: $this->phoneNumber,
-                    projectNumber: $index + 1,
-                    companyName: $company->company_name
-                ))->delay(now()->addSeconds($index + 1));
-            }
-
-            Bus::dispatchChain($projectJobs);
-
-            Log::info('Project details jobs dispatched', [
-                'company_id' => $company->id,
-                'project_count' => count($projectJobs),
-            ]);
-        }
     }
 
     public function failed(\Throwable $exception): void
@@ -110,48 +87,27 @@ class SendCompanyDetailsMessage implements ShouldQueue
         ]);
     }
 
-    protected function buildCompanyDetailsMessage(Company $company): string
+    protected function buildMessage(Company $company): string
     {
-        $details = [];
+        $message = [];
 
-        // Opening greeting
-        $details[] = "Thank you for visiting *{$company->company_name}* at CREDAI GLAM Property Show.";
-        $details[] = '';
-        $details[] = 'Here are the company details:';
-        $details[] = '';
+        // Greeting
+        $message[] = "Thank you for visiting *{$company->company_name}* at CREDAI GLAM Property Show.";
+        $message[] = '';
 
-        // Company Information
-        $details[] = '*Company Information:*';
+        // Exhibitor link
+        $exhibitorUrl = route('exhibitor.show', ['exhibitor' => $company->exhibitor->slug]);
+        $message[] = 'Here is a link to know more about the company and projects:';
+        $message[] = $exhibitorUrl;
+        $message[] = '';
 
-        if ($company->main_person_name) {
-            $details[] = "Contact Person: {$company->main_person_name}";
+        // Brochure line or explore more
+        if ($company->exhibitor->brochure_path) {
+            $message[] = 'We are also sharing our company profile with you. We hope you find it insightful and look forward to connecting with you soon.';
+        } else {
+            $message[] = 'Feel free to explore more.';
         }
 
-        if ($company->stall_number) {
-            $details[] = "Stall Number: {$company->stall_number}";
-        }
-
-        if ($company->exhibitor) {
-            if ($company->exhibitor->office_address) {
-                $details[] = "Address: {$company->exhibitor->office_address}";
-            }
-
-            if ($company->exhibitor->city) {
-                $details[] = "City: {$company->exhibitor->city}";
-            }
-
-            if ($company->exhibitor->email) {
-                $details[] = "Email: {$company->exhibitor->email}";
-            }
-
-            if ($company->exhibitor->website) {
-                $details[] = "Website: {$company->exhibitor->website}";
-            }
-        }
-
-        $details[] = '';
-        $details[] = 'Our team will contact you soon with more information.';
-
-        return implode("\n", $details);
+        return implode("\n", $message);
     }
 }
