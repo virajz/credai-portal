@@ -14,22 +14,23 @@
         <!-- Filters -->
         <flux:card>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <flux:select wire:model.live="dateRange" label="Date Range">
-                    <option value="1">Last 24 hours</option>
-                    <option value="7">Last 7 days</option>
-                    <option value="30">Last 30 days</option>
-                    <option value="90">Last 90 days</option>
-                    <option value="all">All time</option>
+                <flux:select wire:model.live="dateRange" label="Date Range" variant="listbox">
+                    <flux:select.option value="1">Last 24 hours</flux:select.option>
+                    <flux:select.option value="7">Last 7 days</flux:select.option>
+                    <flux:select.option value="30">Last 30 days</flux:select.option>
+                    <flux:select.option value="90">Last 90 days</flux:select.option>
+                    <flux:select.option value="all">All time</flux:select.option>
                 </flux:select>
 
-                <flux:select wire:model.live="eventTypeFilter" label="Event Type">
-                    <option value="all">All Events</option>
-                    <option value="exhibitor_profile_view">Profile Views</option>
-                    <option value="project_view">Project Views</option>
-                    <option value="company_brochure_download">Brochure Downloads</option>
-                    <option value="project_brochure_download">Project Brochure Downloads</option>
-                    <option value="call_clicked">Calls</option>
-                    <option value="website_visit_clicked">Website Visits</option>
+                <flux:select wire:model.live="eventTypeFilter" label="Event Type" variant="listbox">
+                    <flux:select.option value="all">All Events</flux:select.option>
+                    <flux:select.option value="exhibitor_profile_view">Profile Views</flux:select.option>
+                    <flux:select.option value="project_view">Project Views</flux:select.option>
+                    <flux:select.option value="company_brochure_download">Brochure Downloads</flux:select.option>
+                    <flux:select.option value="project_brochure_download">Project Brochure Downloads
+                    </flux:select.option>
+                    <flux:select.option value="call_clicked">Calls</flux:select.option>
+                    <flux:select.option value="website_visit_clicked">Website Visits</flux:select.option>
                 </flux:select>
             </div>
         </flux:card>
@@ -117,13 +118,13 @@
                                     <flux:table.cell>
                                         <flux:badge
                                             :color="match ($event->event_type) {
-                                                                                            'exhibitor_profile_view' => 'blue',
-                                                                                            'project_view' => 'purple',
-                                                                                            'company_brochure_download', 'project_brochure_download' => 'teal',
-                                                                                            'call_clicked' => 'amber',
-                                                                                            'website_visit_clicked' => 'rose',
-                                                                                            default => 'zinc',
-                                                                                        }">
+                                                                                                                                                                                    'exhibitor_profile_view' => 'blue',
+                                                                                                                                                                                    'project_view' => 'purple',
+                                                                                                                                                                                    'company_brochure_download', 'project_brochure_download' => 'teal',
+                                                                                                                                                                                    'call_clicked' => 'amber',
+                                                                                                                                                                                    'website_visit_clicked' => 'rose',
+                                                                                                                                                                                    default => 'zinc',
+                                                                                                                                                                                }">
                                             {{ str_replace('_', ' ', ucfirst($event->event_type)) }}
                                         </flux:badge>
                                     </flux:table.cell>
