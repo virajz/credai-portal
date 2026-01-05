@@ -173,13 +173,13 @@ class ClientRegistrationForm extends Component
                 // Check if area is a custom value (not in predefined list)
                 $area = $project->area;
                 $areaOther = null;
-                
-                if ($area && !in_array($area, $this->predefinedAreas)) {
+
+                if ($area && ! in_array($area, $this->predefinedAreas)) {
                     // Custom area - set dropdown to "Others" and populate area_other
                     $areaOther = $area;
                     $area = 'Others';
                 }
-                
+
                 $this->projects[] = [
                     'id' => $project->id,
                     'name' => $project->name,
@@ -458,7 +458,7 @@ class ClientRegistrationForm extends Component
                 'email' => ['nullable', 'email', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
                 'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'extensions:png,jpg,jpeg,pdf,cdr', 'max:5120'],
-                'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:51200'],
+                'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
                 'video_url' => ['nullable', 'url', 'max:255'],
                 'social_media_links' => ['nullable', 'array'],
                 'social_media_links.facebook' => ['nullable', 'url', 'max:255'],
@@ -475,7 +475,6 @@ class ClientRegistrationForm extends Component
                 'logo.required' => 'Company logo is required.',
                 'logo.mimes' => 'Logo must be a PNG, JPG, PDF, or CDR file.',
                 'logo.max' => 'Logo file size should not exceed 5MB.',
-                'brochure.required' => 'Company brochure is required.',
                 'brochure.mimes' => 'Brochure must be a PDF file.',
                 'brochure.max' => 'Brochure file size should not exceed 50MB.',
                 'video_url.url' => 'Please provide a valid video URL (YouTube or Vimeo).',
@@ -612,7 +611,7 @@ class ClientRegistrationForm extends Component
         }
 
         // Also clear the existing file path if it exists
-        $pathKey = $type . '_path';
+        $pathKey = $type.'_path';
         if (isset($this->projects[$index][$pathKey])) {
             // Delete the existing file from storage
             Storage::disk('public')->delete($this->projects[$index][$pathKey]);
@@ -734,7 +733,7 @@ class ClientRegistrationForm extends Component
 
                 // Branding & Media
                 'logo' => [$this->logo_path ? 'nullable' : 'required', 'file', 'extensions:png,jpg,jpeg,pdf,cdr', 'max:5120'],
-                'brochure' => [$this->brochure_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:51200'],
+                'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
                 'video_url' => ['nullable', 'url', 'max:255'],
                 'social_media_links' => ['nullable', 'array'],
 
@@ -743,7 +742,6 @@ class ClientRegistrationForm extends Component
                 'additional_details' => ['nullable', 'string', 'max:1000'],
             ], [
                 'logo.required' => 'Company logo is required.',
-                'brochure.required' => 'Company brochure is required.',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Validation failed - check all steps for errors and highlight them
@@ -760,17 +758,17 @@ class ClientRegistrationForm extends Component
         // Handle file uploads with original filenames
         $logoPath = $this->logo ? $this->logo->storeAs(
             'exhibitors/logos',
-            time() . '_' . $this->logo->getClientOriginalName(),
+            time().'_'.$this->logo->getClientOriginalName(),
             'public'
         ) : null;
         $brochurePath = $this->brochure ? $this->brochure->storeAs(
             'exhibitors/brochures',
-            time() . '_' . $this->brochure->getClientOriginalName(),
+            time().'_'.$this->brochure->getClientOriginalName(),
             'public'
         ) : null;
 
         // Filter empty social media links
-        $socialMediaLinks = array_filter($this->social_media_links, fn($value) => ! empty($value));
+        $socialMediaLinks = array_filter($this->social_media_links, fn ($value) => ! empty($value));
 
         // Check if exhibitor already exists (for updates)
         $exhibitor = Exhibitor::where('company_id', $this->company->id)->first();
@@ -821,7 +819,7 @@ class ClientRegistrationForm extends Component
                     if (isset($projectData['pdf']) && is_object($projectData['pdf'])) {
                         $projectPdfPath = $projectData['pdf']->storeAs(
                             'projects/pdfs',
-                            time() . '_' . $projectData['pdf']->getClientOriginalName(),
+                            time().'_'.$projectData['pdf']->getClientOriginalName(),
                             'public'
                         );
                     }
@@ -829,14 +827,14 @@ class ClientRegistrationForm extends Component
                     if (isset($projectData['logo']) && is_object($projectData['logo'])) {
                         $projectLogoPath = $projectData['logo']->storeAs(
                             'projects/logos',
-                            time() . '_' . $projectData['logo']->getClientOriginalName(),
+                            time().'_'.$projectData['logo']->getClientOriginalName(),
                             'public'
                         );
                     }
 
                     // Use custom area if "Others" is selected and area_other is provided
                     $area = $projectData['area'] ?? null;
-                    if ($area === 'Others' && !empty($projectData['area_other'])) {
+                    if ($area === 'Others' && ! empty($projectData['area_other'])) {
                         $area = $projectData['area_other'];
                     }
 

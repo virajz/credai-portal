@@ -144,7 +144,7 @@
             }
         }">
             <div class="space-y-2">
-                <flux:label>Company Brochure <span class="text-red-500">*</span></flux:label>
+                <flux:label badge="Optional">Company Brochure</flux:label>
 
                 <div class="relative">
                     <input type="file" @change="handleFile($event)" accept="application/pdf" class="hidden"
