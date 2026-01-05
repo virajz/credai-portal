@@ -32,11 +32,24 @@ class WhatsAppWebhookController extends Controller
             'text' => $data['content']['text'] ?? null,
         ]);
 
-        // Check if this is the first message from this sender
-        $isFirstMessage = WhatsAppMessage::isFirstMessageFrom($data['from']);
+        // Check if message contains company inquiry (format: "Hi, I want to know more about CompanyName - uuid123")
+        $messageText = $data['content']['text'] ?? '';
+        if (! $this->isCompanyInquiry($messageText)) {
+            // Ignore all other messages - only process company inquiries
+            Log::info('Message ignored - not a company inquiry', [
+                'message_id' => $data['messageId'],
+                'from' => $data['from'],
+                'text' => $messageText,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Webhook received successfully',
+            ], 200);
+        }
 
         // Store the message in database
-        $message = WhatsAppMessage::create([
+        WhatsAppMessage::create([
             'message_id' => $data['messageId'],
             'channel' => $data['channel'],
             'from' => $data['from'],
@@ -46,40 +59,10 @@ class WhatsAppWebhookController extends Controller
             'text' => $data['content']['text'] ?? null,
             'raw_payload' => $data,
             'received_at' => $data['receivedAt'],
-            'thank_you_sent' => false,
         ]);
 
-        // Send thank you message only for first-time users
-        if ($isFirstMessage) {
-            $thankYouMessage = 'Thank you, we will get back to you.';
-
-            $result = $this->whatsappService->sendSessionMessage(
-                $data['from'],
-                $thankYouMessage
-            );
-
-            if ($result['success']) {
-                $message->update(['thank_you_sent' => true]);
-
-                Log::info('Thank you message sent', [
-                    'message_id' => $data['messageId'],
-                    'from' => $data['from'],
-                    'sender_name' => $data['whatsapp']['senderName'],
-                ]);
-            } else {
-                Log::error('Failed to send thank you message', [
-                    'message_id' => $data['messageId'],
-                    'from' => $data['from'],
-                    'error' => $result['error'] ?? 'Unknown error',
-                ]);
-            }
-        }
-
-        // Check if message contains company inquiry (format: "Hi, I want to know more about CompanyName - uuid123")
-        $messageText = $data['content']['text'] ?? '';
-        if ($this->isCompanyInquiry($messageText)) {
-            $this->handleCompanyInquiry($messageText, $data['from']);
-        }
+        // Handle company inquiry
+        $this->handleCompanyInquiry($messageText, $data['from'], $data['whatsapp']['senderName']);
 
         return response()->json([
             'success' => true,
@@ -98,7 +81,7 @@ class WhatsAppWebhookController extends Controller
     /**
      * Handle company inquiry and send company details
      */
-    protected function handleCompanyInquiry(string $message, string $phoneNumber): void
+    protected function handleCompanyInquiry(string $message, string $phoneNumber, string $senderName): void
     {
         // Extract company name and UUID last 6 from message
         // Format: "Hi, I want to know more about Atlanta - ffb590"
@@ -122,6 +105,22 @@ class WhatsAppWebhookController extends Controller
                 'uuid_last_6' => $uuidLast6,
                 'phone_number' => $phoneNumber,
             ]);
+
+            // Send company not found message
+            $notFoundMessage = "Hello {$senderName}, we could not find the company you are looking for. Please check the company name and try again.";
+            $result = $this->whatsappService->sendSessionMessage($phoneNumber, $notFoundMessage);
+
+            if ($result['success']) {
+                Log::info('Company not found message sent', [
+                    'phone_number' => $phoneNumber,
+                    'company_name' => $companyName,
+                ]);
+            } else {
+                Log::error('Failed to send company not found message', [
+                    'phone_number' => $phoneNumber,
+                    'error' => $result['error'] ?? 'Unknown error',
+                ]);
+            }
 
             return;
         }

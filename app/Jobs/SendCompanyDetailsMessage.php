@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Services\WhatsAppService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 
 class SendCompanyDetailsMessage implements ShouldQueue
@@ -42,38 +43,61 @@ class SendCompanyDetailsMessage implements ShouldQueue
             'phone_number' => $this->phoneNumber,
         ]);
 
-        // Build company details message
-        $detailsMessage = $this->buildCompanyDetailsMessage($company);
+        // Step 1: Send company details (text only)
+        $companyDetailsMessage = $this->buildCompanyDetailsMessage($company);
+        $result = $whatsappService->sendSessionMessage($this->phoneNumber, $companyDetailsMessage);
 
-        // Get brochure URL if available
-        $brochureUrl = $company->exhibitor?->brochure_path
-            ? \Storage::url($company->exhibitor->brochure_path)
-            : null;
-
-        // Convert to absolute URL if brochure exists
-        if ($brochureUrl) {
-            $brochureUrl = url($brochureUrl);
-        }
-
-        // Send company details with brochure if available
-        $result = $whatsappService->sendSessionMessage($this->phoneNumber, $detailsMessage, $brochureUrl);
-
-        if ($result['success']) {
-            Log::info('Company details sent successfully', [
-                'company_id' => $company->id,
-                'company_name' => $company->company_name,
-                'phone_number' => $this->phoneNumber,
-                'response' => $result['data'] ?? $result['body'],
-            ]);
-        } else {
+        if (! $result['success']) {
             Log::error('Failed to send company details', [
                 'company_id' => $company->id,
-                'company_name' => $company->company_name,
-                'phone_number' => $this->phoneNumber,
                 'error' => $result['error'],
             ]);
 
             throw new \Exception('WhatsApp API error: '.$result['error']);
+        }
+
+        Log::info('Company details sent successfully', [
+            'company_id' => $company->id,
+        ]);
+
+        // Step 2: Send brochure if available
+        if ($company->exhibitor?->brochure_path) {
+            $brochureUrl = url(\Storage::url($company->exhibitor->brochure_path));
+            $brochureMessage = "Here is the company brochure for *{$company->company_name}*.";
+
+            $brochureResult = $whatsappService->sendSessionMessage($this->phoneNumber, $brochureMessage, $brochureUrl);
+
+            if ($brochureResult['success']) {
+                Log::info('Company brochure sent successfully', [
+                    'company_id' => $company->id,
+                ]);
+            } else {
+                Log::error('Failed to send company brochure', [
+                    'company_id' => $company->id,
+                    'error' => $brochureResult['error'],
+                ]);
+            }
+        }
+
+        // Step 3: Dispatch individual jobs for each project with delays
+        if ($company->exhibitor && $company->exhibitor->projects->isNotEmpty()) {
+            $projectJobs = [];
+
+            foreach ($company->exhibitor->projects as $index => $project) {
+                $projectJobs[] = (new SendProjectDetailsMessage(
+                    projectId: $project->id,
+                    phoneNumber: $this->phoneNumber,
+                    projectNumber: $index + 1,
+                    companyName: $company->company_name
+                ))->delay(now()->addSeconds($index + 1));
+            }
+
+            Bus::dispatchChain($projectJobs);
+
+            Log::info('Project details jobs dispatched', [
+                'company_id' => $company->id,
+                'project_count' => count($projectJobs),
+            ]);
         }
     }
 
@@ -93,7 +117,7 @@ class SendCompanyDetailsMessage implements ShouldQueue
         // Opening greeting
         $details[] = "Thank you for visiting *{$company->company_name}* at CREDAI GLAM Property Show.";
         $details[] = '';
-        $details[] = 'Here are the details for the company and upcoming projects:';
+        $details[] = 'Here are the company details:';
         $details[] = '';
 
         // Company Information
@@ -122,34 +146,6 @@ class SendCompanyDetailsMessage implements ShouldQueue
 
             if ($company->exhibitor->website) {
                 $details[] = "Website: {$company->exhibitor->website}";
-            }
-        }
-
-        // Projects Information
-        if ($company->exhibitor && $company->exhibitor->projects->isNotEmpty()) {
-            $details[] = '';
-            $details[] = '*Upcoming Projects:*';
-
-            foreach ($company->exhibitor->projects as $index => $project) {
-                $projectNumber = $index + 1;
-                $details[] = '';
-                $details[] = "{$projectNumber}. *{$project->name}*";
-
-                if ($project->area) {
-                    $details[] = "   Location: {$project->area}";
-                }
-
-                if ($project->category) {
-                    $details[] = "   Category: {$project->category}";
-                }
-
-                if ($project->budget_range) {
-                    $details[] = "   Budget: {$project->budget_range}";
-                }
-
-                if ($project->status) {
-                    $details[] = "   Status: {$project->status}";
-                }
             }
         }
 
