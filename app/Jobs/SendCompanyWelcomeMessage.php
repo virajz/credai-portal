@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
-class SendCompanyDetailsMessage implements ShouldQueue
+class SendCompanyWelcomeMessage implements ShouldQueue
 {
     use Queueable;
 
@@ -28,7 +28,7 @@ class SendCompanyDetailsMessage implements ShouldQueue
         $company = Company::with(['exhibitor'])->find($this->companyId);
 
         if (! $company) {
-            Log::error('Company not found for sending details', [
+            Log::error('Company not found for welcome message', [
                 'company_id' => $this->companyId,
                 'phone_number' => $this->phoneNumber,
             ]);
@@ -45,26 +45,20 @@ class SendCompanyDetailsMessage implements ShouldQueue
             return;
         }
 
-        Log::info('Attempting to send company details', [
+        Log::info('Attempting to send welcome message', [
             'company_id' => $company->id,
             'company_name' => $company->company_name,
             'phone_number' => $this->phoneNumber,
         ]);
 
-        // Send message with exhibitor link and optional brochure
-        $message = $this->buildMessage($company);
-        $brochureUrl = $company->exhibitor->brochure_path
-            ? url(\Storage::url($company->exhibitor->brochure_path))
-            : null;
+        // Build the welcome message
+        $message = $this->buildWelcomeMessage($company);
 
-        $result = $whatsappService->sendSessionMessage(
-            $this->phoneNumber,
-            $message,
-            $brochureUrl
-        );
+        // Send the message
+        $result = $whatsappService->sendSessionMessage($this->phoneNumber, $message);
 
         if (! $result['success']) {
-            Log::error('Failed to send company message', [
+            Log::error('Failed to send welcome message', [
                 'company_id' => $company->id,
                 'error' => $result['error'],
             ]);
@@ -72,22 +66,21 @@ class SendCompanyDetailsMessage implements ShouldQueue
             throw new \Exception('WhatsApp API error: '.$result['error']);
         }
 
-        Log::info('Company message sent successfully', [
+        Log::info('Welcome message sent successfully', [
             'company_id' => $company->id,
-            'has_brochure' => $brochureUrl !== null,
         ]);
     }
 
     public function failed(\Throwable $exception): void
     {
-        Log::critical('Company details job failed after all retries', [
+        Log::critical('Welcome message job failed after all retries', [
             'company_id' => $this->companyId,
             'phone_number' => $this->phoneNumber,
             'exception' => $exception->getMessage(),
         ]);
     }
 
-    protected function buildMessage(Company $company): string
+    protected function buildWelcomeMessage(Company $company): string
     {
         $message = [];
 

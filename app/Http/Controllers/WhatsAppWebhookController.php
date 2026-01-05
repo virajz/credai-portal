@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WhatsAppWebhookRequest;
-use App\Jobs\SendCompanyDetailsMessage;
+use App\Jobs\SendCompanyBrochure;
+use App\Jobs\SendCompanyWelcomeMessage;
 use App\Models\Company;
 use App\Models\WhatsAppMessage;
 use App\Services\WhatsAppService;
@@ -93,7 +94,8 @@ class WhatsAppWebhookController extends Controller
         $uuidLast6 = strtolower($matches[2]);
 
         // Find the company by name and UUID last 6 characters
-        $company = Company::where('company_name', 'ILIKE', $companyName)
+        $company = Company::with('exhibitor')
+            ->where('company_name', 'ILIKE', $companyName)
             ->get()
             ->first(function ($company) use ($uuidLast6) {
                 return strtolower(substr(str_replace('-', '', $company->uuid), -6)) === $uuidLast6;
@@ -125,13 +127,30 @@ class WhatsAppWebhookController extends Controller
             return;
         }
 
-        // Dispatch job to send company details
-        SendCompanyDetailsMessage::dispatch($company->id, $phoneNumber);
+        // Check if exhibitor exists
+        if (! $company->exhibitor) {
+            Log::warning('Exhibitor not found for company', [
+                'company_id' => $company->id,
+                'company_name' => $company->company_name,
+                'phone_number' => $phoneNumber,
+            ]);
 
-        Log::info('Company details job dispatched', [
+            return;
+        }
+
+        // Dispatch Job 1: Send welcome message with link
+        SendCompanyWelcomeMessage::dispatch($company->id, $phoneNumber);
+
+        // Dispatch Job 2: Send brochure (if available)
+        if ($company->exhibitor->brochure_path) {
+            SendCompanyBrochure::dispatch($company->id, $phoneNumber);
+        }
+
+        Log::info('Company inquiry jobs dispatched', [
             'company_id' => $company->id,
             'company_name' => $company->company_name,
             'phone_number' => $phoneNumber,
+            'has_brochure' => $company->exhibitor->brochure_path !== null,
         ]);
     }
 }
