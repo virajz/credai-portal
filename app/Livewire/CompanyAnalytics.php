@@ -43,6 +43,7 @@ class CompanyAnalytics extends Component
             'project_brochure_downloads' => $eventsByType['project_brochure_download'] ?? 0,
             'calls' => $eventsByType['call_clicked'] ?? 0,
             'website_visits' => $eventsByType['website_visit_clicked'] ?? 0,
+            'qr_scans' => $eventsByType['qr_scanned'] ?? 0,
         ];
     }
 

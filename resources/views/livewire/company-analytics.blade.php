@@ -31,6 +31,7 @@
                     </flux:select.option>
                     <flux:select.option value="call_clicked">Calls</flux:select.option>
                     <flux:select.option value="website_visit_clicked">Website Visits</flux:select.option>
+                    <flux:select.option value="qr_scanned">QR Scans</flux:select.option>
                 </flux:select>
             </div>
         </flux:card>
@@ -38,14 +39,14 @@
         <!-- Summary Stats -->
         <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             <!-- Total Events -->
-            <flux:card>
+            {{-- <flux:card>
                 <div class="text-center">
                     <div class="mb-2 text-3xl font-bold text-zinc-900 dark:text-white">
                         {{ number_format($summary['total_events']) }}
                     </div>
                     <div class="text-xs text-zinc-500 dark:text-zinc-400">Total Events</div>
                 </div>
-            </flux:card>
+            </flux:card> --}}
 
             <!-- Profile Views -->
             <flux:card>
@@ -96,6 +97,16 @@
                     <div class="text-xs text-zinc-500 dark:text-zinc-400">Website Visits</div>
                 </div>
             </flux:card>
+
+            <!-- QR Scans -->
+            <flux:card>
+                <div class="text-center">
+                    <div class="mb-2 text-3xl font-bold text-green-600 dark:text-green-400">
+                        {{ number_format($summary['qr_scans']) }}
+                    </div>
+                    <div class="text-xs text-zinc-500 dark:text-zinc-400">QR Scans</div>
+                </div>
+            </flux:card>
         </div>
 
         <!-- Events Table -->
@@ -118,13 +129,14 @@
                                     <flux:table.cell>
                                         <flux:badge
                                             :color="match ($event->event_type) {
-                                                                                                                                                                                    'exhibitor_profile_view' => 'blue',
-                                                                                                                                                                                    'project_view' => 'purple',
-                                                                                                                                                                                    'company_brochure_download', 'project_brochure_download' => 'teal',
-                                                                                                                                                                                    'call_clicked' => 'amber',
-                                                                                                                                                                                    'website_visit_clicked' => 'rose',
-                                                                                                                                                                                    default => 'zinc',
-                                                                                                                                                                                }">
+                                                                                                                                                                                                                                                                            'exhibitor_profile_view' => 'blue',
+                                                                                                                                                                                                                                                                            'project_view' => 'purple',
+                                                                                                                                                                                                                                                                            'company_brochure_download', 'project_brochure_download' => 'teal',
+                                                                                                                                                                                                                                                                            'call_clicked' => 'amber',
+                                                                                                                                                                                                                                                                            'website_visit_clicked' => 'rose',
+                                                                                                                                                                                                                                                                            'qr_scanned' => 'green',
+                                                                                                                                                                                                                                                                            default => 'zinc',
+                                                                                                                                                                                                                                                                        }">
                                             {{ str_replace('_', ' ', ucfirst($event->event_type)) }}
                                         </flux:badge>
                                     </flux:table.cell>

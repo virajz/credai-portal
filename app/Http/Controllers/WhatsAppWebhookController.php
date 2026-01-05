@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WhatsAppWebhookRequest;
 use App\Jobs\SendCompanyBrochure;
 use App\Jobs\SendCompanyWelcomeMessage;
+use App\Models\AnalyticsEvent;
 use App\Models\Company;
 use App\Models\WhatsAppMessage;
 use App\Services\WhatsAppService;
@@ -137,6 +138,24 @@ class WhatsAppWebhookController extends Controller
 
             return;
         }
+
+        // Log QR scan analytics event
+        AnalyticsEvent::create([
+            'event_type' => 'qr_scanned',
+            'trackable_type' => \App\Models\Exhibitor::class,
+            'trackable_id' => $company->exhibitor->id,
+            'metadata' => [
+                'phone_number' => $phoneNumber,
+                'sender_name' => $senderName,
+                'company_name' => $company->company_name,
+            ],
+        ]);
+
+        Log::info('QR scan analytics event logged', [
+            'company_id' => $company->id,
+            'exhibitor_id' => $company->exhibitor->id,
+            'phone_number' => $phoneNumber,
+        ]);
 
         // Dispatch Job 1: Send welcome message with link
         SendCompanyWelcomeMessage::dispatch($company->id, $phoneNumber);
