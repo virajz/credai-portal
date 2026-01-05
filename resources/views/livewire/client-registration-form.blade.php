@@ -450,7 +450,7 @@
 
                                                                         <flux:select
                                                                             wire:model="projects.{{ $index }}.units.{{ $unitIndex }}.budget"
-                                                                            label="Budget" placeholder="Select..."
+                                                                            label="Budget (Optional)" placeholder="Select..."
                                                                             variant="listbox">
                                                                             <flux:select.option value="Below 50L">Below
                                                                                 50L</flux:select.option>
@@ -534,7 +534,7 @@
 
                                                                         <flux:select
                                                                             wire:model="projects.{{ $index }}.units.{{ $unitIndex }}.budget"
-                                                                            label="Budget" placeholder="Select..."
+                                                                            label="Budget (Optional)" placeholder="Select..."
                                                                             variant="listbox">
                                                                             <flux:select.option value="Below 50L">Below
                                                                                 50L</flux:select.option>
