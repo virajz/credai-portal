@@ -78,15 +78,20 @@ class WhatsAppService
      */
     public function sendSessionMessage(
         string $phoneNumber,
-        string $text
+        string $text,
+        ?string $documentUrl = null
     ): array {
         $payload = [
             'sendto' => $phoneNumber,
             'authToken' => $this->authToken,
             'originWebsite' => $this->originWebsite,
-            'contentType' => 'text',
+            'contentType' => $documentUrl ? 'document' : 'text',
             'text' => $text,
         ];
+
+        if ($documentUrl) {
+            $payload['myfile'] = $documentUrl;
+        }
 
         try {
             $response = Http::timeout(30)
