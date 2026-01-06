@@ -6,7 +6,7 @@ use App\Livewire\CreateCompany;
 use App\Livewire\EditCompany;
 use App\Livewire\Entry\ScanEntry;
 use App\Livewire\Entry\ScanExit;
-use App\Livewire\PartnerRegistration;
+use App\Livewire\PartnerRegistrationClosed;
 use App\Livewire\PartnerShow;
 use App\Livewire\PartnersList;
 use App\Livewire\PartnerSuccess;
@@ -105,7 +105,7 @@ Route::get('visitor-success/{visitor}', \App\Livewire\VisitorSuccess::class)->na
 Route::get('visitors/{visitor}', \App\Livewire\VisitorShow::class)->name('visitor.show');
 
 // Public partner registration routes (no auth required)
-Route::get('partner-register', PartnerRegistration::class)->name('partner.register');
+Route::get('partner-register', PartnerRegistrationClosed::class)->name('partner.register');
 Route::get('partner-success/{partner}', PartnerSuccess::class)->name('partner.success');
 Route::get('partners/{partner}', PartnerShow::class)->name('partner.show');
 
