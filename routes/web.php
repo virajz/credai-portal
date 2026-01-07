@@ -31,6 +31,9 @@ Route::get('/scan/entry', ScanEntry::class)->name('entry');
 Route::get('/scan/exit', ScanExit::class)->name('exit');
 Route::get('/scan/search-visitors', App\Livewire\SearchVisitors::class)->name('scan.search-visitors');
 
+// Lucky Draw Route (no authentication required, obscured path)
+Route::get('/exhibition/hourly-winner-draw-2026', \App\Livewire\LuckyDraw::class)->name('lucky-draw');
+
 // Public exhibitors listing page
 Route::get('/explore-exhibitors', PublicExhibitorsList::class)->name('public.exhibitors');
 
