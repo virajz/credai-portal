@@ -29,6 +29,7 @@ Route::get('/', App\Http\Controllers\HomeController::class)->name('home');
 // Entry and Exit Scanner Routes (no authentication required)
 Route::get('/scan/entry', ScanEntry::class)->name('entry');
 Route::get('/scan/exit', ScanExit::class)->name('exit');
+Route::get('/scan/search-visitors', App\Livewire\SearchVisitors::class)->name('scan.search-visitors');
 
 // Public exhibitors listing page
 Route::get('/explore-exhibitors', PublicExhibitorsList::class)->name('public.exhibitors');
