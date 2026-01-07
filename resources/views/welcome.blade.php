@@ -129,76 +129,30 @@
         </div>
     </section>
 
-    <!-- Sponsors Marquee Section -->
-    <section class="py-12 bg-white border-y border-zinc-100 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-            <div class="text-center">
-                <span class="text-xs font-light tracking-widest text-zinc-400 uppercase">Our Sponsors</span>
+    <!-- Partners Section -->
+    <section class="py-12 bg-white border-y border-zinc-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-xs font-light tracking-widest text-zinc-400 uppercase">Our Partners</span>
             </div>
-        </div>
 
-        <!-- Marquee Container -->
-        <div class="relative">
-            <!-- Gradient Overlays -->
-            <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10"></div>
-            <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10"></div>
+            <!-- Partners Grid -->
+            <div class="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
+                <!-- Event Partner -->
+                <a href="https://www.palevents.in/" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-4 group">
+                    <div class="w-48 h-24 flex items-center justify-center transition-transform group-hover:scale-105">
+                        <img src="{{ asset('brands/pal.png') }}" alt="Pal Events" class="max-w-full max-h-full object-contain">
+                    </div>
+                    <span class="text-xs font-light tracking-wide text-zinc-400 uppercase">Event Partner</span>
+                </a>
 
-            <!-- Marquee Track -->
-            <div class="flex animate-marquee">
-                <!-- First set of logos -->
-                <div class="flex items-center gap-16 px-8">
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 1</span>
+                <!-- IT Partner -->
+                <a href="https://techable.in" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-4 group">
+                    <div class="w-48 h-24 flex items-center justify-center transition-transform group-hover:scale-105">
+                        <img src="{{ asset('brands/techable.png') }}" alt="Techable Consultancy" class="max-w-full max-h-full object-contain">
                     </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 2</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 3</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 4</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 5</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 6</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 7</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 8</span>
-                    </div>
-                </div>
-                <!-- Duplicate set for seamless loop -->
-                <div class="flex items-center gap-16 px-8">
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 1</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 2</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 3</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 4</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 5</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 6</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 7</span>
-                    </div>
-                    <div class="flex-shrink-0 w-32 h-16 bg-zinc-50 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-light text-zinc-400">Sponsor 8</span>
-                    </div>
-                </div>
+                    <span class="text-xs font-light tracking-wide text-zinc-400 uppercase">IT Partner</span>
+                </a>
             </div>
         </div>
     </section>
