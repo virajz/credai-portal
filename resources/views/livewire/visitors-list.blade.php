@@ -8,9 +8,7 @@
             <flux:button variant="outline" wire:click="openQrModal" icon="qr-code" icon:variant="outline">
                 Generate QR Code
             </flux:button>
-            <flux:button variant="primary" wire:click="exportVisitors" icon="arrow-down-tray" icon:variant="outline">
-                Export Data
-            </flux:button>
+            <livewire:components.export-button />
         </div>
     </div>
 

@@ -3,9 +3,11 @@
 namespace App\Livewire\Exhibitor;
 
 use App\Concerns\VisitorFiltering;
+use App\Models\EntryExitLog;
 use App\Models\Visitor;
 use App\Services\QrCodeService;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -101,8 +103,13 @@ class VisitorsList extends Component
         $this->modal('visitor-details')->close();
     }
 
-    public function exportVisitors()
+    #[On('export-visitors-all')]
+    public function exportVisitors(?string $date = null)
     {
+        if ($date) {
+            return $this->exportVisitorsByDate($date);
+        }
+
         $query = Visitor::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
@@ -172,6 +179,82 @@ class VisitorsList extends Component
 
             fclose($file);
         };
+
+        $this->dispatch('export-complete');
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    #[On('export-visitors-date-wise')]
+    public function exportVisitorsByDate(string $date)
+    {
+        $visitorIds = EntryExitLog::whereNotNull('visitor_id');
+
+        if ($date !== 'all') {
+            $visitorIds->whereDate('entry_time', $date);
+        }
+
+        $visitorIds = $visitorIds->distinct('visitor_id')
+            ->pluck('visitor_id')
+            ->toArray();
+
+        $visitors = Visitor::whereIn('id', $visitorIds)
+            ->orderBy('name', 'asc')
+            ->cursor();
+
+        $dateLabel = $date === 'all' ? 'all-days' : $date;
+        $filename = "visitors_entered_{$dateLabel}_".now()->format('Y-m-d_His').'.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($visitors) {
+            $file = fopen('php://output', 'w');
+
+            fputcsv($file, [
+                'ID',
+                'Name',
+                'Phone',
+                'Age Group',
+                'Current Residential Area',
+                'Company Name',
+                'Interests',
+                'Residential Types',
+                'Commercial Types',
+                'Plotting Types',
+                'Weekend Home Types',
+                'Planning to Buy',
+                'Areas',
+                'Tracking Medium',
+                'Registered At',
+            ]);
+
+            foreach ($visitors as $visitor) {
+                fputcsv($file, [
+                    $visitor->id,
+                    $visitor->name,
+                    $visitor->phone,
+                    $visitor->age_group,
+                    $visitor->current_residential_area,
+                    $visitor->company_name,
+                    is_array($visitor->interests) ? implode(', ', $visitor->interests) : '',
+                    is_array($visitor->residential_types) ? implode(', ', $visitor->residential_types) : '',
+                    is_array($visitor->commercial_types) ? implode(', ', $visitor->commercial_types) : '',
+                    is_array($visitor->plotting_types) ? implode(', ', $visitor->plotting_types) : '',
+                    is_array($visitor->weekend_home_types) ? implode(', ', $visitor->weekend_home_types) : '',
+                    $visitor->planning_to_buy,
+                    is_array($visitor->areas) ? implode(', ', $visitor->areas) : '',
+                    $visitor->tracking_medium,
+                    $visitor->created_at?->format('Y-m-d H:i:s'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        $this->dispatch('export-complete');
 
         return response()->stream($callback, 200, $headers);
     }

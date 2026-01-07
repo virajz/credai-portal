@@ -5,9 +5,7 @@
             <flux:subheading>View visitor registrations and information</flux:subheading>
         </div>
         <div class="flex gap-3">
-            <flux:button variant="primary" wire:click="exportVisitors" icon="arrow-down-tray" icon:variant="outline">
-                Export Data
-            </flux:button>
+            <livewire:components.export-button />
         </div>
     </div>
 
