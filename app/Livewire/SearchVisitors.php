@@ -73,8 +73,12 @@ class SearchVisitors extends Component
                 data: [
                     $visitor->name,
                     'GLAM SURAT – Property Show 2026',
+                    '9, 10, 11 January 2026',
+                    'Vanita Vishram Ground, Surat',
                 ],
-                imageUrl: $imageUrl
+                imageUrl: $imageUrl,
+                buttonValue: 'https://property-show.credai-surat.com/',
+                visitorId: $visitor->id
             );
 
             $this->visitorToSendWhatsApp = null;
