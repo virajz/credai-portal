@@ -437,6 +437,10 @@
                                                             {{ $project->category }}
                                                         </div>
                                                     @endif
+                                                    <div class="mt-1 space-y-0.5 text-[10px] text-zinc-400 dark:text-zinc-500">
+                                                        <div>Submitted: {{ $project->created_at->format('M d, Y') }}</div>
+                                                        <div>Updated: {{ $project->updated_at->format('M d, Y') }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </button>
@@ -472,6 +476,20 @@
 
                                     <!-- Project Details Grid -->
                                     <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+                                        @if ($project->created_at)
+                                            <div>
+                                                <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Submitted Date
+                                                </div>
+                                                <div class="mt-1 font-medium">{{ $project->created_at->format('M d, Y') }}</div>
+                                            </div>
+                                        @endif
+                                        @if ($project->updated_at)
+                                            <div>
+                                                <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Last Updated
+                                                </div>
+                                                <div class="mt-1 font-medium">{{ $project->updated_at->format('M d, Y') }}</div>
+                                            </div>
+                                        @endif
                                         @if ($project->area)
                                             <div>
                                                 <div class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Area
