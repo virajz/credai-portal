@@ -63,22 +63,22 @@
         <flux:subheading>Scan QR code to record entry</flux:subheading>
     </div>
 
-    <div class="grid gap-6">
-        <flux:card>
-            <flux:heading size="lg">Camera Scanner</flux:heading>
+    <div class="grid gap-4 md:gap-6">
+        <flux:card class="overflow-hidden">
+            <flux:heading size="lg" class="px-4 md:px-6 pt-4 md:pt-6">Camera Scanner</flux:heading>
 
-            <div class="mt-4 flex flex-col gap-4">
-                <div x-show="scanning" class="space-y-4">
-                    <div class="relative aspect-video overflow-hidden rounded-lg border-2 border-zinc-300 dark:border-zinc-600 bg-black">
+            <div class="flex flex-col">
+                <div x-show="scanning" class="w-full">
+                    <div class="relative w-full overflow-hidden bg-black" style="height: calc(100vh - 280px); min-height: 400px; max-height: 600px;">
                         <video x-ref="video" class="absolute inset-0 h-full w-full object-cover"></video>
                         <canvas x-ref="canvas" class="hidden"></canvas>
                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div class="border-2 border-white rounded-lg" style="width: 250px; height: 250px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);"></div>
+                            <div class="border-4 border-white rounded-lg w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96" style="box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);"></div>
                         </div>
                     </div>
                 </div>
 
-                <div x-show="!scanning" class="flex items-center justify-center py-12">
+                <div x-show="!scanning" class="flex items-center justify-center py-16 md:py-20 px-4">
                     <flux:button @click="startCamera()" type="button" variant="primary" icon="camera">
                         Start Camera
                     </flux:button>
@@ -88,7 +88,7 @@
 
         @if($scannedVisitor || $scannedPartner)
             <flux:card>
-                <flux:heading size="lg">{{ $personType === 'visitor' ? 'Visitor' : 'Partner' }} Details</flux:heading>
+                <flux:heading size="lg" class="text-base md:text-lg">{{ $personType === 'visitor' ? 'Visitor' : 'Partner' }} Details</flux:heading>
 
                 @if($alreadyEntered)
                     <flux:callout variant="warning" icon="exclamation-triangle" class="mt-4">
@@ -100,35 +100,35 @@
                     @if($scannedVisitor)
                         <div>
                             <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Name</div>
-                            <div class="text-lg">{{ $scannedVisitor->name }}</div>
+                            <div class="text-base md:text-lg font-medium">{{ $scannedVisitor->name }}</div>
                         </div>
 
                         <div>
                             <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Phone</div>
-                            <div class="text-lg">{{ $scannedVisitor->phone }}</div>
+                            <div class="text-base md:text-lg font-medium">{{ $scannedVisitor->phone }}</div>
                         </div>
 
                         @if($scannedVisitor->company_name)
                             <div>
                                 <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Company</div>
-                                <div class="text-lg">{{ $scannedVisitor->company_name }}</div>
+                                <div class="text-base md:text-lg font-medium">{{ $scannedVisitor->company_name }}</div>
                             </div>
                         @endif
                     @elseif($scannedPartner)
                         <div>
                             <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Name</div>
-                            <div class="text-lg">{{ $scannedPartner->first_name }} {{ $scannedPartner->last_name }}</div>
+                            <div class="text-base md:text-lg font-medium">{{ $scannedPartner->first_name }} {{ $scannedPartner->last_name }}</div>
                         </div>
 
                         <div>
                             <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Phone</div>
-                            <div class="text-lg">{{ $scannedPartner->phone }}</div>
+                            <div class="text-base md:text-lg font-medium">{{ $scannedPartner->phone }}</div>
                         </div>
 
                         @if($scannedPartner->firm_name)
                             <div>
                                 <div class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Firm Name</div>
-                                <div class="text-lg">{{ $scannedPartner->firm_name }}</div>
+                                <div class="text-base md:text-lg font-medium">{{ $scannedPartner->firm_name }}</div>
                             </div>
                         @endif
                     @endif
