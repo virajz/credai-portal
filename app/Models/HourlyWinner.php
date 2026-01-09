@@ -13,12 +13,16 @@ class HourlyWinner extends Model
         'visitor_name',
         'visitor_phone',
         'drawn_at',
+        'is_awarded',
+        'awarded_at',
     ];
 
     protected function casts(): array
     {
         return [
             'drawn_at' => 'datetime',
+            'is_awarded' => 'boolean',
+            'awarded_at' => 'datetime',
         ];
     }
 

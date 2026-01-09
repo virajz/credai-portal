@@ -20,12 +20,14 @@ class LuckyDraw extends Component
     {
         $oneHourAgo = now()->subHour();
 
-        $winnerIds = HourlyWinner::pluck('visitor_id')->toArray();
+        $awardedWinnerIds = HourlyWinner::where('is_awarded', true)
+            ->pluck('visitor_id')
+            ->toArray();
 
         $eligibleEntry = EntryExitLog::with('visitor')
             ->where('entry_time', '>=', $oneHourAgo)
             ->whereNotNull('visitor_id')
-            ->whereNotIn('visitor_id', $winnerIds)
+            ->whereNotIn('visitor_id', $awardedWinnerIds)
             ->inRandomOrder()
             ->first();
 
@@ -51,6 +53,17 @@ class LuckyDraw extends Component
         $this->dispatch('start-animation');
     }
 
+    public function awardWinner(int $winnerId): void
+    {
+        $winner = HourlyWinner::findOrFail($winnerId);
+        $winner->update([
+            'is_awarded' => true,
+            'awarded_at' => now(),
+        ]);
+
+        $this->dispatch('winner-awarded');
+    }
+
     public function finishAnimation(): void
     {
         $this->winner = [
@@ -68,7 +81,13 @@ class LuckyDraw extends Component
 
     public function render()
     {
-        return view('livewire.lucky-draw')->layout('components.layouts.front', [
+        $winners = HourlyWinner::with('visitor')
+            ->orderBy('drawn_at', 'desc')
+            ->get();
+
+        return view('livewire.lucky-draw', [
+            'winners' => $winners,
+        ])->layout('components.layouts.front', [
             'title' => 'Lucky Draw - '.config('app.name'),
         ]);
     }
