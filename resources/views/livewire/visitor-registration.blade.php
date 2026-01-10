@@ -102,11 +102,10 @@
                         </flux:field>
                     </div>
 
-                    <!-- Current Residential Area with Google Places -->
+                    <!-- Current Residential Area or Pincode -->
                     <flux:field>
-                        <flux:label>Current Residential Area <span class="text-red-500">*</span></flux:label>
-                        <flux:input wire:model="current_residential_area" placeholder="Start typing your area..."
-                            id="autocomplete-input" autocomplete="off" />
+                        <flux:label>Current Residential Area or Pincode <span class="text-red-500">*</span></flux:label>
+                        <flux:input wire:model.blur="current_residential_area" placeholder="Enter your area or pincode" />
                         <flux:error name="current_residential_area" />
                     </flux:field>
                 </div>
@@ -235,66 +234,3 @@
         </form>
     </flux:card>
 </div>
-
-@push('scripts')
-    <script>
-        (function() {
-            let visitorAutocomplete;
-            let isAutocompleteInitialized = false;
-
-            function initVisitorAutocomplete() {
-                if (isAutocompleteInitialized) return;
-
-                const input = document.getElementById('autocomplete-input');
-                if (!input) return;
-
-                isAutocompleteInitialized = true;
-
-                // Initialize autocomplete
-                visitorAutocomplete = new google.maps.places.Autocomplete(input, {
-                    componentRestrictions: {
-                        country: 'in'
-                    },
-                    fields: ['formatted_address', 'name'],
-                    types: ['geocode']
-                });
-
-                visitorAutocomplete.addListener('place_changed', () => {
-                    const place = visitorAutocomplete.getPlace();
-
-                    if (!place || !place.formatted_address) {
-                        return;
-                    }
-
-                    // Update Livewire component
-                    @this.set('current_residential_area', place.formatted_address);
-                });
-
-                console.log('Google Places Autocomplete initialized for visitor registration');
-            }
-
-            function initWhenReady() {
-                if (typeof google !== 'undefined' &&
-                    google.maps &&
-                    google.maps.places) {
-                    initVisitorAutocomplete();
-                } else {
-                    setTimeout(initWhenReady, 100);
-                }
-            }
-
-            // Listen for Livewire navigation events
-            document.addEventListener('livewire:navigated', () => {
-                isAutocompleteInitialized = false;
-                initWhenReady();
-            });
-
-            // Initial load
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initWhenReady);
-            } else {
-                initWhenReady();
-            }
-        })();
-    </script>
-@endpush
