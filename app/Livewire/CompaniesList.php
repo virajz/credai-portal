@@ -229,11 +229,11 @@ class CompaniesList extends Component
 
     public function downloadAllQrCodes(): StreamedResponse
     {
-        $companies = Company::whereNotNull('uuid')->get();
+        $companies = Company::all();
 
         $headers = [
             'Content-Type' => 'application/zip',
-            'Content-Disposition' => 'attachment; filename="company-qr-codes-' . now()->format('Y-m-d') . '.zip"',
+            'Content-Disposition' => 'attachment; filename="company-qr-codes-'.now()->format('Y-m-d').'.zip"',
         ];
 
         $callback = function () use ($companies) {
@@ -285,7 +285,7 @@ class CompaniesList extends Component
 
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="companies-' . now()->format('Y-m-d') . '.csv"',
+            'Content-Disposition' => 'attachment; filename="companies-'.now()->format('Y-m-d').'.csv"',
         ];
 
         $callback = function () use ($companies) {
@@ -353,7 +353,7 @@ class CompaniesList extends Component
 
         $headers = [
             'Content-Type' => 'application/zip',
-            'Content-Disposition' => 'attachment; filename="companies-by-category-' . now()->format('Y-m-d') . '.zip"',
+            'Content-Disposition' => 'attachment; filename="companies-by-category-'.now()->format('Y-m-d').'.zip"',
         ];
 
         $callback = function () use ($categories) {
@@ -433,7 +433,7 @@ class CompaniesList extends Component
                 fclose($csv);
 
                 // Add to zip with a safe filename
-                $fileName = preg_replace('/[^A-Za-z0-9 _.-]/', '_', $category) . '.csv';
+                $fileName = preg_replace('/[^A-Za-z0-9 _.-]/', '_', $category).'.csv';
                 $zip->addFromString($fileName, $contents);
             }
 
