@@ -8,10 +8,12 @@
                     <div class="text-3xl font-bold">{{ number_format(\App\Models\Project::count()) }}</div>
                 </div>
             </flux:card>
-            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
-            </div>
+            <livewire:total-visitors-entered-widget />
         </div>
+
+        <!-- Exhibitor Analytics Summary -->
+        <livewire:exhibitor-analytics-summary />
+
         <div class="relative h-full flex-1 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
             <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
         </div>
